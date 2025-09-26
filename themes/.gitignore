@@ -11,9 +11,9 @@ wp-content/*
  
 
 # Ignore everything in the "themes" directory, except:  
-# wp-content/themes/*
-# !wp-content/themes/bricks/
-# !wp-content/themes/bricks-child/
-# !wp-content/themes/primary/
-# !wp-content/themes/Avada/
-# !wp-content/themes/Avada-Child-Theme/
+wp-content/themes/*
+!wp-content/themes/bricks/
+!wp-content/themes/bricks-child/
+!wp-content/themes/primary/
+!wp-content/themes/Avada/
+!wp-content/themes/Avada-Child-Theme/
