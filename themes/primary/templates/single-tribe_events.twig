@@ -1,0 +1,55 @@
+{% extends "_base.twig" %}
+
+{% block content %}
+	{% include "partials/page-header.twig" %}
+
+	<div class="event_entry">
+		<script type="application/ld+json">
+			{{ post.fw_ld_json }}
+		</script>
+
+		<!-- Page Feature -->
+		<div class="page_feature" id="page_content" tabindex="-1" aria-labelledby="page_title">
+			{% include "partials/event/event-meta.twig" with {
+				item: post
+			} %}
+		</div>
+		<!-- END: Page Feature -->
+
+		<!-- Page Content -->
+		<div class="page_content">
+			<div class="fs-row">
+				<div class="fs-cell {{ cell }}">
+					{% if post.image %}
+						<figure class="event_entry_figure">
+							{% include 'partials/image.twig' with {
+								class: 'event_entry',
+								alt: '',
+								image: post.image,
+								loading: 'eager',
+								sources: [
+									"classic-xlrg",
+									"classic-lrg",
+									"classic-med",
+									"classic-sml",
+									"classic-xsml",
+									"classic-xxsml"
+								]
+							} %}
+						</figure>
+					{% endif %}
+
+					<!-- WYSIWYG -->
+					<div class="typography">
+						{{ post.content }}
+					</div>
+					<!-- END: WYSIWYG -->
+
+					{% include 'partials/event/event-actions.twig' with {
+						items: post.fw_actions
+					} %}
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

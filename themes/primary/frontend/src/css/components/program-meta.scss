@@ -1,0 +1,118 @@
+/* ==========================================================================
+	Program Meta
+============================================================================= */
+
+.program_meta {
+}
+
+.program_meta_inner {
+	// display: grid;
+	// gap: 30px;
+	display: grid;
+	gap: 20px;
+}
+
+.program_details {
+	// display: grid;
+	// gap: 20px;
+
+	// @media #{$min_lg} {
+	// 	display: flex;
+	// 	flex-wrap: wrap;
+	// 	gap: 30px;
+	// }
+
+	display: grid;
+	flex-wrap: wrap;
+	gap: 20px;
+
+	@media (min-width: 400px $and_max_lg) {
+		grid-template-columns: 1fr 1fr;
+	}
+
+	@media #{$min_md $and_max_lg} {
+		display: flex;
+		flex-wrap: wrap;
+	}
+}
+
+.program_detail {
+	display: grid;
+	gap: 5px;
+
+	@media (min-width: 400px) {
+	}
+
+	@media #{$min_md} {
+	}
+}
+
+.program_detail_label {
+	@include h6;
+}
+
+.program_detail_label_hint {
+	@include visually_hide;
+}
+
+.program_detail_data {
+	@include small_text;
+
+	font-weight: 700;
+}
+
+.program_detail_data_link {
+	color: $blue_navy;
+	font-weight: normal;
+	text-decoration: underline;
+	transition: color $base_speed;
+
+	@include hover {
+		color: $black;
+	}
+}
+
+.program_meta_links {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 20px;
+
+	@media #{$min_lg} {
+		display: grid;
+		gap: 18px;
+	}
+}
+
+.program_meta_link_item {
+	&.orange {
+		--link-background-color: #{$orange};
+		--link-color: #{$black};
+		--link-hover-background-color: #{$turquoise};
+		--link-hover-color: #{$blue_navy};
+	}
+
+	&.turquoise {
+		--link-background-color: #{$turquoise};
+		--link-color: #{$black};
+		--link-hover-background-color: #{$turquoise};
+		--link-hover-color: #{$black};
+	}
+}
+
+.program_meta_link {
+	@include type_button;
+
+	background-color: var(--link-background-color);
+	border-radius: 4px;
+	box-shadow: 4px 4px 0px rgba($black, 0.1);
+	color: var(--link-color);
+	display: inline-block;
+	padding: 15px 20px;
+	transition: background-color $base_speed, box-shadow $base_speed, color $base_speed;
+
+	@include hover {
+		background-color: var(--link-hover-background-color);
+		box-shadow: 0px 0px 0px rgba($black, 0.1);
+		color: var(--link-hover-color);
+	}
+}

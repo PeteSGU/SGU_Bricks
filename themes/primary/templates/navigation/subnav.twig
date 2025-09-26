@@ -1,0 +1,35 @@
+<div class="page_nav">
+	<div class="fs-row">
+		<div class="fs-cell">
+			<div class="page_nav_inner">
+				<a class="skip_link skip_subnav" id="skip_sub_link" href="#page_content">Skip Sub Navigation</a>
+				<div class="page_nav_flat">
+					{% include "navigation/basic.twig" with {
+						class: "sub_flat",
+						modifier: "",
+						title: post.title,
+						active_index: "1",
+						links: items
+					} %}
+				</div>
+				<div class="page_nav_toggle">
+					{% include "navigation/toggle.twig" with {
+						class: "sub",
+						modifier: "",
+						title: post.title|lower,
+						links: items,
+						icon: "",
+						child_icon: "",
+						toggle: {
+							title: "Explore This Section",
+							icon: "chevron_down",
+							title_active: "Explore This Section",
+							icon_active: "chevron_down",
+							swap_target: ".js-sub-nav-group"
+						}
+					} %}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

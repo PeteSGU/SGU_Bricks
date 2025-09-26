@@ -1,0 +1,185 @@
+<!-- Menu -->
+<div class="js-menu menu" id="menu" aria-label="{{ title }}">
+	<div class="menu_sm">
+		<div class="menu_intro">
+			<div class="menu_header">
+				<div class="fs-row">
+					<div class="fs-cell">
+						<div class="menu_header_inner">
+							<h2 class="menu_title">{{ title }}</h2>
+							<div class="menu_contact_nav_sm">
+								{% include '@navigation-basic' with {
+									class: 'menu_contact',
+									modifier: '',
+									title: 'Next Steps',
+									active_index: '',
+									links: navigation.ctaSchool
+								} %}
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="menu_primary">
+				<div class="fs-row">
+					<div class="fs-cell">
+						<div class="menu_primary_inner">
+							<div class="menu_main_nav_collapse">
+								{% include '@navigation-collapse' with {
+									class: 'main_collapse',
+									modifier: '',
+									title: 'site',
+									toggle_icon: 'caret_down',
+									active_index: activePage,
+									links: navigation.mainSchool
+								} %}
+							</div>
+							<div class="menu_search">
+								{% include '@partial-search' with {
+									modifier: 'menu',
+									aria: 'Site Search',
+									label: 'Search',
+									placeholder: 'Search...',
+									button_text: 'Submit'
+								} %}
+							</div>
+							<div class="menu_controls">
+								<div class="menu_control">
+									<button class="menu_chat_button">
+										<span class="menu_chat_button_label">Chat</span>
+										<span class="menu_chat_button_icon">{{ icon("chat") }}</span>
+									</button>
+								</div>
+								<div class="menu_control">
+									<a class="menu_portal_link" href="#">
+										<span class="menu_portal_link_label">Login To Portal</span>
+										<span class="menu_portal_link_icon">{{ icon("person") }}</span>
+									</a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="menu_secondary">
+			<div class="fs-row">
+				<div class="fs-cell">
+					<div class="menu_secondary_inner">
+						<div class="menu_experience_nav">
+							{% include '@navigation-basic' with {
+								class: 'experience',
+								modifier: '',
+								title: 'Experience St. George\'s',
+								active_index: '',
+								links: navigation.experience
+							} %}
+						</div>
+						<div class="menu_about_nav">
+							{% include '@navigation-basic' with {
+								class: 'about',
+								modifier: '',
+								title: 'About',
+								active_index: '',
+								links: navigation.about
+							} %}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="menu_close">
+			<div class="fs-row">
+				<div class="fs-cell">
+					<div class="menu_close_inner">
+						{% include '@partial-button-toggle' with {
+							class: 'menu_close',
+							title: 'Close',
+							icon: 'close',
+							active_title: "Close",
+							active_icon: 'close',
+							swap_target: '.menu',
+							swap_link: 'menu'
+						} %}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="menu_lg">
+		<div class="menu_lg_inner">
+			<div class="menu_ribbon">
+				<div class="menu_contact_nav_lg">
+					{% include '@navigation-basic' with {
+						class: 'menu_contact',
+						modifier: '',
+						title: 'Next Steps',
+						active_index: '',
+						links: navigation.ctaSchool
+					} %}
+				</div>
+				<div class="menu_controls">
+					<div class="menu_control">
+						<a class="menu_portal_link" href="#">
+							<span class="menu_portal_link_label">Login To Portal</span>
+							<span class="menu_portal_link_icon">{{ icon("person") }}</span>
+						</a>
+					</div>
+				</div>
+			</div>
+			<div class="menu_grid">
+				<div class="menu_grid_primary">
+					<div class="menu_header">
+						<div class="menu_header_inner">
+							<h2 class="menu_title">{{ title }}</h2>
+						</div>
+					</div>
+					<div class="menu_main_nav_basic">
+						{% include '@navigation-basic' with {
+							class: 'main_basic',
+							modifier: '',
+							title: 'site',
+							active_index: '',
+							links: navigation.mainSchool
+						} %}
+					</div>
+				</div>
+				<div class="menu_grid_secondary">
+					<div class="menu_experience_nav">
+						{% include '@navigation-basic' with {
+							class: 'experience',
+							modifier: '',
+							title: 'Experience St. George\'s',
+							active_index: '',
+							links: navigation.experience
+						} %}
+					</div>
+					<div class="menu_about_nav">
+						{% include '@navigation-basic' with {
+							class: 'about',
+							modifier: '',
+							title: 'About',
+							active_index: '',
+							links: navigation.about
+						} %}
+					</div>
+				</div>
+			</div>
+			<div class="menu_close">
+				<div class="menu_close_inner">
+					{% include '@partial-button-toggle' with {
+						class: 'menu_close',
+						title: 'Close',
+						icon: 'close',
+						active_title: "Close",
+						active_icon: 'close',
+						swap_target: '.menu',
+						swap_link: 'menu'
+					} %}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- END: Menu -->

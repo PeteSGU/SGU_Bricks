@@ -1,0 +1,102 @@
+/* ==========================================================================
+	Formstone Carousel
+============================================================================= */
+
+.fs-carousel-canister {
+	@media print {
+		width: 100% !important;
+
+		display: block !important;
+		transform: none !important;
+	}
+}
+
+.fs-carousel-item {
+	@media print {
+		width: 100% !important;
+		height: auto !important;
+
+		page-break-inside: avoid;
+	}
+
+	&.fs-carousel-visible {
+	}
+}
+
+/* Carousel Controls
+============================================================================= */
+
+.fs-carousel-controls {
+	@media print {
+		display: none !important;
+	}
+}
+
+.fs-carousel-control {
+	position: relative;
+
+	cursor: default;
+	opacity: 0;
+	padding: 20px;
+	visibility: hidden;
+	transition: opacity $base_speed, visibility $base_speed;
+
+	&.fs-carousel-visible {
+		cursor: pointer;
+		opacity: 1;
+		visibility: visible;
+	}
+
+	&.fs-carousel-control_previous {
+	}
+
+	&.fs-carousel-control_next {
+	}
+}
+
+.fs-carousel-control-icon {
+	@include center;
+
+	pointer-events: none;
+}
+
+.fs-carousel-control-label {
+	@include visually_hide;
+}
+
+/* Carousel Pagination
+============================================================================= */
+
+.fs-carousel-pagination {
+	@media print {
+		display: none !important;
+	}
+}
+
+.fs-carousel-page {
+	width: 15px;
+	height: 15px;
+
+	position: relative;
+
+	color: transparent;
+	display: inline-block;
+	overflow: hidden;
+
+	&:before {
+		@include center;
+
+		width: 10px;
+		height: 10px;
+
+		background-color: $gray_40;
+		border-radius: 50%;
+		content: '';
+	}
+
+	&.fs-carousel-active {
+		&:before {
+			background-color: $black;
+		}
+	}
+}

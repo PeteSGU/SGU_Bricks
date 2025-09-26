@@ -1,0 +1,35 @@
+{#
+	{% include "@partial-lazy-video" with {
+		class: '',
+		id: '306272054',
+		type: 'vimeo',
+		title: 'Video Title',
+		display: "inline", // or ["inline", "background"]
+		autoplay: false,
+		playerVars: {}
+	} %}
+#}
+
+
+{% set config = {
+	id: id,
+	type: type,
+	title: title,
+	display: display|default("inline"),
+	autoplay: autoplay|default(false),
+	playerVars: playerVars|default({})
+} %}
+{% if type == "youtube" %}
+{% set url = 'https://www.youtube.com/watch?v=' ~ id %}
+{% elseif type == "vimeo" %}
+{% set url = 'https://vimeo.com/' ~ id %}
+{% endif %}
+
+<div class="{{ class }}_lazy_video lazy_video js-video-lazy-load {{ toggle ? "has_toggle" : "" }}" data-video-lazy-load='{{ config|json_encode }}'>
+	<a class="lazy_video_toggle_btn js-play-btn" href="{{ url }}" aria-label="Play {{ title }}">
+		{{ icon('video_play') }}
+	</a>
+	<div class="lazy_video_iframe_wrap">
+		<div class="lazy_video_iframe_target js-iframe-target"></div>
+	</div>
+</div>

@@ -1,0 +1,46 @@
+<div class="people_entry">
+	<script type="application/ld+json">
+		{
+			'@context': 'http://schema.org',
+			'@type': 'Person',
+			'email': 'mailto:jane-doe@xyz.edu',
+			'image': 'janedoe.jpg',
+			'jobTitle': 'Professor',
+			'name': 'Jane Doe',
+			'telephone': '(425) 123-4567',
+			'url': 'http://www.janedoe.com'
+		}
+	</script>
+
+	<!-- Page Content -->
+	<div class="page_content">
+		<div class="fs-row">
+			<div class="fs-cell fs-lg-4 fs-xl-3">
+				{% render '@partial-people-meta--detail' %}
+			</div>
+			<div class="fs-cell fs-lg-8 fs-xl-8">
+				{% if page.image %}
+					<figure class="people_entry_figure">
+						{% include '@partial-image' with {
+							class: 'people_entry',
+							alt: '',
+							image: page.image,
+							sources: [
+								img.square.xsml,
+								img.square.xxsml,
+								img.square.thumb
+							]
+						} %}
+					</figure>
+				{% endif %}
+				<!-- WYSIWYG -->
+				<div class="typography">
+					<p class="intro">Dr. Loukas was appointed dean of the School of Medicine in 2021.</p>
+					<p>Prior, he was appointed chairman of the Department of Anatomical Sciences at SGU in 2008. He is responsible for managing the anatomy department, developing curriculum, supervising research and inspiring scholarly activities. Under his guidance, the department publishes approximately 70 to 80 academic papers a year. In addition, Dr. Loukas is the University's dean of research and assistant dean of basic and allied health sciences.</p>
+					<p>Prior to joining SGU, Dr. Loukas taught anatomy, histology, and radiology at Harvard Medical School's Department of Education and Development for seven years. He also taught anatomy at the American University of the Caribbean and was course director and Chairman of the Department of Anatomy for one year. Dr. Loukas served on the Student Evaluation and Promotion Committee and Faculty Evaluation Committee, and was chair of the Information Technology Committee at the American University of the Caribbean. Dr. Loukas has won several awards for research and teaching and has published over 300 works in a variety of publications.</p>
+				</div>
+				<!-- END: WYSIWYG -->
+			</div>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,16 @@
+{% set class_name = class_name|default("news_item") %}
+
+<div class="{{ class_name }}_details">
+	{% if item.date %}
+		<div class="{{ class_name }}_detail news_item_date">
+			<span class="{{ class_name }}_detail_hint">Published:&nbsp;</span>
+			<time class="{{ class_name }}_detail_label" datetime="{{ item.date }}">{{ item.date|date("F j, Y") }}</time>
+		</div>
+	{% endif %}
+	{% if item.author %}
+		<div class="{{ class_name }}_detail news_item_author">
+			<span class="{{ class_name }}_detail_hint">- by&nbsp;</span>
+			<span class="{{ class_name }}_detail_label">{{ item.author }}</span>
+		</div>
+	{% endif %}
+</div>

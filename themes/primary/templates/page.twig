@@ -1,0 +1,13 @@
+{% extends "_base.twig" %}
+
+{% block content %}
+	<div class="page_content" id="skip_content" tabindex="-1">
+		{% if post.content %}
+			<div class="blocks_wrapper">
+				<div class="wp-site-blocks">
+					{{ post.content }}
+				</div>
+			</div>
+		</div>
+	{% endif %}
+{% endblock %}

@@ -1,0 +1,123 @@
+{#
+	{% include '@component-related-events' with {
+		title: 'Title',
+		description: 'Description',
+		items: [
+			{
+				image: '1',
+				title: 'Item Title',
+				description: 'Item Description'
+			}
+		]
+	} %}
+#}
+
+<!-- Related Events -->
+<div class="event_related">
+	{% if title or description %}
+		<div class="event_related_header">
+			<div class="fs-row">
+				<div class="fs-cell">
+					<div class="event_related_header_inner">
+						{% if title %}
+							<h2 class="event_related_title">{{ title }}</h2>
+						{% endif %}
+						{% if description %}
+							<div class="event_related_description">
+								<p>{{ description }}</p>
+							</div>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+		</div>
+	{% endif %}
+	<div class="event_related_body">
+		<div class="fs-row">
+			<div class="fs-cell">
+				<ul class="event_related_items" aria-label="{% if title %}{{ title }}{% else %}Related Events{% endif %}">
+					{% for item in items %}
+						<li class="event_related_item">
+							{% if item.image %}
+								<figure class="event_related_item_figure">
+									<a class="event_related_item_figure_link" href="{{ item.url }}" aria-label="Read more about {{ item.title }}" tabindex="-1">
+										{% include '@partial-image' with {
+											class: 'event_related_item',
+											alt: '',
+											image: item.image,
+											loading: 'lazy',
+											sources: [
+												img.classic.med,
+												img.classic.sml,
+												img.classic.xsml,
+												img.classic.xxsml
+											]
+										} %}
+									</a>
+								</figure>
+							{% endif %}
+							<div class="event_related_item_wrapper">
+								<div class="event_related_item_header">
+									<h2 class="event_related_item_title">
+										{% include '@partial-link' with {
+											class: 'event_related_item_title',
+											title: item.title,
+											url: item.url
+										} %}
+									</h2>
+									<div class="event_related_item_time_wrapper">
+										<time class="event_related_item_time" datetime="{{ item.date.from }}">
+											<span class="event_related_item_time_start">{{ item.date.from|date('M d') }}</span>
+											{% if item.date.same_day == false %}
+												<span class="event_related_item_time_end"> - {{ item.date.to|date('M d') }}</span>
+											{% endif %}
+										</time>
+									</div>
+								</div>
+								<div class="event_related_item_body">
+									{% if item.description %}
+										<div class="event_related_item_description">
+											<p>{{ item.description }}</p>
+										</div>
+									{% endif %}
+									<div class="event_related_item_details">
+										{% if item.date.all_day == false %}
+											<div class="event_related_item_detail">
+												<span class="event_related_item_detail_icon">{{ icon('clock') }}</span>
+												<span class="event_related_item_detail_hint">Time:&nbsp;</span>
+												<span class="event_related_item_detail_label">
+													<span class="event_related_item_detail_label_date">{{ item.date.from|date('g:i A') }} - {{ item.date.to|date('g:i A') }}</span>
+												</span>
+											</div>
+										{% endif %}
+										{% if item.location %}
+											<div class="event_related_item_detail">
+												<span class="event_related_item_detail_icon">{{ icon('place') }}</span>
+												<span class="event_related_item_detail_hint">Location:&nbsp;</span>
+												<span class="event_related_item_detail_label">{{ item.location }}</span>
+											</div>
+										{% endif %}
+										{% if item.categories %}
+											<div class="event_related_item_detail event_related_item_detail_category">
+												<span class="event_related_item_detail_icon">{{ icon('label') }}</span>
+												<span class="event_related_item_detail_hint">Categories:&nbsp;</span>
+												<ul class="event_related_item_detail_list" aria-label="Categories">
+													{% for category in item.categories %}
+														<li class="event_related_item_detail_item">
+															<a class="event_related_item_detail_link" href="{{ category.url }}">{{ category.label }}</a>
+														</li>
+													{% endfor %}
+												</ul>
+											</div>
+										{% endif %}
+									</div>
+								</div>
+							</div>
+						</li>
+					{% endfor %}
+				</ul>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- END: Related Events -->

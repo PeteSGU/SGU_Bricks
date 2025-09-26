@@ -1,0 +1,44 @@
+/* ==========================================================================
+	Utility Navigation
+============================================================================= */
+
+.utility_nav {
+}
+
+.utility_nav_header {
+}
+
+.utility_nav_title {
+	@include visually_hide;
+}
+
+.utility_nav_list {
+	font-size: 14px;
+	line-height: 1.2;
+
+	@media #{$min_lg} {
+		display: flex;
+		gap: 30px;
+	}
+}
+
+.utility_nav_item {
+}
+
+.utility_nav_link {
+	color: $white;
+	display: block;
+	padding-block: 8px;
+	transition: color $base_speed;
+	text-decoration: underline;
+
+	@include hover {
+		color: $turquoise;
+	}
+}
+
+.utility_nav_link_icon {
+}
+
+.utility_nav_link_label {
+}

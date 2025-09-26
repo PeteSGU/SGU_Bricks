@@ -1,0 +1,26 @@
+{
+    "key": "ui_options_page_66a1288fe335f",
+    "title": "Campus Alert",
+    "active": true,
+    "menu_order": 0,
+    "page_title": "Campus Alert",
+    "menu_slug": "campus-alert",
+    "parent_slug": "none",
+    "advanced_configuration": 1,
+    "icon_url": "",
+    "menu_title": "Campus Alert",
+    "position": "",
+    "redirect": 0,
+    "description": "",
+    "menu_icon": {
+        "type": "dashicons",
+        "value": "dashicons-megaphone"
+    },
+    "update_button": "Update",
+    "updated_message": "Options Updated",
+    "capability": "edit_posts",
+    "data_storage": "options",
+    "post_id": "",
+    "autoload": 0,
+    "modified": 1721837747
+}

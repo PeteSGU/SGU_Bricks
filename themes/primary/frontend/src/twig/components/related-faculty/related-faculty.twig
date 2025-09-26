@@ -1,0 +1,149 @@
+{#
+	{% include '@component-related-faculty' with {
+		title: 'Title',
+		items: [
+			{
+				name: 'Name',
+				job_title: 'Job Title',
+				url: '#',
+				image: '1',
+				contact: {
+					email: 'email',
+					phone: 'phone'
+				},
+				department: [
+					{
+						url: '#',
+						label: 'Label'
+					}
+				]
+			},
+		]
+	} %}
+#}
+
+<!-- Related Faculty -->
+<div class="related_faculty">
+	{% if title %}
+		<div class="related_faculty_header">
+			<div class="fs-row">
+				<div class="fs-cell fs-lg-8 fs-all-justify-center">
+					<div class="related_faculty_header_inner">
+						<h2 class="related_faculty_title">{{ title }}</h2>
+					</div>
+				</div>
+			</div>
+		</div>
+	{% endif %}
+	<div class="related_faculty_body">
+		<div class="fs-row">
+			<div class="fs-cell">
+				<ul class="related_faculty_rows" id="item_list" aria-label="{{ title ?: page.title }}">
+					{% for item in items %}
+						<li class="people_list_row">
+							<div class="people_list_item">
+								<div class="people_list_item_header">
+									<div class="people_list_item_info">
+										<h2 class="people_list_item_name">
+											{% if item.url %}
+												<a class="people_list_item_name_link" href="{{ item.url }}">
+													<span class="people_list_item_name_link_label">{{ item.name }}</span>
+													<span class="people_list_item_name_link_icon">{{ icon('caret_right') }}</span>
+												</a>
+											{% else %}
+												{{ item.name }}
+											{% endif %}
+										</h2>
+										{% if item.job_title %}
+											<div class="people_list_item_title">{{ item.job_title }}</div>
+										{% endif %}
+									</div>
+									{% if item.image %}
+										<figure class="people_list_item_figure small">
+											{% include '@partial-image' with {
+												class: 'people_list_item',
+												alt: '',
+												image: item.image,
+												loading: 'lazy',
+												sources: [
+													img.square.xxsml,
+													img.square.thumb
+												]
+											} %}
+										</figure>
+									{% endif %}
+								</div>
+								<div class="people_list_item_body">
+									<div class="people_list_item_details">
+										{% if item.contact %}
+											<div class="people_list_item_detail contact">
+												{% if item.contact.phone or item.contact.email %}
+													<div class="people_list_item_detail_label">Contact</div>
+												{% endif %}
+												{% if item.contact.email %}
+													<div class="people_list_item_detail_item">
+														<div class="people_list_item_detail_item_header">
+															<div class="people_list_item_detail_icon">{{ icon('mail') }}</div>
+															<div class="people_list_item_detail_hint">Email: </div>
+														</div>
+														<div class="people_list_item_detail_info">
+															<a class="people_list_item_detail_info_link" href="mailto:{{ item.contact.email }}">
+																<span class="people_list_item_detail_info_label">{{ item.contact.email }}</span>
+															</a>
+														</div>
+													</div>
+												{% endif %}
+												{% if item.contact.phone %}
+													<div class="people_list_item_detail_item">
+														<div class="people_list_item_detail_item_header">
+															<div class="people_list_item_detail_icon">{{ icon('phone') }}</div>
+															<div class="people_list_item_detail_hint">Phone: </div>
+														</div>
+														<div class="people_list_item_detail_info">
+															<a class="people_list_item_detail_info_link" href="tel:{{ tel(item.contact.phone) }}">
+																<span class="people_list_item_detail_info_label">{{ item.contact.phone }}</span>
+															</a>
+														</div>
+													</div>
+												{% endif %}
+											</div>
+										{% endif %}
+										{% if item.department %}
+											<div class="people_list_item_detail department">
+												<div class="people_list_item_detail_label">School & Department</div>
+												{% for department in item.department %}
+													<div class="people_list_item_detail_item">
+														<div class="people_list_item_detail_info">
+															<a class="people_list_item_detail_info_link" href="{{ department.url }}">
+																<span class="people_list_item_detail_info_label">{{ department.label }}</span>
+															</a>
+														</div>
+													</div>
+												{% endfor %}
+											</div>
+										{% endif %}
+									</div>
+								</div>
+								{% if item.image %}
+									<figure class="people_list_item_figure large">
+										{% include '@partial-image' with {
+											class: 'people_list_item',
+											alt: '',
+											image: item.image,
+											loading: 'lazy',
+											sources: [
+												img.square.xxsml,
+												img.square.thumb
+											]
+										} %}
+									</figure>
+								{% endif %}
+							</div>
+						</li>
+					{% endfor %}
+				</ul>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- END: Related Faculty -->

@@ -1,0 +1,43 @@
+{#
+	{% include '@partial-link-toggle' with {
+		title: 'Button Text',
+		url: '#',
+		class: '',
+		js: false,
+		icon: '',
+		active_title: 'Active Text',
+		active_icon: '',
+		swap_target: '',
+		swap_linked: '',
+		aria: '',
+		nowrap: false
+	} %}
+#}
+<a href="{{ url ?: '#' }}" class="{{ class }}_toggle{% if js %} js-{{ class|replace({ '_': '-'}) }}-toggle{% endif %}{% if swap_target %} js-swap{% endif %}" {% if aria %} aria-label="{{ aria }}" {% endif %} {% if swap_target %} data-swap-target="{{ swap_target }}" {% endif %} {% if swap_link %} data-swap-linked="{{ swap_link }}" {% endif %}>
+	<span class="{{ class }}_toggle_inner_default {{ class }}_toggle_inner">
+		{% if nowrap == true %}
+			<span class="{{ class }}_toggle_label_default {{ class }}_toggle_label">{{ title }}</span><span class="{{ class }}_toggle_icon_default {{ class }}_toggle_icon icon_nowrap" aria-hidden="true">&#xfeff;{{ icon(icon) }}</span>
+		{% else %}
+			<span class="{{ class }}_toggle_label_default {{ class }}_toggle_label">{{ title }}</span>
+			{% if icon %}
+				<span class="{{ class }}_toggle_icon_default {{ class }}_toggle_icon" aria-hidden="true">
+					{{ icon(icon) }}
+				</span>
+			{% endif %}
+		{% endif %}
+	</span>
+	{% if active_title %}
+		<span class="{{ class }}_toggle_inner_active {{ class }}_toggle_inner">
+			{% if nowrap == true %}
+				<span class="{{ class }}_toggle_label_active {{ class }}_toggle_label">{{ active_title }}</span><span class="{{ class }}_toggle_icon_active {{ class }}_toggle_icon icon_nowrap" aria-hidden="true">&#xfeff;{{ icon(icon) }}</span>
+			{% else %}
+			<span class="{{ class }}_toggle_label_active {{ class }}_toggle_label">{{ active_title }}</span>
+				{% if icon %}
+					<span class="{{ class }}_toggle_icon_active {{ class }}_toggle_icon" aria-hidden="true">
+						{{ icon(icon) }}
+					</span>
+				{% endif %}
+			{% endif %}
+		</span>
+	{% endif %}
+</a>

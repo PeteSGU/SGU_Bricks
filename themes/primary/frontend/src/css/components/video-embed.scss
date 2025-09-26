@@ -1,0 +1,19 @@
+/* ==========================================================================
+	Video Embed
+============================================================================= */
+
+.video_embed_block {
+	@include margined_xl;
+}
+
+.video_embed_figure {
+	@include responsive_image;
+
+	position: relative;
+}
+
+.video_embed_image {
+}
+
+.video_embed_lazy_video {
+}

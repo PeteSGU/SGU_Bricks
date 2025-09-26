@@ -1,0 +1,234 @@
+/* ==========================================================================
+	Department List
+============================================================================= */
+
+.department_list {
+	@include margined_xl;
+}
+
+.department_list_inner {
+}
+
+.department_list_header {
+	display: none;
+
+	@media #{$min_lg} {
+		display: grid;
+		gap: $fs_grid_gap;
+		grid-template-columns: 65.4% 1fr;
+	}
+
+	@media #{$min_xl} {
+		gap: 8.8%;
+		grid-template-columns: 60.6% 1fr;
+	}
+}
+
+.department_list_header_label {
+	@include h6;
+
+	margin-block: 0;
+	padding-block: 20px;
+}
+
+.department_list_items {
+	border-bottom: 2px solid $turquoise_dark;
+}
+
+.department_list_row {
+	border-top: 1px solid rgba($gray_medium, 0.3);
+	padding: 26px 0;
+}
+
+.department_list_item {
+	display: grid;
+	gap: 20px;
+
+	@media #{$min_lg} {
+		gap: $fs_grid_gap;
+		grid-template-columns: 65.4% 1fr;
+	}
+
+	@media #{$min_xl} {
+		gap: 8.8%;
+		grid-template-columns: 60.6% 1fr;
+	}
+}
+
+.department_list_item_header {
+}
+
+.department_list_item_info {
+	display: grid;
+	gap: 8px;
+}
+
+.department_list_item_name {
+	@include h5;
+
+	margin-block: 0;
+}
+
+.department_list_item_name_link {
+	color: $blue_navy;
+	display: flex;
+	font-size: inherit;
+	letter-spacing: inherit;
+	gap: 6px;
+	text-decoration: none;
+	transition: color $base_speed;
+
+	@include hover {
+		color: $black;
+	}
+}
+
+.department_list_item_name_link_label {
+}
+
+.department_list_item_name_link_icon {
+	margin-top: 2px;
+
+	@media #{$min_md} {
+		margin-top: 4px;
+	}
+
+	@media #{$min_lg} {
+		margin-top: 6px;
+	}
+
+	@media #{$min_lg} {
+		margin-top: 8px;
+	}
+
+	.icon {
+		min-height: auto;
+		min-width: auto;
+	}
+}
+
+.department_list_item_description {
+	@include caption_text;
+}
+
+.department_list_item_title {
+	@include body_text;
+}
+
+.department_list_item_figure {
+	@include responsive_image;
+
+	width: 60px;
+}
+
+.department_list_item_image {
+	border-radius: 50%;
+}
+
+.department_list_item_body {
+}
+
+.department_list_item_details {
+	display: grid;
+	gap: 30px $fs_grid_gap;
+
+	@media #{$min_sm} {
+		--columns: 2;
+
+		grid-template-columns: repeat(var(--columns), 1fr);
+	}
+
+	@media #{$min_md} {
+		--columns: 3;
+	}
+
+	@media #{$min_xl} {
+		--columns: 4;
+	}
+}
+
+.department_list_item_detail {
+	align-content: start;
+	display: grid;
+	gap: 20px;
+	grid-template-rows: max-content;
+}
+
+.department_list_item_detail_label {
+	@include h6;
+}
+
+.department_list_item_detail_item {
+}
+
+.department_list_item_detail_item_header {
+	align-items: center;
+	display: flex;
+	gap: 10px;
+	margin-bottom: 4px;
+}
+
+.department_list_item_detail_icon {
+}
+
+.department_list_item_detail_hint {
+	@include label_text;
+}
+
+.department_list_item_detail_info {
+	@include small_text;
+
+	display: block;
+}
+
+.department_list_item_detail_info_link {
+	text-decoration: underline;
+	transition: color $base_speed;
+
+	@include hover {
+		color: $black;
+	}
+
+	&:after {
+		@media print {
+			content: normal;
+		}
+	}
+}
+
+.department_list_item_detail_info_label {
+}
+
+.department_list_item_email {
+	@media #{$min_lg} {
+		margin-top: 8px;
+	}
+}
+
+.department_list_item_email_link {
+	align-items: center;
+	color: $blue_navy;
+	display: flex;
+	font-size: 14px;
+	font-weight: 700;
+	gap: 12px;
+	transition: background-color $base_speed;
+
+	&:hover,
+	&:focus {
+		color: $black;
+	}
+}
+
+.department_list_item_email_link_label {
+	font: inherit;
+	letter-spacing: inherit;
+}
+
+.department_list_item_email_link_icon {
+	color: $orange;
+}
+
+.department_list_pagination {
+	@include margined_lg_top;
+}

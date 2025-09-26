@@ -1,0 +1,32 @@
+{% extends "_base.twig" %}
+
+{% block content %}
+	{% include "partials/page-header.twig" %}
+
+	<!-- Page Feature -->
+	<div class="page_feature" id="page_content" tabindex="-1" aria-labelledby="page_title">
+		{% include 'partials/program/program-meta.twig' with {
+			level: post.fw_degree_levels,
+			department: post.fw_department,
+			mode: post.fw_learning_modes,
+			degree: post.fw_degree_types,
+			data_category: post.fw_data_category
+		} %}
+	</div>
+	<!-- END: Page Feature -->
+
+	<div class="page_content">
+			{{ post.content }}
+	</div>
+
+	{% if components|length %}
+		<div class="full_width_callouts">
+			{% for component in components %}
+				{% include [
+					"components/" ~ component.acf_fc_layout ~ ".twig",
+					"components/not-found.twig"
+				] with component %}
+			{% endfor %}
+		</div>
+	{% endif %}
+{% endblock %}

@@ -1,0 +1,59 @@
+<div class="pagination">
+	<nav class="pagination_nav" aria-label="{{ title }}">
+		<a
+			class="
+				pagination_arrow pagination_arrow_left
+				{% if not pagination.prev %}pagination_arrow_disabled{% endif %}
+				{% if pagination.prev %}{{ pagination.prev.class }}{% endif %}
+			"
+			{% if pagination.prev %}
+			href="{{ pagination.prev.link }}"
+			{% endif %}
+		>
+			<span class="pagination_arrow_icon">{{ icon("caret_left") }}</span>
+			<span class="pagination_arrow_label">Previous Page</span>
+		</a>
+
+		<a
+			class="
+				pagination_arrow pagination_arrow_right
+				{% if not pagination.next %}pagination_arrow_disabled{% endif %}
+				{% if pagination.next %}{{ pagination.next.class }}{% endif %}
+			"
+			{% if pagination.next %}
+			href="{{ pagination.next.link }}"
+			{% endif %}
+		>
+			<span class="pagination_arrow_icon">{{ icon("caret_right") }}</span>
+			<span class="pagination_arrow_label">Next Page</span>
+		</a>
+	</nav>
+
+	<form class="pagination_form" action="{{ page_link }}#item_list" method="get">
+		{% for name, filter in filters %}
+			{% for filtered_item in filter.filtered %}
+				<input type="hidden" name="{{ name }}[]" value="{{ filtered_item.value }}">
+			{% endfor %}
+		{% endfor %}
+
+		<div class="pagination_form_inner">
+			<label class="pagination_form_label" for="pagination_form_select">Page</label>
+			<div class="pagination_form_select_wrapper">
+				<select class="pagination_form_select" name="paged" id="pagination_form_select" aria-label="Select Page Number">
+					{% for page in  1..pagination.total %}
+						<option
+							value="{{ page }}"
+							{% if page == pagination.current %}
+							selected="selected"
+							{% endif %}
+						>{{ page }}</option>
+					{% endfor %}
+				</select>
+				<span class="pagination_form_select_icon">{{ icon("caret_down") }}</span>
+			</div>
+
+			<span class="pagination_form_suffix">of {{ pagination.total }}</span>
+			<button class="pagination_form_button" type="submit" aria-label="View Page">Go</button>
+		</div>
+	</form>
+</div>

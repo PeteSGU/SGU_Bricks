@@ -1,0 +1,11 @@
+{% set message = message|default("There are no results that match your criteria.") %}
+
+<div class="results_message">
+	<div class="fs-row">
+		<div class="fs-cell">
+			<div class="results_message_inner typography">
+				{{ message }}
+			</div>
+		</div>
+	</div>
+</div>

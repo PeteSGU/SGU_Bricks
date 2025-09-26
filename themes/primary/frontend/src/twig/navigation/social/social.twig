@@ -1,0 +1,23 @@
+{#
+	{% include '@navigation-social' with {
+		modifier: 'lg',
+		title: 'Social Navigation',
+		links: [{ 'title': 'Facebook', 'url': '#' }]
+	} %}
+#}
+
+<div class="social_nav{% if modifier %} social_nav_{{ modifier }}{% endif %}">
+	<div class="social_nav_header">
+		<h2 class="social_nav_title" id="social_nav_title{% if modifier %}_{{ modifier }}{% endif %}">{{ title }}</h2>
+	</div>
+	<ul class="social_nav_list" aria-labelledby="social_nav_title{% if modifier %}_{{ modifier }}{% endif %}">
+		{% for link in links %}
+			<li class="social_nav_item">
+				<a class="social_nav_link social_nav_link_{{ link.title|lower }}" href="{{ link.url }}" target="_blank" rel="noopener">
+					<span class="social_nav_icon">{{ icon(link.title|lower) }}</span>
+					<span class="social_nav_label">{{ link.title }}</span>
+				</a>
+			</li>
+		{% endfor %}
+	</ul>
+</div>

@@ -1,0 +1,68 @@
+@mixin inside_gutenberg_column($count: null) {
+	@if ($count) {
+		.wp-block-columns.child_count_#{$count} & {
+			@content;
+		}
+	} @else {
+		.wp-block-column & {
+			@content;
+		}
+	}
+}
+
+@mixin component_quote {
+	.quote {
+		position: relative;
+	}
+
+	.quote_mark_open {
+		color: $orange;
+		display: inline-block;
+	}
+
+	.quote_content {
+		color: $black;
+		font-size: 24px;
+		font-weight: 700;
+		line-height: calc(42 / 28);
+		margin: 0 0 12px;
+
+		@media #{$min_md} {
+			font-size: 28px;
+		}
+
+		&:not(.quote_content) {
+		}
+
+		p {
+			margin-block: 0;
+		}
+
+		p {
+			&:first-of-type {
+				margin-top: 0;
+			}
+
+			&:last-of-type {
+				margin-bottom: 0;
+			}
+		}
+	}
+
+	.quote_caption {
+		@include body_text;
+	}
+
+	.quote_caption_name {
+		@include body_text;
+
+		display: block;
+		font-weight: 700;
+	}
+
+	.quote_caption_title {
+		@include caption_text;
+
+		display: block;
+	}
+}

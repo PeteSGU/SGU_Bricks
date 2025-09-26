@@ -1,0 +1,55 @@
+{
+	"name": "sgu",
+	"version": "0.1.0",
+	"license": "UNLICENSED",
+	"description": "Framework by Fastspot.",
+	"author": "Fastspot",
+	"repository": {
+		"type": "git",
+		"url": "url"
+	},
+	"scripts": {
+		"gulp": "gulp",
+		"wp:build": "wp-scripts build",
+		"build": "cross-env NODE_ENV=production npm run gulp build",
+		"fractal:build": "cross-env NODE_ENV=production npm run gulp fractal:build",
+		"ci:build": "cross-env NODE_ENV=production CI=true npm run gulp ci:build"
+	},
+	"browserslist": [
+		"defaults",
+		"not IE 11"
+	],
+	"devDependencies": {
+		"@babel/core": "^7.18.10",
+		"@babel/preset-env": "^7.18.10",
+		"@frctl/fractal": "^1.5.14",
+		"@frctl/twig": "^1.2.13",
+		"@fullhuman/postcss-purgecss": "^5.0.0",
+		"autoprefixer": "^10.4.8",
+		"babel-loader": "^9.1.2",
+		"classnames": "^2.3.2",
+		"cross-env": "^7.0.2",
+		"formstone": "^1.4.22",
+		"gulp": "^4.0.2",
+		"gulp-axe-webdriver": "file:custom-node-packages/gulp-axe-webdriver",
+		"gulp-clean": "^0.4.0",
+		"gulp-if": "^3.0.0",
+		"gulp-postcss": "^9.0.1",
+		"gulp-real-favicon": "^0.3.2",
+		"gulp-rename": "^2.0.0",
+		"gulp-sass": "^5.1.0",
+		"gulp-sass-glob": "^1.1.0",
+		"gulp-sourcemaps": "^3.0.0",
+		"gulp-svgstore": "^9.0.0",
+		"imagemin": "^7.0.0",
+		"imagemin-mozjpeg": "^9.0.0",
+		"imagemin-pngquant": "^9.0.2",
+		"normalize.css": "^8.0.1",
+		"postcss": "^8.4.16",
+		"postcss-pxtorem": "^6.0.0",
+		"sass": "^1.54.4",
+		"vinyl-named": "^1.1.0",
+		"webpack": "^5.74.0",
+		"webpack-stream": "^7.0.0"
+	}
+}

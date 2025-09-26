@@ -1,0 +1,39 @@
+<div class="facts_stats_columns">
+	<div class="fs-row">
+		<div class="fs-cell">
+			<div class="facts_stats_columns_inner">
+				<div class="facts_stats_columns_header">
+					<div class="facts_stats_columns_header_inner">
+						<h2 class="facts_stats_columns_title">{{ title }}</h2>
+						{% if image %}
+						<figure class="facts_stats_columns_figure">
+							{% include '@partial-image' with {
+								class: 'facts_stats_columns',
+								alt: '',
+								image: image,
+								loading: 'lazy',
+								sources: [
+									img.wide.med,
+									img.wide.sml,
+									img.wide.xsml,
+									img.wide.xxsml
+								]
+							} %}
+						</figure>
+						{% endif %}
+					</div>
+				</div>
+				<div class="facts_stats_columns_list">
+					{% for item in items %}
+						<div class="facts_stats_columns_item">
+							<h3 class="facts_stats_columns_item_stat{% if not item.description %} no_desc{% endif %}"><span>{{ item.stat }}</span> {{ item.context }}</h3>
+							{% if item.description %}
+							<span class="facts_stats_columns_item_desription">{{ item.description }}</span>
+							{% endif %}
+						</div>
+					{% endfor %}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

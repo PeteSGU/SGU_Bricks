@@ -1,0 +1,47 @@
+<div class="page_news_header page_header_news_detail">
+	<div class="fs-row">
+		<div class="fs-cell">
+			<div class="page_news_header_inner">
+				{% if no_breadcrumb is empty %}
+					<div class="page_breadcrumb">
+						{% include 'navigation/breadcrumb.twig' with {
+							page: page,
+							modifier: '',
+							links: page.breadcrumb|default(framework_fn('get_breadcrumb')),
+							icon_home: 'home',
+							icon_divider: 'minus',
+							icon_end: 'angle_down'
+						} %}
+					</div>
+				{% endif %}
+				<h1 class="page_title" id="page_title" tabindex="-1">{{ page.title }}</h1>
+				<div class="page_news_intro_wrapper">
+					<div class="page_news_intro_group">
+						{% if page.description %}
+							<p class="page_description">{{ page.description }}</p>
+						{% endif %}
+
+						{% if page.duration %}
+							<p class="page_duration">{{ page.duration }} min read</p>
+						{% endif %}
+					</div>
+					<div class="page_news_cta">
+						<figure class="page_news_cta_figure">
+							{% include 'partials/image.twig' with {
+								class: 'page_news_cta',
+								image: Image(post.image),
+								loading: 'eager',
+								sources: [
+									"wide-sml",
+									"wide-xsml",
+									"wide-xxsml",
+									"wide-thumb"
+								]
+							} %}
+						</figure>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

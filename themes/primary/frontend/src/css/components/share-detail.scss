@@ -1,0 +1,41 @@
+/* ==========================================================================
+	Share Detail
+============================================================================= */
+
+.share_tools_detail {
+}
+
+.share_tools_detail_header {
+}
+
+.share_tools_detail_title {
+	@include h6;
+
+	margin-top: 0;
+}
+
+.share_tools_detail_list {
+	display: flex;
+
+	align-items: center;
+	gap: 15px;
+}
+
+.share_tool_detail_item {
+}
+
+.share_tool_detail {
+	color: $blue_navy;
+	transition: color $base_speed;
+
+	@include hover {
+		color: $turquoise_dark;
+	}
+}
+
+.share_tool_detail_icon {
+}
+
+.share_tool_detail_label {
+	@include visually_hide;
+}

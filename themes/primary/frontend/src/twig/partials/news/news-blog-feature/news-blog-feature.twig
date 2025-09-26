@@ -1,0 +1,78 @@
+<div class="news_blog_feature">
+	<div class="fs-row">
+		<div class="fs-cell">
+			<div class="news_blog_feature_inner">
+				<div class="news_blog_feature_header">
+					<h2 class="news_blog_feature_title">{{ group_title }}</h2>
+					{% if links %}
+					<div class="news_blog_feature_header_links">
+						{% for link in links %}
+						<a href="{{ link.url }}" class="news_blog_feature_header_link">{{ link.label }}</a>
+						{% endfor %}
+					</div>
+					{% endif %}
+				</div>
+				<div class="news_blog_feature_feature">
+					<figure class="news_blog_feature_feature_figure">
+						{% include '@partial-image' with {
+							class: 'news_blog_feature_feature',
+							alt: '',
+							image: feature.image,
+							loading: 'lazy',
+							sources: [
+								img.wide.med,
+								img.wide.sml,
+								img.wide.xsml,
+								img.wide.xxsml
+							]
+						} %}
+						{% if feature.video %}
+							<span class="news_blog_feature_feature_icon">{{ icon("video") }}</span>
+						{% elseif feature.podcast %}
+							<span class="news_blog_feature_feature_icon">{{ icon("podcast") }}</span>
+						{% endif %}
+					</figure>
+					<div class="news_blog_feature_feature_wrapper">
+						<h3 class="news_blog_feature_feature_title">
+							<a href="#" class="news_blog_feature_feature_title_link">{{ feature.title }}</a>
+						</h3>
+						<a href="#" class="news_blog_feature_feature_category">{{ feature.category }}</a>
+						<span class="news_blog_feature_feature_description">{{ feature.description }}</span>
+					</div>
+				</div>
+				<div class="news_blog_feature_list">
+					{% for item in items %}
+					<div class="news_blog_feature_list_item">
+						<figure class="news_blog_feature_list_item_figure">
+							{% include '@partial-image' with {
+								class: 'news_blog_feature_list_item',
+								alt: '',
+								image: item.image,
+								loading: 'lazy',
+								sources: [
+									img.wide.med,
+									img.wide.sml,
+									img.wide.xsml,
+									img.wide.xxsml
+								]
+							} %}
+							{% if item.video %}
+								<span class="news_blog_feature_list_item_icon">{{ icon("video") }}</span>
+							{% elseif item.podcast %}
+								<span class="news_blog_feature_list_item_icon">{{ icon("podcast") }}</span>
+							{% endif %}
+						</figure>
+						<div class="news_blog_feature_list_item_wrapper">
+							<h3 class="news_blog_feature_list_item_title">
+								<a href="#" class="news_blog_feature_list_item_title_link">{{ item.title }}</a>
+							</h3>
+							<a href="#" class="news_blog_feature_list_item_category">{{ item.category }}</a>
+							<span class="news_blog_feature_list_item_description">{{ item.description }}</span>
+						</div>
+					</div>
+					{% endfor %}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

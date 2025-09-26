@@ -1,0 +1,77 @@
+/* ==========================================================================
+	Event Meta
+============================================================================= */
+
+.event_meta {
+}
+
+.event_meta_inner {
+	border-bottom: 1px solid;
+	padding-block: 30px;
+
+	@media #{$min_lg} {
+		align-items: center;
+		display: grid;
+		gap: 30px;
+		grid-template-columns: 1fr max-content;
+	}
+}
+
+.event_meta_body {
+}
+
+.event_meta_details {
+	@include small_text;
+
+	display: grid;
+	gap: 20px;
+
+	@media #{$min_lg} {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 40px;
+	}
+}
+
+.event_meta_detail {
+	display: grid;
+	grid-template-columns: 14px 1fr;
+	gap: 10px;
+}
+
+.event_meta_detail_hint {
+	@include visually_hide;
+}
+
+.event_meta_detail_icon {
+	position: relative;
+	top: 4px;
+}
+
+.event_meta_detail_label {
+}
+
+.event_meta_detail_label_date {
+}
+
+.event_meta_detail_label_time {}
+
+.event_meta_detail_link {
+	text-decoration: underline;
+	transition: color $base_speed;
+
+	@include hover {
+		color: $black;
+	}
+}
+
+.event_meta_detail_list {
+}
+
+.event_meta_detail_item {
+	display: inline-block;
+	margin-right: 10px;
+}
+
+.event_meta_share {
+}

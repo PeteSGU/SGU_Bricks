@@ -1,0 +1,67 @@
+{#
+	{% include '@partial-department-list' with {
+		title: 'Title',
+		items: [
+				{
+				name: 'Name',
+				url: '#',
+				email: 'email@address.com'
+			}
+		]
+	} %}
+#}
+<!-- Department List -->
+<div class="department_list">
+	<div class="fs-row">
+		<div class="fs-cell">
+			<div class="department_list_inner">
+				<div class="department_list_header">
+					<p class="department_list_header_label">Name</p>
+					<p class="department_list_header_label">Contact</p>
+				</div>
+				<ul class="department_list_items" id="item_list" aria-label="{{ title }}">
+					{% for item in items %}
+						<li class="department_list_row">
+							<div class="department_list_item">
+								<div class="department_list_item_header">
+									<div class="department_list_item_info">
+										<h2 class="department_list_item_name">
+											{% if item.url %}
+												<a class="department_list_item_name_link" href="{{ item.url }}">
+													<span class="department_list_item_name_link_label">{{ item.name }}</span>
+													<span class="department_list_item_name_link_icon">{{ icon('caret_right') }}</span>
+												</a>
+											{% else %}
+												{{ item.name }}
+											{% endif %}
+										</h2>
+										{% if item.description %}
+											<div class="department_list_item_description">{{ item.description }}</div>
+										{% endif %}
+									</div>
+								</div>
+								{% if item.email %}
+									<div class="department_list_item_body">
+										<div class="department_list_item_email">
+											<a class="department_list_item_email_link" href="mailto:{{ item.email }}">
+												<span class="department_list_item_email_link_icon">{{ icon('mail') }}</span>
+												<span class="department_list_item_email_link_label">{{ item.email }}</span>
+											</a>
+										</div>
+									</div>
+								{% endif %}
+							</div>
+						</li>
+					{% endfor %}
+				</ul>
+				<div class="department_list_pagination">
+					{% include '@partial-pagination' with {
+						title: 'Directory Pagination',
+						pages: '50'
+					} %}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- END: Department List -->

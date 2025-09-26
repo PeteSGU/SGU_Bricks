@@ -1,0 +1,160 @@
+{#
+	{% include '@component-contact-info' with {
+		item: {
+			name: 'Full Name',
+			job_title: 'Director of Department',
+			image: '1',
+			phone_numbers: [
+				{
+					label: 'mobile',
+					type: 'telephone',
+					number: '(410) 555-1234'
+				}
+			],
+			email: 'name@university.edu',
+			location: '1234 Maple Bacon Ln.<br>Baltimore, MD 21211',
+			office_hours: [
+				{
+					label: 'Monday',
+					hours: '9am - 5pm'
+				}
+			],
+			social_links: [
+				{
+					title: 'LinkedIn',
+					url: '#'
+				}
+			]
+		}
+	} %}
+#}
+
+<!-- Contact Info -->
+<div class="contact_block">
+	<script type="application/ld+json">
+		{
+			'@context': 'http://schema.org',
+			'@type': 'Person',
+			'email': 'mailto:{{ item.email }}',
+			'image': '{{ item.image }}',
+			'jobTitle': '{{ item.job_title }}',
+			'name': '{{ item.name }}',
+			'telephone': '{{ item.phone_numbers[0].number }}',
+			'url': '#'
+		}
+	</script>
+	<div class="fs-row">
+		<div class="fs-cell">
+			<div class="contact_block_inner">
+				<div class="contact">
+					<div class="contact_header">
+						<div class="contact_info">
+							<h2 class="contact_name">{{ item.name }}</h2>
+							{% if item.job_title %}
+								<div class="contact_title">{{ item.job_title }}</div>
+							{% endif %}
+						</div>
+						{% if item.image %}
+							<figure class="contact_figure">
+								{% include '@partial-image' with {
+									class: 'contact',
+									alt: '',
+									image: item.image,
+									loading: 'lazy',
+									sources: [
+										img.square.xxsml,
+										img.square.thumb
+									]
+								} %}
+							</figure>
+						{% endif %}
+					</div>
+					<div class="contact_body">
+						<div class="contact_details">
+							{% if item.phone_numbers or item.email %}
+								<div class="contact_detail contact">
+									<div class="contact_detail_label">Contact</div>
+									{% for phone in item.phone_numbers %}
+										<div class="contact_detail_item">
+											<div class="contact_detail_item_header">
+												<div class="contact_detail_icon">{{ icon('phone') }}</div>
+												<div class="contact_detail_hint">{{ phone.label }}</div>
+											</div>
+											<div class="contact_detail_info">
+												<a class="contact_detail_info_link" href="tel:{{ tel(phone.number) }}">{{ phone.number }}</a>
+											</div>
+										</div>
+									{% endfor %}
+									{% if item.email %}
+										<div class="contact_detail_item">
+											<div class="contact_detail_item_header">
+												<div class="contact_detail_icon">{{ icon('mail') }}</div>
+												<div class="contact_detail_hint">Email Address</div>
+											</div>
+											<div class="contact_detail_info">
+												<a class="contact_detail_info_link" href="mailto:{{ item.email }}">{{ item.email }}</a>
+											</div>
+										</div>
+									{% endif %}
+								</div>
+							{% endif %}
+							{% if item.location %}
+								<div class="contact_detail location">
+									<div class="contact_detail_label">Location</div>
+									<div class="contact_detail_item">
+										<div class="contact_detail_item_header">
+											<div class="contact_detail_icon">{{ icon('place') }}</div>
+										</div>
+										<div class="contact_detail_info">{{ item.location }}</div>
+									</div>
+								</div>
+							{% endif %}
+							{% if item.departments %}
+								<div class="contact_detail department">
+									<div class="contact_detail_label">Department</div>
+									{% for department in item.departments %}
+										<div class="contact_detail_item">
+											<div class="contact_detail_item_header">
+												<div class="contact_detail_icon">{{ icon('building') }}</div>
+											</div>
+											<div class="contact_detail_info">
+												<a class="contact_detail_info_link" href="{{ department.url }}">{{ department.name }}</a>
+											</div>
+										</div>
+									{% endfor %}
+								</div>
+							{% endif %}
+							{% if item.office_hours %}
+								<div class="contact_detail hours">
+									<div class="contact_detail_label">Office Hours</div>
+									{% for office_hours in item.office_hours %}
+										<div class="contact_detail_item">
+											<div class="contact_detail_item_header">
+												<div class="contact_detail_icon">{{ icon('clock') }}</div>
+												<div class="contact_detail_hint">{{ office_hours.label }}</div>
+											</div>
+											<div class="contact_detail_info">{{ office_hours.hours }}</div>
+										</div>
+									{% endfor %}
+								</div>
+							{% endif %}
+							{% if item.social_links %}
+								<div class="contact_detail social">
+									<div class="contact_detail_label">Social</div>
+									<ul class="contact_socials" aria-label="Social Links for {{ item.name }}">
+										{% for social in item.social_links %}
+											<li class="contact_social">
+												<a class="contact_social_link" href="{{ social.url }}" aria-label="{{ item.name }} {{ social.title }}" target="_blank" rel="noopener"><span class="contact_social_link_icon">{{ icon(social.title|lower) }}</span><span class="contact_social_link_label">{{ social.title }}</span></a>{% if not loop.last %}<span class="contact_social_punctuation">, </span>{% endif %}
+											</li>
+										{% endfor %}
+									</ul>
+								</div>
+							{% endif %}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- END: Contact Info -->

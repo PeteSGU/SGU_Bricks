@@ -1,0 +1,145 @@
+/* ==========================================================================
+	Contact
+============================================================================= */
+
+.contact_block {
+	@include margined_xl;
+}
+
+.contact_block_inner {
+}
+
+.contact {
+}
+
+.contact_header {
+	align-items: center;
+	display: grid;
+	gap: 20px;
+	grid-template-columns: 1fr max-content;
+	margin-bottom: 30px;
+}
+
+.contact_info {
+}
+
+.contact_name {
+	@include h3;
+
+	margin-block: 0;
+}
+
+.contact_title {
+	@include body_text;
+}
+
+.contact_figure {
+	@include responsive_image;
+
+	width: 60px;
+}
+
+.contact_image {
+	border-radius: 50%;
+}
+
+.contact_body {
+}
+
+.contact_details {
+	display: grid;
+	gap: 30px $fs_grid_gap;
+
+	@media #{$min_sm} {
+		--columns: 2;
+
+		grid-template-columns: repeat(var(--columns), 1fr);
+	}
+
+	@media #{$min_md} {
+		--columns: 3;
+	}
+
+	@media #{$min_xl} {
+		--columns: 5;
+	}
+}
+
+.contact_detail {
+	align-content: start;
+	display: grid;
+	gap: 20px;
+	grid-template-rows: max-content;
+}
+
+.contact_detail_label {
+	@include h6;
+}
+
+.contact_detail_item {
+}
+
+.contact_detail_item_header {
+	align-items: center;
+	display: flex;
+	gap: 10px;
+	margin-bottom: 4px;
+}
+
+.contact_detail_icon {
+}
+
+.contact_detail_hint {
+	@include label_text;
+}
+
+.contact_detail_info {
+	@include small_text;
+
+	display: block;
+}
+
+.contact_detail_info_link {
+	text-decoration: underline;
+	transition: color $base_speed;
+
+	@include hover {
+		color: $black;
+	}
+
+	&:after {
+		@media print {
+			content: normal;
+		}
+	}
+}
+
+.contact_socials {
+	display: grid;
+	gap: 10px;
+}
+
+.contact_social {
+}
+
+.contact_social_link {
+	align-items: center;
+	display: inline-flex;
+	gap: 10px;
+	text-decoration: underline;
+	transition: color $base_speed;
+
+	@include hover {
+		color: $black;
+	}
+}
+
+.contact_social_link_icon {
+}
+
+.contact_social_link_label {
+}
+
+.contact_social_punctuation {
+	display: none;
+}

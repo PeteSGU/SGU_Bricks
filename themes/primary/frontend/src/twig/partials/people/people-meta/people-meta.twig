@@ -1,0 +1,130 @@
+{#
+	{% include '@partial-people-meta' with {
+		item: {
+			phone_numbers: [
+				{
+					label: 'Phone Label',
+					type: 'Phone Type',
+					number: '(410) 555-1234'
+				}
+			],
+			office_hours: [
+				{
+					label: 'Monday',
+					hours: '9am - 5pm'
+				}
+			],
+			email: 'email@address.com',
+			location: 'Location',
+			social_links: [
+				{
+					title: 'Linkedin',
+					url: '#'
+				}
+			]
+		}
+	} %}
+#}
+
+<!-- Person Meta -->
+<div class="people_meta" id="meta" data-type="entity" data-category="{% for item in item.departments %}{{ item.name }}{% if not loop.last %}, {% endif %}{% endfor %}">
+	<div class="fs-row">
+		<div class="fs-cell">
+			<div class="people_meta_inner">
+				<div class="people_meta_body">
+					<div class="people_meta_details">
+						{% if item.phone_numbers or item.email or item.appointment %}
+							<div class="people_meta_detail contact">
+								<div class="people_meta_detail_label">Get In Touch</div>
+								{% if item.email %}
+									<div class="people_meta_detail_item">
+										<div class="people_meta_detail_item_header">
+											<div class="people_meta_detail_icon">{{ icon('mail') }}</div>
+											<div class="people_meta_detail_hint">Email Address</div>
+										</div>
+										<div class="people_meta_detail_info">
+											<a class="people_meta_detail_info_link" href="mailto:{{ item.email }}">{{ item.email }}</a>
+										</div>
+									</div>
+								{% endif %}
+								{% for phone in item.phone_numbers %}
+									<div class="people_meta_detail_item">
+										<div class="people_meta_detail_item_header">
+											<div class="people_meta_detail_icon">{{ icon('phone') }}</div>
+											<div class="people_meta_detail_hint">{{ phone.label }}</div>
+										</div>
+										<div class="people_meta_detail_info">
+											<a class="people_meta_detail_info_link" href="tel:{{ tel(phone.number) }}">{{ phone.number }}</a>
+										</div>
+									</div>
+								{% endfor %}
+								{% if item.appointment %}
+									<div class="people_meta_detail_item">
+										<div class="people_meta_detail_info">
+											<a href="#" class="people_meta_detail_info_button">Book An Appointment</a>
+										</div>
+									</div>
+								{% endif %}
+							</div>
+						{% endif %}
+						{% if item.departments %}
+							<div class="people_meta_detail department">
+								<div class="people_meta_detail_label">Department</div>
+								{% for department in item.departments %}
+									<div class="people_meta_detail_item">
+										<div class="people_meta_detail_info">
+											<a class="people_meta_detail_info_link" href="{{ department.url }}">{{ department.name }}</a>
+										</div>
+									</div>
+								{% endfor %}
+							</div>
+						{% endif %}
+						{% if item.location %}
+							<div class="people_meta_detail location">
+								<div class="people_meta_detail_label">Location</div>
+								<div class="people_meta_detail_item">
+									<a class="people_meta_detail_info_link" href="{{ item.location.url }}">{{ item.location.label }}</a>
+								</div>
+							</div>
+						{% endif %}
+						{% if item.faculty_type %}
+							<div class="people_meta_detail faculty_type">
+								<div class="people_meta_detail_label">Faculty Type</div>
+								{% for type in item.faculty_type %}
+									<div class="people_meta_detail_item">{{ type }}</div>
+								{% endfor %}
+							</div>
+						{% endif %}
+						{% if item.office_hours %}
+							<div class="people_meta_detail hours">
+								<div class="people_meta_detail_label">Office Hours</div>
+								{% for office_hours in item.office_hours %}
+									<div class="people_meta_detail_item">
+										<div class="people_meta_detail_item_header">
+											<div class="people_meta_detail_icon">{{ icon('clock') }}</div>
+											<div class="people_meta_detail_hint">{{ office_hours.label }}</div>
+										</div>
+										<div class="people_meta_detail_info">{{ office_hours.hours }}</div>
+									</div>
+								{% endfor %}
+							</div>
+						{% endif %}
+						{% if item.social_links %}
+							<div class="people_meta_detail social">
+								<div class="people_meta_detail_label">Social</div>
+								<ul class="people_meta_socials" aria-label="Social Links for {{ item.name }}">
+									{% for social in item.social_links %}
+										<li class="people_meta_social">
+											<a class="people_meta_social_link" href="{{ social.url }}" aria-label="{{ item.name }} {{ social.title }}" target="_blank" rel="noopener"><span class="people_meta_social_link_icon">{{ icon(social.title|lower) }}</span><span class="people_meta_social_link_label">{{ social.title }}</span></a>{% if not loop.last %}<span class="people_meta_social_punctuation">, </span>{% endif %}
+										</li>
+									{% endfor %}
+								</ul>
+							</div>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- END: Person Meta -->

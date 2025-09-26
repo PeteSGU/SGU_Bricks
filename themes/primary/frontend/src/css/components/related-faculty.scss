@@ -1,0 +1,30 @@
+/* ==========================================================================
+	Related Faculty
+============================================================================= */
+
+.related_faculty {
+	@include padded_xl;
+
+	background-color: $turquoise_light;
+}
+
+.related_faculty_header {
+	margin-bottom: 30px;
+	text-align: center;
+}
+
+.related_faculty_header_inner {
+}
+
+.related_faculty_title {
+	@include h2;
+
+	color: $blue_navy;
+	margin-block: 0;
+}
+
+.related_faculty_body {
+}
+
+.related_faculty_rows {
+}

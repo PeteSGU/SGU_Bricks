@@ -1,0 +1,431 @@
+/* ==========================================================================
+	Header
+============================================================================= */
+
+.header {
+	--background-color: #{$blue_navy};
+	--color: #{$white};
+	--navigation-color: #{$white};
+	--navigation-hover-color: #{$turquoise};
+	--ribbon-border-color: #{rgba($white, 0.2)};
+	--search-background-color: #{rgba($turquoise_light, 0.15)};
+	--search-submit-color: #{$white};
+	--search-submit-hover-color: #{$turquoise};
+	--breadcrumb-accent-color: #{$turquoise};
+	--page-title-color: #{$white};
+	--page-intro-padding-bottom: 95px;
+	--header-curve-position: 0;
+
+	position: relative;
+	z-index: 10;
+
+	@media #{$min_lg} {
+		--page-intro-padding-bottom: 136px;
+	}
+
+	&.theme_turquoise {
+		--background-color: #{$turquoise_light};
+		--color: #{$black};
+		--navigation-color: #{$black};
+		--navigation-hover-color: #{$blue_navy};
+		--ribbon-border-color: #{rgba($black, 0.1)};
+		--search-background-color: #{rgba($white, 0.45)};
+		--search-submit-color: #{$turquoise_dark};
+		--search-submit-hover-color: #{$blue_navy};
+		--breadcrumb-accent-color: #{$blue_navy};
+		--page-title-color: #{$blue_navy};
+	}
+
+	&.theme_gray {
+		--background-color: #{$gray_light};
+		--color: #{$black};
+		--navigation-color: #{$black};
+		--navigation-hover-color: #{$blue_navy};
+		--ribbon-border-color: #{rgba($black, 0.1)};
+		--search-background-color: #{rgba($white, 0.45)};
+		--search-submit-color: #{$turquoise_dark};
+		--search-submit-hover-color: #{$blue_navy};
+		--breadcrumb-accent-color: #{$blue_navy};
+		--page-title-color: #{$blue_navy};
+	}
+
+	&.has_content_image {
+		--page-intro-padding-bottom: 40px;
+		--header-curve-position: 30px;
+
+		@media #{$min_md} {
+			--header-curve-position: 60px;
+		}
+
+		@media #{$min_lg} {
+			--header-curve-position: 220px;
+		}
+	}
+
+	.body_layout_home & {
+		--header-curve-position: 60px;
+
+		@media #{$min_md} {
+			--header-curve-position: 200px;
+		}
+
+		@media #{$min_lg} {
+			--header-curve-position: 300px;
+		}
+
+		@media #{$min_xl} {
+			--header-curve-position: 400px;
+		}
+	}
+
+	.body_layout_school_home & {
+		--header-curve-position: 280px;
+
+		@media #{$min_sm} {
+			--header-curve-position: 250px;
+		}
+
+		@media (min-width: 600px) {
+			--header-curve-position: 170px;
+		}
+
+		@media #{$min_md} {
+			--header-curve-position: 300px;
+		}
+	}
+}
+
+.header_main {
+	position: relative;
+
+	background-color: var(--background-color);
+	color: var(--color);
+
+	&::after {
+		width: 100%;
+		height: 61px;
+
+		position: absolute;
+		bottom: var(--header-curve-position);
+		left: 0;
+
+		background-image: url('../images/header_curve_small.png');
+		background-position: left bottom;
+		background-repeat: no-repeat;
+		content: '';
+		display: block;
+		pointer-events: none;
+
+		@media #{$min_lg} {
+			height: 112px;
+
+			background-image: url('../images/header_curve_large.png');
+			background-position: center bottom;
+		}
+
+		@media (min-width: 1440px) {
+			height: auto;
+
+			aspect-ratio: 1440 / 112;
+			background-size: cover;
+		}
+	}
+
+	.header.has_content_image & {
+		&::after {
+			box-shadow: 0 var(--header-curve-position) 0 $white;
+
+			@media #{$min_lg} {
+				box-shadow: 0 100px 0 $white, 0 200px 0 $white, 0 220px 0 $white;
+			}
+		}
+	}
+
+	.header.has_cta & {
+		&::after {
+			@media #{$min_lg} {
+				height: 67px;
+
+				bottom: 40px;
+
+				background-image: url('../images/header_curve_cta_large.png');
+				box-shadow: 0 40px 0 $white;
+			}
+
+			@media (min-width: 1440px) {
+				height: auto;
+
+				aspect-ratio: 1440 / 67;
+			}
+		}
+	}
+
+	.body_layout_school_home & {
+		&::after {
+			height: 108px;
+
+			background-image: url('../images/header_curve_school_small.png');
+			background-position: right bottom;
+			box-shadow: 0 108px 0 $white;
+
+			@media #{$min_md} {
+				box-shadow: 0 100px 0 $white, 0 200px 0 $white, 0 300px 0 $white;
+			}
+
+			@media #{$min_lg} {
+				height: 167px;
+
+				bottom: 200px;
+
+				background-image: url('../images/header_curve_school_large.png');
+				background-position: left bottom;
+				box-shadow: 0 167px 0 $white, 0 267px 0 $white;
+			}
+
+			@media #{$min_xl} {
+				bottom: 250px;
+
+				box-shadow: 0 167px 0 $white, 0 334px 0 $white;
+			}
+
+			@media (min-width: 1440px) {
+				height: auto;
+
+				aspect-ratio: 1440 / 167;
+			}
+		}
+	}
+}
+
+.header_bg_figure {
+	@include cover;
+
+	opacity: 0.1;
+}
+
+.header_bg_image {
+	width: 100%;
+	height: 100%;
+
+	object-fit: cover;
+}
+
+.header_main_texture {
+	@include cover;
+
+	background-image: url('../images/header_bg_small.png');
+	background-position: left top;
+	background-repeat: no-repeat;
+
+	@media (min-width: 448px) and (max-width: 997px), (min-width: 2190px) {
+		background-size: cover;
+	}
+
+	@media #{$min_lg} {
+		background-image: url('../images/header_bg_large.png');
+		background-position: center top;
+	}
+}
+
+.header_main_group {
+	position: relative;
+}
+
+.header_primary {
+}
+
+.header_primary_inner {
+	align-items: center;
+	display: flex;
+	gap: 10px;
+	padding-block: 20px;
+
+	@media #{$min_lg} {
+		padding-block: 26px 56px;
+	}
+}
+
+.header_primary_group {
+	position: relative;
+	top: -8px;
+
+	align-items: stretch;
+	display: flex;
+	gap: 12px;
+}
+
+.header_ribbon {
+	display: none;
+
+	@media #{$min_lg} {
+		border-bottom: 1px solid var(--ribbon-border-color);
+		display: block;
+	}
+
+	@media print {
+		display: none;
+	}
+}
+
+.header_ribbon_inner {
+	display: flex;
+	gap: 20px;
+}
+
+.header_ribbon_group {
+	display: flex;
+	gap: 10px;
+	padding-block: 10px;
+}
+
+.header_school_nav {
+	margin-right: auto;
+}
+
+.header_search {
+	@media #{$min_lg} {
+	}
+
+	@media print {
+		display: none;
+	}
+}
+
+.header_logo {
+	margin-right: auto;
+
+	.icon {
+		@media (max-width: 389px) {
+			width: max(70vw, 200px);
+		}
+
+		@media (min-width: 390px) and (max-width: 979px) {
+			width: 280px;
+		}
+	}
+}
+
+.header_secondary_nav {
+	@media #{$max_lg} {
+		display: none;
+	}
+}
+
+.header_menu {
+}
+
+.header_main_decoration {
+	width: 1px;
+	height: 75px;
+
+	position: absolute;
+	bottom: -13px;
+	left: calc($fs_grid_margin + 6px);
+
+	z-index: 10;
+
+	background-color: $turquoise_dark;
+
+	@media #{$min_lg} {
+		height: 142px;
+
+		bottom: -32px;
+		left: 50%;
+	}
+
+	.body_layout_home & {
+		display: none;
+	}
+
+	&::before,
+	&::after {
+		width: 5px;
+
+		position: absolute;
+		left: -2px;
+
+		aspect-ratio: 1;
+		background-color: $turquoise_dark;
+		border-radius: 50%;
+		content: '';
+		display: block;
+	}
+
+	&::after {
+		bottom: 0;
+	}
+
+	.header.has_content_image & {
+		@media #{$max_lg} {
+			display: none;
+		}
+	}
+
+	.header.has_cta & {
+		@media #{$min_lg} {
+			height: 122px;
+
+			bottom: -2px;
+			left: calc($fs_grid_margin + 6px);
+		}
+	}
+
+	.body_layout_news_detail & {
+		display: none;
+
+		@media #{$min_lg} {
+			height: 122px;
+			display: block;
+
+			bottom: -40px;
+			left: calc($fs_grid_margin + 2px);
+		}
+
+		@media #{$min_xl} {
+			height: 200px;
+
+			bottom: -106px;
+		}
+
+		@media #{$min_xxl} {
+			height: 250px;
+			bottom: -106px;
+		}
+	}
+}
+
+.header_suppliment {
+}
+
+/* Chat button
+============================================================================= */
+
+.header_chat_button {
+	@include type_button;
+
+	align-items: center;
+	border: 1px solid $turquoise;
+	border-radius: 4px;
+	color: var(--color);
+	display: flex;
+	gap: 8px;
+	padding-inline: 16px;
+	transition: background-color $base_speed, color $base_speed;
+
+	@include hover {
+		background-color: $turquoise;
+		color: $blue_navy;
+	}
+}
+
+.header_chat_button_label {
+}
+
+.header_chat_button_icon {
+	color: $turquoise;
+	transition: color $base_speed;
+
+	@include nested_hover($selector: '.header_chat_button') {
+		color: $blue_navy;
+	}
+}

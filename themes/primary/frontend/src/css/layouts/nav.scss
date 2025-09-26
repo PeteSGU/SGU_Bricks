@@ -1,0 +1,117 @@
+/* ==========================================================================
+	Shared Navigation
+============================================================================= */
+
+.nav {
+	@media print {
+		display: none;
+	}
+}
+
+.nav_header {
+}
+
+.nav_title {
+}
+
+/* Site Navigation Links
+============================================================================= */
+
+.nav_list {
+}
+
+.nav_item {
+}
+
+.nav_item_inner {
+	.has_children & {
+		position: relative;
+
+		display: grid;
+		grid-template-columns: 1fr minmax(34px, max-content);
+
+		@media #{$min_lg} {
+			display: block;
+		}
+	}
+}
+
+.nav_link {
+	display: block;
+}
+
+.nav_link_label {
+}
+
+.nav_link_icon {
+}
+
+.nav_toggle {
+	display: none;
+	transition: opacity $base_speed, rotate $base_speed;
+
+	&.fs-swap-enabled {
+		display: block;
+
+		@media #{$min_lg} {
+			height: 100%;
+
+			position: absolute;
+			top: 0;
+			right: 0;
+
+			opacity: 0;
+			pointer-events: none;
+		}
+
+		&:focus {
+			opacity: 1;
+		}
+	}
+}
+
+.nav_toggle_icon {
+	display: inline-block;
+}
+
+/* Site Navigation Children
+============================================================================= */
+
+.nav_children {
+	@media #{$min_lg} {
+		position: absolute;
+
+		opacity: 0;
+		transition: opacity $base_speed, visibility $base_speed;
+		visibility: hidden;
+	}
+
+	.nav_item.fs-swap-enabled & {
+		display: none;
+
+		@media #{$min_lg} {
+			display: block;
+		}
+	}
+
+	.nav_item.fs-swap-active & {
+		display: block;
+	}
+
+	@include nested_hover($selector: '.nav_item', $swap: true) {
+		@media #{$min_lg} {
+			opacity: 1;
+			visibility: visible;
+		}
+	}
+}
+
+.nav_child_item {
+}
+
+.nav_child_link {
+	display: block;
+}
+
+.nav_child_link_label {
+}

@@ -1,0 +1,133 @@
+/* ==========================================================================
+	Audience Navigation
+============================================================================= */
+
+.audience_nav_group {
+	@media #{$min_lg} {
+		position: relative;
+	}
+}
+
+.audience_nav_panel {
+	background-color: $gray_05;
+
+	@media #{$min_lg} {
+		width: 200px;
+
+		position: absolute;
+		right: 0;
+	}
+
+	.audience_nav_group.fs-swap-enabled & {
+		@media #{$min_lg} {
+			display: block;
+
+			opacity: 0;
+			pointer-events: none;
+			transition: opacity $base_speed, visibility $base_speed;
+			visibility: hidden;
+		}
+	}
+
+	.audience_nav_group.fs-swap-active & {
+		@media #{$min_lg} {
+			opacity: 1;
+			pointer-events: auto;
+			visibility: visible;
+		}
+	}
+}
+
+.audience_nav {
+	.audience_nav_group.fs-swap-enabled & {
+		@media #{$min_lg} {
+			display: block;
+		}
+	}
+}
+
+.audience_nav_header {
+	@include visually_hide;
+}
+
+.audience_nav_title {
+}
+
+.audience_nav_list {
+	@include label_text;
+}
+
+.audience_nav_item {
+}
+
+.audience_nav_link {
+	display: block;
+	padding: 10px 20px;
+	text-decoration: underline;
+	transition: color $base_speed;
+
+	@include hover {
+		color: $black;
+	}
+}
+
+.audience_nav_link_inner {
+}
+
+.audience_nav_link_label {
+}
+
+/* Toggle
+============================================================================= */
+
+.audience_nav_toggle {
+	&.fs-swap-enabled {
+		width: 100%;
+
+		border: 1px solid;
+		color: blue;
+		text-align: left;
+		transition: color $base_speed;
+
+		@include hover {
+			color: $black;
+		}
+	}
+}
+
+.audience_nav_toggle_inner {
+	width: 100%;
+
+	align-items: center;
+	display: flex;
+	gap: 10px;
+	padding: 10px;
+}
+
+.audience_nav_toggle_inner_default {
+}
+
+.audience_nav_toggle_inner_active {
+}
+
+.audience_nav_toggle_label {
+	@include h6;
+
+	flex: 1;
+	text-decoration: underline;
+}
+
+.audience_nav_toggle_label_default {
+}
+
+.audience_nav_toggle_label_active {
+}
+
+.audience_nav_toggle_icon {
+}
+
+.audience_nav_toggle_icon_default {
+}
+
+.audience_nav_toggle_icon_active {
+}

@@ -1,0 +1,35 @@
+{% set id = uniqid('js-program-item') %}
+{% set group_id = uniqid('program-group') %}
+
+<!-- Program List -->
+<div class="js-accordion program_list">
+	<div class="fs-row">
+		<div class="fs-cell">
+			<div class="program_list_inner">
+				<ul class="program_list_items" id="item_list" aria-label="{{ title }}">
+					{% for item in items %}
+						<li class="js-accordion-item {{ id }}-{{ loop.index }} program_item">
+							{% include "partials/program/program-list-item.twig" with {
+								id: id,
+								group_id: group_id,
+								item: item
+							} %}
+						</li>
+					{% endfor %}
+				</ul>
+
+				{% if pagination.pages %}
+					{% include "partials/pagination.twig" with {
+						"pagination": pagination,
+						"page_link": page_link
+					} %}
+				{% endif %}
+			</div>
+		</div>
+	</div>
+</div>
+<!-- END: Program List -->
+
+{% if not items|length %}
+	{% include "partials/no-results-message.twig" %}
+{% endif %}

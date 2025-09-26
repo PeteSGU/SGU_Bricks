@@ -1,0 +1,101 @@
+<div class="hero_school">
+	<div class="fs-row">
+		<div class="fs-cell">
+			<div class="hero_school_inner">
+				<div class="hero_school_media">
+					<figure class="hero_school_figure">
+						{% if page.hero_school_portrait == true %}
+							{% include '@partial-image' with {
+								class: 'hero_school_figure',
+								alt: '',
+								image: page.hero_school_image,
+								loading: 'eager',
+								sources: [
+									img.portraitClassic.xlrg,
+									img.portraitClassic.lrg,
+									img.portraitClassic.med,
+									img.portraitClassic.sml,
+									img.portraitClassic.xsml,
+									img.portraitClassic.xxsml
+								],
+								sizes: [
+									'(min-width: 1394px) 1260px',
+									'(min-width: 1220px) 1100px',
+									'(min-width: 980px) 880px',
+									'(min-width: 740px) 694px',
+									'(min-width: 500px) 48vw',
+									'90vw'
+								]
+							} %}
+						{% else %}
+							{% include '@partial-image' with {
+								class: 'hero_school_figure',
+								alt: '',
+								image: page.hero_school_image,
+								loading: 'eager',
+								sources: [
+									img.wide.xlrg,
+									img.wide.lrg,
+									img.wide.med,
+									img.wide.sml,
+									img.wide.xsml,
+									img.wide.xxsml
+								],
+								sizes: [
+									'(min-width: 1394px) 1260px',
+									'(min-width: 1220px) 1100px',
+									'(min-width: 980px) 880px',
+									'(min-width: 740px) 694px',
+									'(min-width: 500px) 48vw',
+									'90vw'
+								]
+							} %}
+						{% endif %}
+					</figure>
+					{% set config = {
+						id: page.hero_school_video.id,
+						type: page.hero_school_video.type,
+						title: page.hero_school_video.title,
+						display: display|default("inline"),
+						autoplay: autoplay|default(false),
+						playerVars: playerVars|default({})
+					} %}
+					{% if type == "youtube" %}
+						{% set url = 'https://www.youtube.com/watch?v=' ~ id %}
+					{% elseif type == "vimeo" %}
+						{% set url = 'https://vimeo.com/' ~ id %}
+					{% endif %}
+					<div class="lazy_video js-video-lazy-load " data-video-lazy-load='{{ config|json_encode }}'>
+						<a class="js-play-btn js-swap hero_school_media_button" href="{{ url }}" aria-label="Play {{ title }}" data-swap-target=".hero_school">
+							<span class="hero_school_media_button_group">
+								<span class="hero_school_media_button_label">{{ page.hero_school_button.label }}</span>
+								<span class="hero_school_media_button_name">{{ page.hero_school_button.name }}</span>
+							</span>
+							<span class="hero_school_media_icon">{{ icon('play') }}</span>
+						</a>
+						<div class="lazy_video_iframe_wrap">
+							<div class="lazy_video_iframe_target js-iframe-target"></div>
+						</div>
+					</div>
+				</div>
+				<div class="hero_school_group">
+					<div class="hero_school_header">
+						<h1 class="hero_school_label" id="page_title" tabindex="-1">{{ page.hero_school_label }}</h1>
+						<p class="hero_school_title">{{ page.title }}</p>
+					</div>
+					<div class="hero_school_header_decoration"></div>
+					<div class="hero_school_body">
+						<p class="hero_school_description">{{ page.description }}</p>
+						<ul class="hero_school_links" aria-label="{{ page.description }}">
+							{% for link in page.hero_school_links %}
+								<li class="hero_school_link_item">
+									<a class="hero_school_link" href="link.url">{{ link.label }}</a>
+								</li>
+							{% endfor %}
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,22 @@
+@use 'sass:math';
+
+/**
+ * https://utopia.fyi/blog/clamp
+ * Slope = (MaxSize - MinSize) / (MaxWidth - MinWidth)
+ * yIntersection = (-1 * MinWidth) * Slope + MinSize
+ * font-size: clamp(MinSize[rem], yIntersection[rem] + Slope * 100vw, MaxSize[rem])
+*/
+@function font_size_clamp(
+	$min_font_size,
+	$max_font_size,
+	$min_viewport_width: 500px,
+	$max_viewport_width: 1220px
+) {
+	$slope: math.div(
+		($max_font_size - $min_font_size),
+		($max_viewport_width - $min_viewport_width)
+	);
+	$y_intersection: ((-1 * $min_viewport_width) * $slope) + $min_font_size;
+
+	@return clamp($min_font_size, $y_intersection + ($slope * 100vw), $max_font_size);
+}

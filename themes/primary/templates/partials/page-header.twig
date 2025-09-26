@@ -1,0 +1,112 @@
+<div class="page_header {% if page.image %}has_image{% endif %} {% if page.news_carousel_items %}news_carousel{% endif %}">
+	<div class="page_header_inner">
+		<div class="page_intro">
+			<div class="fs-row">
+				<div class="fs-cell fs-lg-10 fs-all-justify-center">
+					<div class="page_intro_inner">
+						{% if no_breadcrumb is empty %}
+							<div class="page_breadcrumb">
+								{% include 'navigation/breadcrumb.twig' with {
+									page: page,
+									modifier: '',
+									links: page.breadcrumb|default(framework_fn('get_breadcrumb')),
+									icon_home: 'home',
+									icon_divider: 'minus',
+									icon_end: 'angle_down'
+								} %}
+							</div>
+						{% endif %}
+
+						<h1 class="page_title" id="page_title" tabindex="-1">{{ page.title }}</h1>
+
+						{% if page.description %}
+							<p class="page_description">{{ page.description }}</p>
+						{% endif %}
+						
+						{% if page.meta_bar %}
+							{% include "partials/" ~ page.meta_bar ~ "/" ~ page.meta_bar ~ "-meta.twig" ignore missing with {
+								item: post
+							} %}
+						{% endif %}
+					</div>
+				</div>
+			</div>
+
+			{% if fn("is_archive") and filters|length %}
+				{% include "partials/filter.twig" with {
+					tools: filters,
+					results_count: results_count,
+					results_text: results_text,
+					page_link: page_link,
+				} %}
+			{% endif %}
+
+			{% if page.news_carousel_items and page.news_carousel_items|length %}
+				{% include "partials/news/news-featured-carousel.twig" with {
+					items: page.news_carousel_items
+				} %}
+			{% endif %}
+
+			{% if page.image %}
+				<div class="fs-row">
+					<div class="fs-cell">
+						<figure class="page_header_figure">
+							{% include "partials/image.twig" with {
+								class: "page_header",
+								alt: "",
+								image: page.image,
+								loading: "eager",
+								sources: [
+									"classic-xlrg",
+									"classic-lrg",
+									"classic-med",
+									"classic-sml",
+									"classic-xsml",
+									"classic-xxsml"
+								]
+							} %}
+						</figure>
+					</div>
+				</div>
+			{% endif %}
+		</div>
+	</div>
+</div>
+
+{% if ("layout_detail" not in page_classes and page.image) or ("layout_detail" not in page.classes and page.video) %}
+	<div class="page_header_media {% if page.video %}has_video{% endif %}">
+		<div class="fs-row">
+			<div class="fs-cell">
+				<div class="page_header_media_inner">
+					{% if page.image %}
+						<figure class="page_header_figure">
+							{% include "partials/image.twig" with {
+								class: "page_header",
+								alt: page.image_alt_text,
+								image: page.image,
+								sources: [
+									"wide-xlrg",
+									"wide-lrg",
+									"wide-med",
+									"wide-sml",
+									"wide-xsml"
+								]
+							} %}
+						</figure>
+
+						{% if page.video %}
+							<div class="page_header_video">
+								{% include "partials/lazy-video.twig" with {
+									class: 'page_header_bg',
+									id: page.video.id,
+									type: page.video.service,
+									title: page.title|striptags|e('html_attr'),
+								} %}
+							</div>
+						{% endif %}
+					{% endif %}
+				</div>
+			</div>
+		</div>
+	</div>
+{% endif %}

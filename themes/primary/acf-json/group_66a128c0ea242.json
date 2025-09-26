@@ -1,0 +1,186 @@
+{
+    "key": "group_66a128c0ea242",
+    "title": "Alert Message",
+    "fields": [
+        {
+            "key": "field_66d76a1586edd",
+            "label": "Alert Banner",
+            "name": "show_alert_banner",
+            "aria-label": "",
+            "type": "button_group",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "33",
+                "class": "",
+                "id": ""
+            },
+            "choices": {
+                "true": "Is Active",
+                "false": "Is NOT Active"
+            },
+            "default_value": "",
+            "return_format": "value",
+            "allow_null": 0,
+            "layout": "horizontal"
+        },
+        {
+            "key": "field_66a5a75a4c9a8",
+            "label": "Alert Banner Background Color",
+            "name": "alert_banner_background_color",
+            "aria-label": "",
+            "type": "radio",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "33",
+                "class": "",
+                "id": ""
+            },
+            "choices": {
+                "grey": "Grey - Neutral 20",
+                "red": "Red - Accent",
+                "skyblue": "Sky Blue - Secondary Tint",
+                "orange": "Orange - Action"
+            },
+            "default_value": "",
+            "return_format": "value",
+            "allow_null": 0,
+            "other_choice": 0,
+            "layout": "vertical",
+            "save_other_choice": 0
+        },
+        {
+            "key": "field_66d76c4bb6433",
+            "label": "Alert Banner Icon",
+            "name": "alert_banner_icon",
+            "aria-label": "",
+            "type": "radio",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "33",
+                "class": "",
+                "id": ""
+            },
+            "choices": {
+                "bell": "Bell",
+                "bang": "Exclamation Point",
+                "video": "Video \/ Livestream",
+                "storm": "Inclement Weather",
+                "grad": "Graduation"
+            },
+            "default_value": "",
+            "return_format": "value",
+            "allow_null": 0,
+            "other_choice": 0,
+            "layout": "vertical",
+            "save_other_choice": 0
+        },
+        {
+            "key": "field_66a128c1deabb",
+            "label": "Alert Message",
+            "name": "alert_message",
+            "aria-label": "",
+            "type": "textarea",
+            "instructions": "Text in this box will not appear until the dropdown is set to Alert Banner 'Is Active'.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "rows": "",
+            "placeholder": "",
+            "new_lines": ""
+        },
+        {
+            "key": "field_66a12b8141743",
+            "label": "Notice",
+            "name": "",
+            "aria-label": "",
+            "type": "message",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "message": "The fields below are just here to keep common alerts handy so we can copy\/paste as needed. Nothing in these boxes appear anywhere on the site.",
+            "new_lines": "wpautop",
+            "esc_html": 0
+        },
+        {
+            "key": "field_66a12c1641744",
+            "label": "Alert Messages",
+            "name": "common_alert_messages",
+            "aria-label": "",
+            "type": "repeater",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "layout": "row",
+            "pagination": 0,
+            "min": 0,
+            "max": 0,
+            "collapsed": "",
+            "button_label": "Add Common Alert Message",
+            "rows_per_page": 20,
+            "sub_fields": [
+                {
+                    "key": "field_66a12c3741745",
+                    "label": "Alert Message",
+                    "name": "alert_message",
+                    "aria-label": "",
+                    "type": "textarea",
+                    "instructions": "",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "default_value": "",
+                    "maxlength": "",
+                    "rows": "",
+                    "placeholder": "",
+                    "new_lines": "",
+                    "parent_repeater": "field_66a12c1641744"
+                }
+            ]
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "options_page",
+                "operator": "==",
+                "value": "campus-alert"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "",
+    "show_in_rest": 0,
+    "modified": 1726683064
+}

@@ -1,0 +1,98 @@
+<div class="page_header{% if page.image %} has_image{% endif %}{% if page.news_carousel %} news_carousel{% endif %}">
+	<div class="page_header_inner">
+		<div class="page_intro">
+			<div class="fs-row">
+				<div class="fs-cell fs-lg-10 fs-all-justify-center">
+					<div class="page_intro_inner">
+						{% if page.breadcrumbNav != false  %}
+							<div class="page_breadcrumb">
+								{% render '@navigation-breadcrumb' with {
+									page: page,
+									modifier: '',
+									links: page.breadcrumbNav,
+									icon_home: 'home',
+									icon_divider: 'minus',
+									icon_end: 'angle_down'
+								} %}
+							</div>
+						{% endif %}
+						<h1 class="page_title" id="page_title" tabindex="-1">{{ page.title }}</h1>
+						{% if page.description %}
+							<p class="page_description">{{ page.description }}</p>
+						{% endif %}
+						{% if page.meta %}
+							{% render '@partial-' ~ page.meta ~ '-meta' %}
+						{% endif %}
+					</div>
+				</div>
+			</div>
+
+			{% if page.filter %}
+				{% include '@partial-filter' with page.filter %}
+			{% endif %}
+			{% if page.news_carousel %}
+				{% render '@partial-news-feature-carousel' %}
+			{% endif %}
+			{% if page.image %}
+				<div class="fs-row">
+					<div class="fs-cell">
+						<figure class="page_header_figure">
+							{% include '@partial-image' with {
+								class: 'page_header',
+								alt: '',
+								image: page.image,
+								loading: 'eager',
+								sources: [
+									img.classic.xlrg,
+									img.classic.lrg,
+									img.classic.med,
+									img.classic.sml,
+									img.classic.xsml,
+									img.classic.xxsml
+								]
+							} %}
+						</figure>
+					</div>
+				</div>
+			{% endif %}
+		</div>
+	</div>
+</div>
+{% if ('layout_detail' not in page.classes and page.image) or ('layout_detail' not in page.classes and page.video) %}
+	<div class="page_header_media{% if page.video %} has_video{% endif %}">
+		<div class="fs-row">
+			<div class="fs-cell">
+				<div class="page_header_media_inner">
+					{% if page.image %}
+						<figure class="page_header_figure">
+							{% include '@partial-image' with {
+								class: 'page_header',
+								alt: '',
+								image: page.image,
+								loading: 'eager',
+								sources: [
+									img.wide.xlrg,
+									img.wide.lrg,
+									img.wide.med,
+									img.wide.sml,
+									img.wide.xsml,
+									img.wide.xxsml
+								]
+							} %}
+						</figure>
+					{% endif %}
+					{% if page.video %}
+						<div class="page_header_video">
+							{% include "@partial-lazy-video" with {
+								class: 'page_header_bg',
+								id: page.video.id,
+								type: page.video.type,
+								title: page.video.title,
+							} %}
+						</div>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+	</div>
+{% endif %}

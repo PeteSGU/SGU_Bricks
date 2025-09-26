@@ -1,0 +1,72 @@
+<div class="event_entry">
+	<script type="application/ld+json">
+		{
+			'@context': 'http://schema.org',
+			'@type': 'Event',
+			'location': {
+				'@type': 'Place',
+				'address': {
+					'@type': 'PostalAddress',
+					'addressLocality': 'Baltimore',
+					'addressRegion': 'MD',
+					'postalCode': '21211',
+					'streetAddress': '2980 Falls Rd'
+				},
+				'name': 'Fastspot Office'
+			},
+			'name': '{{ page.title }}',
+			'image': '',
+			'description': '{{ page.description }}',
+			'startDate': '2013-09-14T21:30',
+			'endDate': '2013-09-14T21:30',
+			'offers': {
+				'@type': 'Offer',
+				'url': '#'
+			},
+		}
+	</script>
+
+	<!-- Page Feature -->
+	<div class="page_feature" id="page_content" tabindex="-1" aria-labelledby="page_title">
+		{% render '@partial-event-meta' %}
+	</div>
+	<!-- END: Page Feature -->
+
+	<!-- Page Content -->
+	<div class="page_content">
+		<div class="fs-row">
+			<div class="fs-cell">
+				{% if page.image %}
+					<figure class="event_entry_figure">
+						{% include '@partial-image' with {
+							class: 'event_entry',
+							alt: '',
+							image: page.image,
+							loading: 'eager',
+							sources: [
+								img.classic.xlrg,
+								img.classic.lrg,
+								img.classic.med,
+								img.classic.sml,
+								img.classic.xsml,
+								img.classic.xxsml
+							]
+						} %}
+					</figure>
+				{% endif %}
+
+				<!-- WYSIWYG -->
+				<div class="typography">
+					<h2>Lorem Ipsum</h2>
+					<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. <a href="#">Nulla consequat</a> massa quis enim. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem</p>
+					<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Quis enim. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem</p>
+				</div>
+				<!-- END: WYSIWYG -->
+
+				<div class="event_entry_actions">
+					{% render '@partial-event-actions' %}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

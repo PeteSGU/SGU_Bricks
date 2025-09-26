@@ -1,0 +1,83 @@
+<div class="place_entry">
+	<script type="application/ld+json">
+		{
+			'@context': 'http://schema.org',
+			'@type': 'Place',
+			'name': '{{ page.title }}',
+			'telephone': '410-537-5007',
+			'url': '#',
+			'address': '2980 Falls Rd\nBaltimore, MD 21211'
+		}
+	</script>
+
+	<!-- Page Feature -->
+	<div class="page_feature" id="page_content" tabindex="-1" aria-labelledby="page_title">
+		{% include '@partial-department-meta' with {
+			item: {
+				name: page.title,
+				phone_numbers: [
+					{
+						label: 'mobile',
+						type: 'telephone',
+						number: '(410) 555-1234'
+					},
+					{
+						label: 'office',
+						type: 'telephone',
+						number: '(410) 555-1234'
+					}
+				],
+				email: 'name@university.edu',
+				location: 'Appleseed Library<br>Room 214',
+				office_hours: [
+					{
+						label: 'Monday',
+						hours: '8am - 5pm'
+					},
+					{
+						label: 'Wednesday',
+						hours: '9am - 11am'
+					}
+				],
+				social_links: [
+					{
+						title: 'LinkedIn',
+						url: '#'
+					},
+					{
+						title: 'Twitter',
+						url: '#'
+					},
+					{
+						title: 'Facebook',
+						url: '#'
+					},
+					{
+						title: 'Instagram',
+						url: '#'
+					}
+				]
+			}
+		} %}
+	</div>
+	<!-- END: Page Feature -->
+
+	<!-- Page Content -->
+	<div class="page_content">
+		<div class="fs-row">
+			<div class="fs-cell">
+				<!-- WYSIWYG -->
+				<div class="typography">
+					<h2>Lorem Ipsum</h2>
+					<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. <a href="#">Nulla consequat</a> massa quis enim. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem</p>
+					<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.</p>
+					<p>Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo.</p>
+					<p>Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus.</p>
+					<p>Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus.</p>
+					<p>Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc,</p>
+				</div>
+				<!-- END: WYSIWYG -->
+			</div>
+		</div>
+	</div>
+</div>

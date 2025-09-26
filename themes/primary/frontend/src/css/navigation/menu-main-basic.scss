@@ -1,0 +1,149 @@
+/* ==========================================================================
+	Menu Main Basic
+============================================================================= */
+
+.main_basic_nav {
+}
+
+.main_basic_nav_header {
+	@include visually_hide;
+}
+
+.main_basic_nav_title {
+}
+
+.main_basic_nav_list {
+	display: grid;
+	gap: 90px 22px;
+	grid-template-columns: 1fr 1fr;
+}
+
+.main_basic_nav_item {
+}
+
+.main_basic_nav_link {
+	color: $turquoise;
+	display: block;
+	font-size: 28px;
+	font-weight: 800;
+	transition: color $base_speed;
+
+	@media (min-width: 980px) and (max-width: 1219px) {
+		font-size: 20px;
+	}
+
+	@media (min-width: 1220px) and (max-width: 1393px) {
+		font-size: 24px;
+	}
+
+	@include hover {
+		color: $white;
+	}
+}
+
+.main_basic_nav_link_inner {
+	align-items: center;
+	display: flex;
+	gap: 8px;
+	flex-direction: row-reverse;
+	justify-content: flex-end;
+}
+
+.main_basic_nav_link_icon {
+	position: relative;
+
+	aspect-ratio: 1;
+	border: 1px solid;
+	border-radius: 50%;
+	flex: 0 0 24px;
+	transition: background-color $base_speed, border $base_speed, color $base_speed;
+
+	.icon {
+		@include center;
+
+		color: $white;
+	}
+
+	@include nested_hover($selector: '.main_basic_nav_link') {
+		background-color: $turquoise;
+		border-color: $blue_navy;
+		color: $blue_navy;
+		transition: color $base_speed;
+
+		.icon {
+			color: $blue_navy;
+		}
+	}
+}
+
+.main_basic_nav_link_label {
+}
+
+.main_basic_nav_children {
+	font-size: 18px;
+	line-height: 1.2;
+
+	@media (min-width: 980px) and (max-width: 1219px) {
+		font-size: 16px;
+	}
+}
+
+.main_basic_nav_child_item {
+	&.button,
+	&.featured_button {
+		display: inline-block;
+		float: left;
+		margin-top: 14px;
+
+		&:not(:last-child) {
+			margin-right: 10px;
+		}
+	}
+}
+
+.main_basic_nav_child_link {
+	color: $white;
+	display: block;
+	padding-block: 14px;
+	transition: color $base_speed;
+
+	@include hover {
+		color: $turquoise;
+	}
+
+	.main_basic_nav_child_item.button &,
+	.main_basic_nav_child_item.featured_button & {
+		@include type_button;
+
+		border-radius: 4px;
+
+		padding: 15px 20px;
+		transition: background-color $base_speed, border $base_speed, box-shadow $base_speed,
+			color $base_speed;
+
+		@include hover {
+			background-color: $turquoise;
+			color: $blue_navy;
+		}
+	}
+
+	.main_basic_nav_child_item.button & {
+		box-shadow: inset 0 0 0 1px $turquoise;
+	}
+
+	.main_basic_nav_child_item.featured_button & {
+		background-color: $orange;
+		box-shadow: 4px 4px 0px rgba($black, 0.1);
+		color: $black;
+
+		@include hover {
+			box-shadow: 0px 0px 0px rgba($black, 0.1);
+		}
+	}
+}
+
+.main_basic_nav_child_link_inner {
+}
+
+.main_basic_nav_child_link_label {
+}

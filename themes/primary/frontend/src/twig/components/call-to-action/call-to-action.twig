@@ -1,0 +1,34 @@
+{#
+	{% include '@component-call-to-action' with {
+		description: 'Description',
+		link: {
+			url: '#',
+			label: 'Link',
+			aria: 'aria',
+			icon: ''
+		}
+	} %}
+#}
+
+<!-- Call to Action -->
+<div class="cta">
+	<div class="fs-row">
+		<div class="fs-cell">
+			<div class="cta_inner">
+				<div class="cta_description">
+					<p>{{ description }}</p>
+				</div>
+				<div class="cta_action">
+					{% include '@partial-link' with {
+						class: 'cta',
+						title: link.label,
+						url: link.url,
+						icon: link.icon,
+						aria: link.aria
+					} %}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- END: Call to Action -->

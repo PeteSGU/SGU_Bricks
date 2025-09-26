@@ -1,0 +1,230 @@
+/* ==========================================================================
+	Forms
+============================================================================= */
+
+@mixin form_label($theme: null) {
+	color: $blue_navy;
+	font-size: 14px;
+	font-weight: 700;
+	line-height: calc(18 / 14);
+	text-transform: uppercase;
+}
+
+@mixin input($theme: null) {
+	border: 1px solid $gray_medium;
+	border-radius: 5px;
+	padding: 8px 12px;
+
+	@media #{$min_md} {
+		padding: 12px 16px;
+	}
+}
+
+/* Select
+============================================================================= */
+
+@mixin select() {
+	position: relative;
+
+	display: inline-block;
+
+	select {
+		width: 100%;
+
+		appearance: none;
+		-webkit-appearance: none;
+		background: none;
+		border: 1px solid;
+		color: inherit;
+		cursor: pointer;
+		display: inline-block;
+		line-height: normal;
+		margin: 0;
+		outline: 0;
+		padding: 14px 40px 14px 20px;
+
+		// Media query to target Firefox only
+		@-moz-document url-prefix() {
+			// Firefox hack to hide the arrow
+			text-indent: 0.01px;
+			text-overflow: '';
+		}
+
+		// Undo the Firefox inner focus ring
+		&:focus:-moz-focusring {
+			color: transparent;
+			text-shadow: 0 0 0 $black;
+		}
+
+		// Hide the arrow in IE10 and up
+		&::-ms-expand {
+			display: none;
+		}
+
+		option {
+			@-moz-document url-prefix() {
+				// <option> elements inherit styles from <select>, so reset them
+				background-color: $white;
+			}
+		}
+	}
+}
+
+/* Select Themes
+============================================================================= */
+
+@mixin select_blue() {
+	select {
+		&:focus {
+			box-shadow: 0 0 3px 1px $black;
+		}
+
+		&:active {
+			color: $white;
+			background-color: $black;
+		}
+	}
+
+	&:after {
+		border-top-color: blue;
+	}
+}
+
+/* Checkbox and Radio
+============================================================================= */
+
+@mixin option() {
+	position: relative;
+
+	input {
+		position: absolute;
+		z-index: -2;
+
+		opacity: 0;
+
+		&:checked {
+			~ [class$='indicator'] {
+				&:before {
+					scale: 1;
+				}
+			}
+		}
+	}
+
+	[class$='indicator'] {
+		position: absolute;
+		top: 0;
+		left: 0;
+
+		display: block;
+		pointer-events: none;
+		text-align: center;
+		transition: background-color $base_speed, border $base_speed, color $base_speed;
+		user-select: none;
+
+		&:before {
+			@include absolute_center;
+
+			display: block;
+			transition: background $base_speed, scale $base_speed;
+		}
+	}
+}
+
+@mixin checkbox() {
+	@include option;
+
+	input {
+		&:checked {
+			~ [class$='indicator'] {
+				&:before {
+					scale: 1;
+				}
+			}
+		}
+	}
+
+	[class$='indicator'] {
+		width: 20px;
+
+		aspect-ratio: 1;
+		border-radius: 2px;
+
+		&:before {
+			top: 3px;
+
+			content: '\2713';
+			font-size: 14px;
+			line-height: 1;
+			scale: 0;
+		}
+	}
+}
+
+@mixin radio() {
+	@include option;
+
+	[class$='indicator'] {
+		width: 16px;
+
+		aspect-ratio: 1;
+		border-radius: 50%;
+
+		&:before {
+			width: 6px;
+
+			aspect-ratio: 1;
+			border-radius: inherit;
+			content: '';
+		}
+	}
+}
+
+@mixin option_blue() {
+	input {
+		&:focus {
+			~ [class$='indicator'] {
+				box-shadow: 0 0 3px 1px blue;
+			}
+		}
+	}
+
+	[class$='indicator'] {
+		border: 1px solid;
+		color: $gray_40;
+	}
+}
+
+@mixin checkbox_blue() {
+	@include option_blue;
+
+	input {
+		&:checked {
+			~ [class$='indicator'] {
+				background-color: blue;
+				border-color: blue;
+				color: $white;
+			}
+		}
+	}
+}
+
+@mixin radio_blue() {
+	@include option_blue;
+
+	[class$='indicator'] {
+		&:before {
+			background-color: $gray_20;
+		}
+	}
+
+	input {
+		&:checked {
+			~ [class$='indicator'] {
+				&:before {
+					background-color: blue;
+				}
+			}
+		}
+	}
+}

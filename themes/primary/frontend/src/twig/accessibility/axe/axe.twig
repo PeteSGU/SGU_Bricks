@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+		<title>Axe Report</title>
+		<style>
+			@import url('https://rsms.me/inter/inter.css');
+
+			* {
+				box-sizing: border-box;
+			}
+
+			html { font-family: 'Inter', sans-serif; }
+
+			@supports (font-variation-settings: normal) {
+				html { font-family: 'Inter var', sans-serif; }
+			}
+
+			body {
+				background-color: #f4f5f7;
+				overflow-x: hidden;
+			}
+
+			p {
+				margin: 0;
+			}
+
+			.report_main {
+				margin: 0 auto;
+				max-width: 56rem;
+				padding-left: 2rem;
+				padding-right: 2rem;
+			}
+
+			.report_header {
+				text-align: center;
+			}
+
+			.report_pages {
+				margin-top: 2rem;
+			}
+
+			.report_error_wrap {
+				text-align: center;
+			}
+
+			.form-input {
+				-webkit-appearance:none;
+				-moz-appearance:none;
+				appearance:none;
+				background-color:#fff;
+				border-color:#d2d6dc;
+				border-width:1px;
+				border-radius:.375rem;
+				padding-top:.5rem;
+				padding-right:.75rem;
+				padding-bottom:.5rem;
+				padding-left:.75rem;
+				font-size:1rem;
+				line-height:1.5
+			}
+
+			label,
+			.label {
+				cursor: pointer;
+				font-size: .875rem;
+			}
+
+			label span {
+				display: block;
+			}
+
+			label input {
+				width: 100%;
+
+				margin-top: 0.5rem;
+			}
+
+			.report_filters_row {
+				display: flex;
+				flex-flow: row wrap;
+				margin: 0 -15px;
+			}
+			
+			.report_filters_row > * {
+				flex: 1;
+				margin-bottom: 15px;
+				padding: 0 15px;
+			}
+
+			.checkboxes label {
+				align-items: center;
+				display: flex;
+			}
+
+			.checkboxes .label {
+				display: inline-block;
+				margin-bottom: 0.5rem;
+			}
+
+			.checkboxes label input {
+				margin-top: 0;
+				width: auto;
+			}
+
+			.checkboxes label span {
+				display: inline-block;
+				margin-left: 10px;
+			}
+
+			.report_pages {
+				margin-top: 1rem;
+			}
+
+			.report_page {
+				background-color: #fff;
+				border-radius: 0.5rem;
+				box-shadow: 0 1px 3px 0 rgba(0,0,0,.1),0 1px 2px 0 rgba(0,0,0,.06);
+				margin-bottom: 2rem;
+				padding: 1rem;
+			}
+
+			.report_item_context {
+				background-color: rgba(0, 0, 0, .05);
+				border-radius: 0.5rem;
+				margin: 10px 0 0;
+				overflow-x: auto;
+				padding: 20px;
+			}
+
+			.font-mono {
+				font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+			}
+
+			.report_item_title_link {
+				color: #DA2315;
+			}
+
+			.report_items_wrap {
+				border-top: solid #000 1px;
+				margin-top: 30px;
+				padding-top: 10px;
+			}
+
+			.report_item_label {
+				margin-top: 10px;
+			}
+		</style>
+
+		<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	</head>
+	<body>
+		<div id="axe-app">
+			{% raw %}
+				<main class="report_main">
+					<header class="report_header">
+						<h1 class="report_title" v-text="title"></h1>
+					</header>
+
+					<div class="report_pages">
+						<div v-if="!results.length">
+							<div class="report_error_wrap">
+								<h2 class="report_error_title">Report not yet generated.</h2>
+								<pre class="report_error_code">
+       \`*-.
+        )  _`-.
+       .  : `. .
+       : _   '  \
+       ; *` _.   `*-._
+       `-.-'          `-.
+         ;       `       `.
+         :.       .        \
+         . \  .   :   .-'   .
+         '  `+.;  ;  '      :
+         :  '  |    ;       ;-.
+         ; '   : :`-:     _.`* ;
+[bug] .*' /  .*' ; .*`- +'  `*'
+      `*-*   `*-*  `*-*'
+								</pre>
+							</div>
+						</div>
+
+						<div v-else>
+							<h2>Filters</h2>
+
+							<div class="report_filters">
+								<div class="report_filters_row">
+									<label>
+										<span>Page</span>
+										<input class="form-input" type="text" v-model="filters.page" />
+									</label>
+
+									<label>
+										<span>Violation</span>
+										<input class="form-input" type="text" v-model="filters.violation" />
+									</label>
+								</div>
+
+								<div class="report_filters_row">
+									<div class="checkboxes">
+										<span class="label">Impact</span>
+										<label v-for="impact in impacts" :key="impact">
+											<input type="checkbox" :id="`impact_${impact}`" :value="impact" v-model="filters.impact" />
+											<span v-text="impact"></span>
+										</label>
+									</div>
+
+									<div class="checkboxes">
+										<span class="label">Tags</span>
+										<label v-for="tag in tags" :key="tag">
+											<input type="checkbox" :id="`tag_${tag}`" :value="tag" v-model="filters.tag" />
+											<span v-text="tag"></span>
+										</label>
+									</div>
+								</div>
+							</div>
+
+							<pre>Page Count: {{ filteredResults.length }}</pre>
+
+							<div class="report_pages">
+								<div
+									class="report_page"
+									v-for="(page, pageIndex) in filteredResults"
+									:key="`page_${pageIndex}`"
+								>
+									<h2 class="report_page_title" v-text="page.url"></h2>
+
+									<pre class="font-mono">Violation Count: {{ page.violations.length }}</pre>
+
+									<div class="report_page_body">
+										<div class="report_page_body">
+											<div
+												class="report_item"
+												v-for="(violation, violationIndex) in page.violations"
+												:key="`${pageIndex}_${violationIndex}`"
+											>
+												<h3 class="report_item_title">
+													<a
+														class="report_item_title_link"
+														target="_blank"
+														rel="nofollow"
+														:href="violation.helpUrl"
+														v-text="violation.description"
+													></a>
+												</h3>
+
+												<div class="report_items_wrap">
+													<p class="report_item_label"><strong>Help</strong></p>
+													<p class="report_item_context" v-text="violation.help"></p>
+													
+													<p class="report_item_label"><strong>Context (escaped)</strong></p>
+													<p class="report_item_context font-mono" v-text="violation.html"></p>
+
+													<p class="report_item_label"><strong>Context (raw)</strong></p>
+													<p class="report_item_context font-mono" v-html="violation.html"></p>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</main>
+			{% endraw %}
+		</div>
+
+		<script>
+			new Vue({
+				el: '#axe-app',
+				data: {
+					title: 'Axe Report',
+					filters: {},
+					results: [],
+					tags: [],
+					impacts: [],
+					ignored: {
+						pages: ['page-404.html', 'page-form-builder.html'],
+						violations: [
+							// 'buttons',
+						],
+					},
+					storage: {
+						filtersKey: 'fastspot.axe-app.filters',
+					},
+					axeJsonFile: {
+						path: '{{ jsonFilePath }}',
+					},
+				},
+				mounted() {
+					fetch(this.axeJsonFile.path)
+						.then((data) => data.json())
+						.then((data) => {
+							data = this.getNormalizedData(data);
+
+							this.results = data.results;
+							this.tags = data.tags;
+							this.impacts = data.impacts;
+						})
+						.catch((error) => {
+							console.log(error);
+						});
+
+					this.filters = window.localStorage.getItem(this.storage.filtersKey)
+						? JSON.parse(localStorage.getItem(this.storage.filtersKey))
+						: this.getFiltersTemplate();
+				},
+				watch: {
+					filters: {
+						handler() {
+							window.localStorage.setItem(
+								this.storage.filtersKey,
+								JSON.stringify(this.filters),
+							);
+						},
+						deep: true,
+					},
+				},
+				computed: {
+					filteredResults() {
+						let results = JSON.parse(JSON.stringify(this.results));
+
+						return results
+							.map((result) => {
+								result.violations = result.violations.filter(
+									this.filterViolation,
+								);
+
+								return result;
+							})
+							.filter(this.filterResult);
+					},
+				},
+				methods: {
+					getFiltersTemplate() {
+						return {
+							page: '',
+							violation: '',
+							impact: [],
+							tag: [],
+						};
+					},
+					getNormalizedData(results) {
+						let obj = {
+							results: [],
+							tags: [],
+							impacts: [],
+						};
+
+						results.forEach((result) => {
+							let url = result.url.split('/')[
+								result.url.split('/').length - 1
+							];
+							let violations = result.violations.map((violation) => ({
+								help: violation.help,
+								helpUrl: violation.helpUrl,
+								description: violation.description,
+								html: violation.nodes[0].html,
+								target: violation.nodes[0].target,
+								impact: violation.impact,
+								tags: violation.tags,
+							}));
+
+							violations.forEach((violation) => {
+								obj.tags.push(...violation.tags);
+								obj.impacts.push(violation.impact);
+							});
+
+							obj.results.push({
+								url,
+								fullUrl: result.url,
+								count: result.violations.length,
+								violations,
+							});
+						});
+
+						obj.tags = [...new Set(obj.tags)];
+						obj.impacts = [...new Set(obj.impacts)];
+
+						return obj;
+					},
+					resetFilters() {
+						this.filters = this.getFiltersTemplate();
+					},
+					filterViolation(violation) {
+						if (this.ignored.violations.length) {
+							let test = this.ignored.violations.some((v) =>
+								violation.description.includes(v),
+							);
+
+							if (test) return false;
+						}
+
+						let tests = [
+							{
+								check: this.filters.violation.length,
+								fn: () =>
+									violation.description.includes(this.filters.violation),
+							},
+							{
+								check: this.filters.impact.length,
+								fn: () => this.filters.impact.includes(violation.impact),
+							},
+							{
+								check: this.filters.tag.length,
+								fn: () =>
+									this.filters.tag.some((tag) =>
+										violation.tags.includes(tag),
+									),
+							},
+						].filter((test) => test.check);
+
+						return !tests.length ? true : tests.some((test) => test['fn']());
+					},
+					filterResult(result) {
+						if (this.ignored.pages.length) {
+							if (this.ignored.pages.includes(result.url)) return false;
+						}
+						if (!result.violations.length) return false;
+
+						let tests = [
+							{
+								check: this.filters.page.length,
+								fn: () => result.url.includes(this.filters.page),
+							},
+						].filter((test) => test.check);
+
+						return !tests.length ? true : tests.some((test) => test['fn']());
+					},
+				},
+			});
+		</script>
+	</body>
+</html>

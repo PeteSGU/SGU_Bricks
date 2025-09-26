@@ -1,0 +1,36 @@
+{#
+	Google Maps, Find the ID of a particular place - https://developers.google.com/places/place-id
+#}
+
+<div class="meta_info" id="meta_info">
+	<script type="application/ld+json">
+		{{ footer_ld_json|raw }}
+	</script>
+	<h2 class="meta_info_title">Contact</h2>
+
+	<ul class="meta_info_details" aria-label="Contact">
+		{% if global.options.footer_campus %}
+			<li class="meta_info_detail">
+				<h3 class="meta_info_detail_title">{{ global.options.footer_campus.label }}</h3>
+				<div class="meta_info_detail_body">
+					<p class="meta_info_detail_label">{{ global.options.footer_campus.title }}</p>
+					<p class="meta_info_detail_info">
+						{{ global.options.footer_campus.content }}
+					</p>
+				</div>
+			</li>
+		{% endif %}
+
+		{% if global.options.footer_office_of_admission %}
+			<li class="meta_info_detail">
+				<h3 class="meta_info_detail_title">{{ global.options.footer_office_of_admission.label }}</h3>
+				<div class="meta_info_detail_body">
+					<p class="meta_info_detail_label">{{ global.options.footer_office_of_admission.title }}</p>
+					<p class="meta_info_detail_info">
+						{{ global.options.footer_office_of_admission.content }}
+					</p>
+				</div>
+			</li>
+		{% endif %}
+	</ul>
+</div>

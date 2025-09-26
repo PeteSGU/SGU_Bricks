@@ -1,0 +1,262 @@
+/* ==========================================================================
+	Filter
+============================================================================= */
+
+.filter {
+	display: none;
+
+	.js & {
+		display: block;
+
+		@media print {
+			display: none;
+		}
+	}
+}
+
+.filter_inner {
+	display: grid;
+	gap: 30px;
+}
+
+.filter_tabs {
+	display: flex;
+	gap: 10px;
+}
+
+.filter_tab {
+	background-color: transparent;
+	border: 1px solid;
+	color: blue;
+	padding: 20px;
+	text-decoration: underline;
+	transition: background-color $base_speed, border-color $base_speed, color $base_speed;
+
+	@media #{$min_sm} {
+		min-width: 135px;
+	}
+
+	@include hover {
+		background-color: $black;
+		color: $white;
+	}
+
+	&.fs-swap-active {
+		background-color: $black;
+		color: $white;
+	}
+}
+
+.filter_form {
+	@media #{$min_lg} {
+		display: flex;
+
+		gap: 20px;
+		justify-content: center;
+	}
+}
+
+.filter_tabpanel {
+	@media #{$min_lg} {
+		text-align: left;
+	}
+}
+
+.filter_tools {
+	@media #{$min_md} {
+		align-items: flex-end;
+		display: flex;
+		gap: 20px;
+	}
+}
+
+.filter_tool {
+	&:not(:last-child) {
+		margin-bottom: 20px;
+
+		@media #{$min_lg} {
+			min-width: 200px;
+
+			margin-bottom: 0;
+		}
+
+		@media #{$min_xxl} {
+			min-width: 300px;
+		}
+	}
+
+	@media #{$min_lg} {
+		display: flex;
+
+		flex-direction: column;
+		justify-content: flex-end;
+	}
+}
+
+.filter_label {
+	@include h6;
+
+	display: block;
+
+	margin-bottom: 10px;
+}
+
+.filter_tool_select_wrapper {
+	@include select;
+
+	display: block;
+}
+
+.filter_tool_select {
+	.filter_tool_select_wrapper & {
+		border-color: $turquoise_dark;
+		border-radius: 5px;
+	}
+}
+
+.filter_tool_select_icon {
+	position: absolute;
+	top: 50%;
+	right: 20px;
+
+	color: $turquoise_dark;
+	fill: currentColor;
+	pointer-events: none;
+	translate: 0 -50%;
+}
+
+.filter_tools_submit {
+	@include h6;
+
+	background: $turquoise;
+	border-radius: 5px;
+	font-weight: 700;
+	padding: 15px 30px;
+	transition: background-color $base_speed, color $base_speed;
+}
+
+.filter_search_wrapper {
+	@media #{$min_lg} {
+		width: calc(100% - 558px);
+		max-width: 400px;
+	}
+}
+
+.filter_search {
+}
+
+.filter_search_form {
+	position: relative;
+
+	margin-bottom: 20px;
+
+	@media #{$min_lg} {
+		margin-bottom: 0;
+	}
+}
+
+.filter_search_input {
+	width: 100%;
+	appearance: none;
+	-webkit-appearance: none;
+	border: 1px solid $turquoise_dark;
+	border-radius: 5px;
+	flex: 1;
+	padding: 14px 20px;
+}
+
+.filter_search_submit {
+	align-items: center;
+	background-color: blue;
+	color: $white;
+	display: flex;
+	justify-content: center;
+	transition: background-color $base_speed;
+
+	@include hover {
+		background-color: $black;
+	}
+}
+
+.filter_search_submit_label {
+	@include visually_hide;
+}
+
+.filter_search_submit_icon {
+}
+
+/* Results
+============================================================================= */
+
+.filter_results {
+	display: grid;
+	gap: 10px;
+
+	@media #{$min_md} {
+		align-items: center;
+		gap: 20px;
+		grid-template-columns: 1fr max-content;
+	}
+}
+
+.filter_results_description {
+	margin-block: 0;
+}
+
+.filter_results_label {
+	@include h5;
+}
+
+.filter_results_category {
+	@include body_text;
+
+	display: block;
+
+	@media #{$min_sm} {
+		display: inline;
+	}
+}
+
+.filter_results_action {
+}
+
+.filter_results_reset_link {
+	border: 1px solid;
+	display: inline-block;
+	padding: 4px 12px;
+	text-decoration: underline;
+	transition: background-color $base_speed, color $base_speed;
+
+	@include hover {
+		background-color: $black;
+		color: $white;
+	}
+}
+
+.filter_results_reset_link_inner {
+	align-items: center;
+	display: flex;
+	gap: 10px;
+}
+
+.filter_results_reset_link_label {
+	@include h6;
+}
+
+.filter_results_reset_link_icon {
+	width: 20px;
+
+	position: relative;
+
+	aspect-ratio: 1;
+	background-color: blue;
+	border-radius: 50%;
+	color: $white;
+	display: block;
+
+	.icon {
+		@include center;
+
+		top: calc(50% - 1px);
+	}
+}

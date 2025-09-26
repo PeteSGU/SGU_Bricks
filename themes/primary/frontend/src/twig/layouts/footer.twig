@@ -1,0 +1,62 @@
+<!-- Footer -->
+<footer class="footer" id="footer">
+	<div class="footer_ribbon">
+		<div class="fs-row">
+			<div class="fs-cell">
+				<div class="footer_ribbon_inner">
+					<div class="footer_logo">
+						{% include '@partial-logo' with {
+							modifier: 'footer',
+							icon: logo,
+							print: ''
+						} %}
+					</div>
+					<div class="footer_social_nav">
+						{% include '@navigation-social' with {
+							title: 'Social',
+							links: navigation.social
+						} %}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="footer_primary">
+		<div class="fs-row">
+			<div class="fs-cell">
+				<div class="footer_primary_inner">
+					<div class="footer_primary_group">
+						<div class="footer_footer_nav">
+							{% include '@navigation-basic' with {
+								class: 'footer',
+								modifier: '',
+								title: 'Footer',
+								active_index: '',
+								links: navigation.footer
+							} %}
+						</div>
+						<div class="footer_meta">
+							{% render '@partial-meta' %}
+						</div>
+					</div>
+					<div class="footer_primary_row">
+						<div class="footer_utility_nav">
+							{% include '@navigation-basic' with {
+								class: 'utility',
+								modifier: '',
+								title: 'Utility',
+								active_index: '',
+								links: navigation.utility
+							} %}
+						</div>
+						<div class="footer_copyright">
+							{% render '@partial-copyright' %}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</footer>
+<!-- END: Footer -->

@@ -1,0 +1,50 @@
+/* ==========================================================================
+	Secondary Navigation Common
+============================================================================= */
+
+.secondary_nav {
+	@media #{$min_lg} {
+		height: 100%;
+	}
+}
+
+.secondary_nav_header {
+}
+
+.secondary_nav_title {
+	@include visually_hide;
+}
+
+/* Secondary Links
+============================================================================= */
+
+.secondary_nav_list {
+	@include h6;
+
+	@media #{$min_lg} {
+		height: 100%;
+
+		display: flex;
+		gap: 30px;
+	}
+}
+
+.secondary_nav_item {
+}
+
+.secondary_nav_link {
+	height: 100%;
+
+	align-items: center;
+	display: flex;
+	padding-block: 10px;
+	text-decoration: underline;
+	transition: color $base_speed;
+
+	@include hover {
+		color: $black;
+	}
+}
+
+.secondary_nav_link_label {
+}

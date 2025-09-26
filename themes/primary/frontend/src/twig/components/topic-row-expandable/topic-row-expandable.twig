@@ -1,0 +1,56 @@
+{% set id = uniqid('js-expandable-topic') %}
+{% set group_id = uniqid('expandable-topic-group') %}
+
+<div class="expandable_topics">
+	<div class="fs-row">
+		<div class="fs-cell">
+			<div class="expandable_topics_inner">
+				<div class="expandable_topics_visuals_wrapper">
+					{% for item in items %}
+					<figure class="expandable_topics_figure expandable_topic_{{ id }}_{{ loop.index }}">
+						{% include '@partial-image' with {
+							class: 'expandable_topics',
+							alt: '',
+							image: item.image,
+							loading: 'lazy',
+							sources: [
+								img.classic.lrg,
+								img.classic.med,
+								img.classic.sml,
+								img.classic.xsml,
+								img.classic.xxsml
+							]
+						} %}
+					</figure>
+					{% endfor %}
+				</div>
+				<div class="expandable_topics_accordion_wrapper">
+					{% for item in items %}
+					<div class="expandable_topic expandable_topic_{{ id }}_{{ loop.index }} js-expandable-topic">
+						<figure class="expandable_topic_figure">
+							{% include '@partial-image' with {
+								class: 'expandable_topic',
+								alt: '',
+								image: item.image,
+								loading: 'lazy',
+								sources: [
+									img.classic.sml,
+									img.classic.xsml,
+									img.classic.xxsml
+								]
+							} %}
+						</figure>
+						<button class="expandable_topic_title js-swap" type="button" data-swap-target=".expandable_topic_{{ id }}_{{ loop.index }}" data-swap-options='{"collapse":false}' data-swap-group="{{ group_id }}">{{ item.title }}</button>
+						{% if item.description %}
+						<span class="expandable_topic_description">{{ item.description }}</span>
+						{% endif %}
+						{% if item.link %}
+						<a href="{{ item.link.url }}" class="expandable_topic_link">{{ item.link.label }}</a>
+						{% endif %}
+					</div>
+					{% endfor %}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

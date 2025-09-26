@@ -1,0 +1,1 @@
+import './js/wds-algolia-search-pro';

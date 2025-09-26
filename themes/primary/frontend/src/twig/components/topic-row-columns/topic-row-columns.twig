@@ -1,0 +1,88 @@
+{#
+	{% include '@component-topic-row' with {
+		title: 'Title',
+		description: 'Description',
+		items: [
+			{
+				title: 'Item Title',
+				image: '1',
+				description: 'Item Description',
+				links: [
+					{
+						title: 'Link Title',
+						url: '#',
+						icon: 'caret_right'
+					}
+				]
+			}
+		]
+	} %}
+#}
+
+<!-- Topic Row -->
+<div class="topics_columns">
+	<div class="fs-row">
+		<div class="fs-cell">
+			<div class="topics_columns_inner">
+				<div class="topics_columns_header">
+					<h2 class="topics_columns_title">
+						<span class="topics_columns_title_label">{{ title }}</span>
+					</h2>
+				</div>
+				<div class="topics_columns_body">
+					{% for item in items %}
+						<div class="topic_columns">
+							<div class="topic_columns_inner">
+								{% if item.image %}
+									<figure class="topic_columns_figure" aria-hidden="true">
+										{% include '@partial-image' with {
+											class: 'topic_columns',
+											alt: '',
+											image: item.image,
+											loading: 'lazy',
+											sources: [
+												img.classic.sml,
+												img.classic.xsml,
+												img.classic.xxsml
+											]
+										} %}
+									</figure>
+								{% endif %}
+								<div class="topic_columns_wrapper">
+									<div class="topic_columns_header">
+										{% if title %}
+											<h3 class="topic_columns_title">{{ item.title }}</h3>
+										{% else %}
+											<h2 class="topic_columns_title">{{ item.title }}</h2>
+										{% endif %}
+									</div>
+									<div class="topic_columns_body">
+										<div class="topic_columns_description">
+											<p>{{ item.description }}</p>
+										</div>
+									</div>
+									{% if item.links %}
+										<div class="topic_columns_links">
+											{% for link in item.links %}
+												<div class="topic_columns_link_item">
+													{% include '@partial-link' with {
+														class: 'topic_columns',
+														title: link.title,
+														url: link.url,
+														icon: link.icon,
+														nowrap: true
+													} %}
+												</div>
+											{% endfor %}
+										</div>
+									{% endif %}
+								</div>
+							</div>
+						</div>
+					{% endfor %}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- END: Topic Row -->

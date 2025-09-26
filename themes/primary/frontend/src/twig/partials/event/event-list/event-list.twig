@@ -1,0 +1,146 @@
+{#
+	{% include '@partial-event-list' with {
+		items: [
+			{
+				image: '1',
+				date: {
+					same_day: true,
+					all_day: false,
+					from: '2023-05-31 17:00:00',
+					to: '2023-05-31 19:00:00'
+				},
+				title: 'Title',
+				url: '#',
+				description: 'Description',
+				location: 'Location',
+				categories: [
+					{
+						label: 'Category',
+						url: '#'
+					}
+				]
+			}
+		]
+	} %}
+#}
+<!-- Event List -->
+<div class="event_list">
+	<div class="fs-row">
+		<div class="fs-cell">
+			<div class="event_list_inner">
+				<ul class="event_list_rows" id="item_list" aria-label="{{ page.title }}">
+					{% for item in items %}
+						<li class="event_list_row">
+							<div class="event_list_item">
+								<div class="event_list_item_col is_media">
+									{% if item.image %}
+										<figure class="event_list_item_figure">
+											<a class="event_list_item_figure_link" href="{{ item.url }}" aria-label="Read more about {{ item.title }}" tabindex="-1">
+												{% include '@partial-image' with {
+													class: 'event_list_item',
+													alt: '',
+													image: item.image,
+													loading: 'lazy',
+													sources: [
+														img.classic.med,
+														img.classic.sml,
+														img.classic.xsml,
+														img.classic.xxsml
+													]
+												} %}
+											</a>
+										</figure>
+									{% endif %}
+								</div>
+
+								<div class="event_list_item_col is_date">
+									<time class="event_list_date_wrap" datetime="{{ item.date.from }}">
+										<div class="event_list_date_wrap_item is_month">
+											{{ item.date.from|date('M') }}
+										</div>
+
+										<div class="event_list_date_wrap_item is_year">
+											{{ item.date.from|date('d') }}
+										</div>
+									</time>
+								</div>
+
+								<div class="event_list_item_col is_content">
+									<div class="event_list_item_wrapper">
+										<div class="event_list_item_header">
+											<div class="event_list_item_time_wrapper">
+												<time class="event_list_item_time" datetime="{{ item.date.from }}">
+													<span class="event_list_item_time_start">{{ item.date.from|date('M d') }}</span>
+													{% if item.date.same_day == false %}
+														<span class="event_list_item_time_end"> - {{ item.date.to|date('M d') }}</span>
+													{% endif %}
+												</time>
+
+												{% if item.categories|length %}
+													<div class="event_list_item_separator">&ndash;</div>
+
+													<div class="event_list_item_category_items">
+														{% for term in item.categories %}
+															<div class="event_list_item_category_item">
+																<a href="{{ term.url }}" class="event_list_item_category_link">
+																	{{ term.label }}
+																</a>
+															</div>
+														{% endfor %}
+													</div>
+												{% endif %}
+											</div>
+										</div>
+
+										<div class="event_list_item_body">
+											<h2 class="event_list_item_title">
+												{% include '@partial-link' with {
+													class: 'event_list_item_title',
+													title: item.title,
+													url: item.url
+												} %}
+											</h2>
+
+											<div class="event_list_item_details">
+												{% if item.date.all_day == false %}
+													<div class="event_list_item_detail">
+														<span class="event_list_item_detail_icon">{{ icon('clock') }}</span>
+														<span class="event_list_item_detail_hint">Time:&nbsp;</span>
+														<span class="event_list_item_detail_label">
+															<span class="event_list_item_detail_label_date">{{ item.date.from|date('g:i A') }} - {{ item.date.to|date('g:i A') }}</span>
+														</span>
+													</div>
+												{% endif %}
+												
+												{% if item.location %}
+													<div class="event_list_item_detail">
+														<span class="event_list_item_detail_icon">{{ icon('place') }}</span>
+														<span class="event_list_item_detail_hint">Location:&nbsp;</span>
+														<span class="event_list_item_detail_label">{{ item.location }}</span>
+													</div>
+												{% endif %}
+											</div>
+
+											{% if item.description %}
+												<div class="event_list_item_description">
+													<p>{{ item.description }}</p>
+												</div>
+											{% endif %}
+										</div>
+									</div>
+								</div>
+							</div>
+						</li>
+					{% endfor %}
+				</ul>
+				<div class="event_list_pagination">
+					{% include '@partial-pagination' with {
+						title: 'Events Pagination',
+						pages: 50
+					} %}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- END: Event Item -->

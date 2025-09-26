@@ -1,0 +1,51 @@
+<div class="filter">
+	<div class="filter_inner">
+		<div class="filter_panels">
+			<div class="filter_tabpanel filter_tabpanel_search" role="tabpanel">
+				<form class="filter_form" action="{{ action_category }}" method="get">
+					<div class="filter_search_wrapper">
+						<label class="filter_label" for="filter_search_input">Search</label>
+						<div class="filter_search_form">
+							<input class="filter_search_input" id="filter_search_input" name="search" type="search" placeholder="Search by keyword" value="{{ fn('get_query_var', 'search') }}">
+						</div>
+					</div>
+
+					{% for tool in tools %}
+						<div class="filter_tool">
+							<label class="filter_label" for="filter_tool_label_{{ loop.index }}">{{ tool.label }}</label>
+							<div class="filter_tool_select_wrapper">
+								<select class="filter_tool_select" name="{{ tool.name }}[]" id="filter_tool_label_{{ loop.index }}" {% if tool.multiple %}multiple{% endif %}>
+									<option value="">{{ tool.all_label }}</option>
+									{% for option in tool.options %}
+										<option value="{{ option.value }}" {% if option.selected == true %} selected="selected" {% endif %}>{{ option.label }}</option>
+									{% endfor %}
+								</select>
+								<span class="filter_tool_select_icon">{{ icon("chevron_down") }}</span>
+							</div>
+						</div>
+					{% endfor %}
+					<div class="filter_tool">
+						<button class="filter_tools_submit" type="submit">Submit</button>
+					</div>
+				</form>
+			</div>
+		</div>
+
+		{# {% if results_text %}
+			<div class="filter_results">
+				<p class="filter_results_description">
+					<span class="filter_results_label">{{ results_count }}
+						Results found for:</span>
+					<span class="filter_results_category">{{ results_text }}</span>
+				</p>
+
+				{% include "partials/link.twig" with {
+					class: "filter_results_reset",
+					title: "Reset",
+					url: page_link,
+					icon: "reset"
+				} %}
+			</div>
+		{% endif %} #}
+	</div>
+</div>

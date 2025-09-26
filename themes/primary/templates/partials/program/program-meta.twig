@@ -1,0 +1,50 @@
+<!-- Program Meta -->
+<div class="program_meta" id="meta" data-type="program" data-category="{{ data_category|e('html_attr') }}">
+	<div class="fs-row">
+		<div class="fs-cell">
+			<div class="program_meta_inner">
+				<div class="program_details">
+					{% if level %}
+						<div class="program_detail">
+							<div class="program_detail_label">Degree Level<span class="program_detail_label_hint">:</span></div>
+							<div class="program_detail_data">
+								{% for item in level %}
+									{{ item }}{% if not loop.last %}, {% endif %}
+								{% endfor %}
+							</div>
+						</div>
+					{% endif %}
+					{% if department %}
+						<div class="program_detail">
+							<div class="program_detail_label">Department<span class="program_detail_label_hint">:</span></div>
+							<div class="program_detail_data">
+								<a class="program_detail_data_link" href="{{ department.link }}">{{ department.title }}</a>
+							</div>
+						</div>
+					{% endif %}
+					{% if mode %}
+						<div class="program_detail">
+							<div class="program_detail_label">Learning Mode<span class="program_detail_label_hint">:</span></div>
+							<div class="program_detail_data">
+								{% for item in mode %}
+									{{ item }}{% if not loop.last %}, {% endif %}
+								{% endfor %}
+							</div>
+						</div>
+					{% endif %}
+					{% if degree %}
+						<div class="program_detail">
+							<div class="program_detail_label">Degree<span class="program_detail_label_hint">:</span></div>
+							<div class="program_detail_data">
+								{% for item in degree %}
+									{{ item }}{% if not loop.last %}, {% endif %}
+								{% endfor %}
+							</div>
+						</div>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- END: Program Meta -->

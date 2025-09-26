@@ -1,0 +1,109 @@
+{#
+	{% include '@component-card-group' with {
+		title: 'Title',
+		description: 'Description',
+		items: [
+			{
+				image: '1',
+				title: 'Item Title',
+				description: 'Item Description'
+			}
+		]
+	} %}
+#}
+
+{% if items|length % 3 == 0 %}
+	{% set card_count = 3 %}
+{% elseif items|length < 3 %}
+	{% set card_count = 2 %}
+{% else %}
+	{% set card_count = 4 %}
+{% endif %}
+
+<!-- Card Group -->
+<div class="card_group">
+	{% if title or description %}
+		<div class="card_group_header">
+			<div class="fs-row">
+				<div class="fs-cell fs-lg-8 fs-all-justify-center">
+					<div class="card_group_header_inner">
+						{% if title %}
+							<h2 class="card_group_title">{{ title }}</h2>
+						{% endif %}
+						{% if description %}
+							<div class="card_group_description">
+								<p>{{ description }}</p>
+							</div>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+		</div>
+	{% endif %}
+	<div class="card_group_body">
+		<div class="fs-row">
+			<div class="fs-cell">
+				<ul class="card_group_items card_count_{{ card_count }}" {% if title %} aria-label="{{ title }}" {% endif %}>
+					{% for item in items %}
+						<li class="card_group_item">
+							<figure class="card_group_item_figure">
+								{% include '@partial-image' with {
+									class: 'card_group_item',
+									alt: '',
+									image: item.image,
+									loading: 'lazy',
+									sources: [
+										img.classic.sml,
+										img.classic.xsml,
+										img.classic.xxsml
+									]
+								} %}
+							</figure>
+							<div class="card_group_item_body">
+								{% if item.title %}
+									{% if title %}
+										<h3 class="card_group_item_title">
+									{% else %}
+										<h2 class="card_group_item_title">
+									{% endif %}
+											<span class="card_group_item_title_label">{{ item.title }}</span>
+									{% if title %}
+										</h3>
+									{% else %}
+										</h2>
+									{% endif %}
+								{% elseif item.stat %}
+									{% if title %}
+										<h3 class="card_group_item_stat">
+									{% else %}
+										<h2 class="card_group_item_stat">
+									{% endif %}
+										<span class="card_group_item_stat_figure">{{ item.stat.figure }}</span>
+										<span class="card_group_item_stat_context">{{ item.stat.context }}</span>
+									{% if title %}
+										</h3>
+									{% else %}
+										</h2>
+									{% endif %}
+								{% endif %}
+								<div class="card_group_item_description">
+									<p>{{ item.description }}</p>
+								</div>
+								{% if item.link %}
+									{% include '@partial-link' with {
+										class: 'card_group_item',
+										title: item.link.label,
+										url: item.link.url,
+										icon: item.link.icon,
+										nowrap: true
+									} %}
+								{% endif %}
+							</div>
+						</li>
+					{% endfor %}
+				</ul>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- END: Card Group -->

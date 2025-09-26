@@ -1,0 +1,21 @@
+{#
+	{% include '@partial-image' with {
+		class: 'media',
+		alt: '',
+		image: '1',
+		loading: 'lazy',
+		sources: [
+			img.classic.xlrg,
+			img.classic.lrg,
+			img.classic.med,
+			img.classic.sml,
+			img.classic.xsml,
+			img.classic.xxsml
+		],
+		sizes: [
+			'(min-width: 500px) 350px',
+			'115px'
+		]
+	} %}
+#}
+<img class="{{ class }}_image"{% if sources|length > 1 %} srcset="{% for source in sources %}https://images.fastspot.com/{{ config.images }}/{{ source.width }}x{{ source.height }}/{{ image }} {{ source.width }}w{% if not loop.last %}, {% endif %}{% endfor %}"{% endif %}{% if sizes %} sizes="{% for size in sizes %}{{ size }}{% if not loop.last %}, {% endif %}{% endfor %}" {% endif %} src="https://images.fastspot.com/{{ config.images }}/{{ sources|last.width }}x{{ sources|last.height }}/{{ image }}" alt="{{ alt }}" loading="{{ loading ?: 'lazy' }}" width="{{ sources|last.width }}" height="{{ sources|last.height }}">

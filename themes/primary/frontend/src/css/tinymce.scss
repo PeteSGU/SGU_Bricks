@@ -1,0 +1,37 @@
+// =============================================================================
+// Imports
+// =============================================================================
+
+@import 'settings/variables';
+@import 'settings/colors';
+
+@import 'tools/functions';
+@import 'tools/mixins';
+
+@import 'generic/normalize';
+@import 'generic/fonts';
+
+@import 'base/elements';
+
+@import 'partials/type';
+@import 'partials/buttons';
+
+body[id='tinymce'] {
+	margin: 20px;
+
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6,
+	p {
+		&:first-child {
+			margin-top: 0;
+		}
+
+		&:last-child {
+			margin-bottom: 0;
+		}
+	}
+}

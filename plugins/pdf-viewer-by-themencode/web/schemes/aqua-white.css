@@ -1,0 +1,259 @@
+body { background-color: #eeeeee; background-image: none; }
+html[dir='ltr'] #toolbarContainer,
+.findbar,
+.secondaryToolbar { box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1); -webkit-box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1); -moz-box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1); }
+html[dir='ltr'] #toolbarSidebar { box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1); -webkit-box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1); -moz-box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1); }
+html[dir='ltr'] #sidebarContent { box-shadow: none; }
+#sidebarContent { background: #dedede; }
+.toolbarButton.toggled,
+.splitToolbarButton.toggled > .toolbarButton.toggled,
+.secondaryToolbarButton.toggled { background-color: transparent; background-image: none;}
+.splitToolbarButton:hover > .toolbarButton,
+.splitToolbarButton:focus > .toolbarButton,
+.splitToolbarButton.toggled > .toolbarButton,
+.toolbarButton.textButton { background-color: transparent; background-image:none; background-clip: padding-box; border: 0px; border-color: transparent; box-shadow: none; }
+.splitToolbarButton > .toolbarButton:hover,
+.splitToolbarButton > .toolbarButton:focus,
+.dropdownToolbarButton:hover,
+.overlayButton:hover,
+.overlayButton:focus,
+.toolbarButton.textButton:hover,
+.toolbarButton.textButton:focus { background-color: transparent; box-shadow: none; }
+#toolbarContainer,
+.findbar,
+.secondaryToolbar { background-color: #fff; background-image: none; }
+.pdfViewer .page { border: 0px; border-image: none; box-shadow: 0px 0px 50px -30px; -webkit-box-shadow: 0px 0px 50px -30px; -moz-box-shadow: 0px 0px 50px -30px; margin: 1px auto 15px auto; }
+#toolbarSidebar { width: 200px; height: 40px; background-color: #fff; background-image: none; }
+html[dir="rtl"] .secondaryToolbarButton { padding-right: 30px; }
+.doorHanger:before,
+.doorHangerRight:before { border-bottom-color: #fff; }
+.doorHanger:after,
+.doorHangerRight:after { border-bottom-color: #fff; }
+.doorHanger,
+.doorHangerRight { border: 0px; }
+.toolbarField { padding: 3px 6px; margin: 7px 0 4px 0; border: 1px solid transparent; border-radius: 2px; background-color: #dedede; background-image: none; background-clip: padding-box; border: 1px solid #dedede; border-color: #dedede; box-shadow: none; color: #232323; height:18px; }
+
+.toolbarField[type="checkbox"] { margin: 12px 0; }
+.toolbarLabel { color: #232323; margin: 9px 2px 5px 10px; }
+.splitToolbarButtonSeparator { padding: 10px 0; background-color: #dedede; display: none; }
+.splitToolbarButton:hover > .splitToolbarButtonSeparator,
+.splitToolbarButton.toggled > .splitToolbarButtonSeparator { padding: 10px 0; margin: 5px 0; }
+.toolbarButton:hover,
+.toolbarButton:focus,
+.overlayButton,
+.secondaryToolbarButton:hover,
+.secondaryToolbarButton:focus { background-color: transparent; background-image: none; background-clip: padding-box; border: 0px; border-color: transparent; box-shadow: none; }
+.toolbarButton,
+.dropdownToolbarButton,
+.secondaryToolbarButton,
+.overlayButton { border-radius: 0px; }
+.horizontalToolbarSeparator { background-color: #dedede; box-shadow: none; display: none; }
+.toolbarButton,
+.dropdownToolbarButton,
+.secondaryToolbarButton,
+.overlayButton { color: #232323; border: 0px; }
+.overlayButton { color: #232323; border: 1px solid #999; background: #dedede; }
+.toolbarButton.toggled:hover:active,
+.splitToolbarButton.toggled > .toolbarButton.toggled:hover:active,
+.secondaryToolbarButton.toggled:hover:active { background: rgb(222, 222, 222, 0.4); border-color: #dedede; box-shadow: none; }
+.dropdownToolbarButton > select { color: #232323; background: rgb(222, 222, 222, 0.4); }
+.dropdownToolbarButton > select > option { background-color: #dedede; color: #232323; }
+#overlayContainer > .container > .dialog { background-color: #fff; background-image: none; color: #232323; box-shadow: 0px 0px 15px #555; -webkit-box-shadow: 0px 0px 15px #555; -moz-box-shadow: 0px 0px 15px #555; border-radius: 0px; border: 1px solid #eee; }
+#tnc-share { background: #ffffff; }
+.outlineItem > a,
+.attachmentsItem > button { color: #232323; }
+.outlineItem > a:hover,
+.attachmentsItem > button:hover { color: #232323; }
+html[dir="ltr"] .dropdownToolbarButton { margin: 7px 2px 4px 0; }
+html[dir="ltr"] .verticalToolbarSeparator { display: none; }
+html[dir="ltr"] .secondaryToolbarButton { padding-left: 30px; }
+html[dir='ltr'] .toolbarButton#sidebarToggle::before { content: url(dark-icons/toolbarButton-sidebarToggle.svg); width: 24px; height: 24px; }
+html[dir='rtl'] .toolbarButton#sidebarToggle::before { content: url(dark-icons/toolbarButton-sidebarToggle-rtl.svg); width: 24px; height: 24px; }
+html[dir='ltr'] .toolbarButton#secondaryToolbarToggle::before { content: url(dark-icons/toolbarButton-secondaryToolbarToggle.svg); width: 24px; height: 24px; }
+html[dir='rtl'] .toolbarButton#secondaryToolbarToggle::before { content: url(dark-icons/toolbarButton-secondaryToolbarToggle-rtl.svg); width: 24px; height: 24px; }
+html[dir='ltr'] .toolbarButton.findPrevious::before { content: url(dark-icons/findbarButton-previous.svg); width: 24px; height: 24px; }
+html[dir='rtl'] .toolbarButton.findPrevious::before { content: url(dark-icons/findbarButton-previous-rtl.svg); width: 24px; height: 24px; }
+html[dir='ltr'] .toolbarButton.findNext::before { content: url(dark-icons/findbarButton-next.svg); width: 24px; height: 24px; }
+html[dir='rtl'] .toolbarButton.findNext::before { content: url(dark-icons/findbarButton-next-rtl.svg); width: 24px; height: 24px; }
+html[dir='ltr'] .toolbarButton.pageUp::before { content: url(dark-icons/toolbarButton-pageUp.svg); width: 24px; height: 24px; }
+html[dir='rtl'] .toolbarButton.pageUp::before { content: url(dark-icons/toolbarButton-pageUp-rtl.svg); width: 24px; height: 24px; }
+html[dir='ltr'] .toolbarButton.pageDown::before { content: url(dark-icons/toolbarButton-pageDown.svg); width: 24px; height: 24px; }
+html[dir='rtl'] .toolbarButton.pageDown::before { content: url(dark-icons/toolbarButton-pageDown-rtl.svg); width: 24px; height: 24px; }
+html[dir="ltr"] #viewOutline.toolbarButton::before { content: url(dark-icons/toolbarButton-viewOutline.svg); width: 24px; height: 24px; }
+html[dir="rtl"] #viewOutline.toolbarButton::before { content: url(dark-icons/toolbarButton-viewOutline-rtl.svg); width: 24px; height: 24px; }
+html[dir='ltr'] .outlineItemToggler.outlineItemsHidden::before { content: url(dark-icons/treeitem-collapsed.svg); width: 24px; height: 24px; }
+html[dir='rtl'] .outlineItemToggler.outlineItemsHidden::before { content: url(dark-icons/treeitem-collapsed-rtl.svg); width: 24px; height: 24px; }
+.dropdownToolbarButton { background: url(dark-icons/toolbarButton-menuArrows.png) no-repeat; background:unset; }
+.toolbarButton.zoomOut::before { content: url(dark-icons/toolbarButton-zoomOut.svg); width: 24px; height: 24px; }
+.toolbarButton.zoomIn::before { content: url(dark-icons/toolbarButton-zoomIn.svg); width: 24px; height: 24px; }
+.toolbarButton.presentationMode::before,
+.secondaryToolbarButton.presentationMode::before { content: url(dark-icons/toolbarButton-presentationMode.svg); width: 24px; height: 24px; }
+.toolbarButton.print::before,
+.secondaryToolbarButton.print::before { content: url(dark-icons/toolbarButton-print.svg); width: 24px; height: 24px; }
+.toolbarButton.openFile::before,
+.secondaryToolbarButton.openFile::before { content: url(dark-icons/toolbarButton-openFile.svg); width: 24px; height: 24px; }
+.toolbarButton.download::before,
+.secondaryToolbarButton.download::before { content: url(dark-icons/toolbarButton-download.svg); width: 24px; height: 24px; }
+.toolbarButton.bookmark::before,
+.secondaryToolbarButton.bookmark::before { content: url(dark-icons/toolbarButton-bookmark.svg); width: 24px; height: 24px; }
+.secondaryToolbarButton.firstPage::before { content: url(dark-icons/secondaryToolbarButton-firstPage.svg); width: 24px; height: 24px; }
+.secondaryToolbarButton.lastPage::before { content: url(dark-icons/secondaryToolbarButton-lastPage.svg); width: 24px; height: 24px; }
+.secondaryToolbarButton.rotateCcw::before { content: url(dark-icons/secondaryToolbarButton-rotateCcw.svg); width: 24px; height: 24px; }
+.secondaryToolbarButton.rotateCw::before { content: url(dark-icons/secondaryToolbarButton-rotateCw.svg); width: 24px; height: 24px; }
+.secondaryToolbarButton.handTool::before { content: url(dark-icons/secondaryToolbarButton-handTool.svg); width: 24px; height: 24px; }
+.secondaryToolbarButton.documentProperties::before { content: url(dark-icons/secondaryToolbarButton-documentProperties.svg); width: 24px; height: 24px; }
+.outlineItemToggler::before { content: url(dark-icons/treeitem-expanded.svg); width: 24px; height: 24px; display: inline-block; position: absolute; }
+#viewThumbnail.toolbarButton::before { content: url(dark-icons/toolbarButton-viewThumbnail.svg); width: 24px; height: 24px; }
+#viewAttachments.toolbarButton::before { content: url(dark-icons/toolbarButton-viewAttachments.svg); width: 24px; height: 24px; }
+#viewFind.toolbarButton::before { content: url(dark-icons/toolbarButton-search.svg); width: 24px; height: 24px; }
+
+/** Custom  Social **/
+
+/* PDF viewer for WordPress Stylesheet
+Developed by ThemeNcode 
+*/
+.tnc_social_share { display: table; margin: 5px 10px; }
+.tnc_social_share ul { padding: 0; }
+.tnc_social_share ul li { float: left; margin: 0 5px; list-style: none; color: #999; }
+.tnc_social_share ul li a { display: block; color: #999; width: 24px; height: 24px; }
+.tnc_social_share ul li a.tnc_share { width: 42px; padding-top: 4px; font-weight: bold; font-size: 14px; text-decoration: none; color: #fff; }
+.social_icon_d { background: url('dark-icons/share.svg') no-repeat; background-size: 24px 24px; margin: 9px 0; width: 24px; height: 24px; }
+.tnc_fb { background: url('dark-icons/facebook.svg') no-repeat left; background-size: 24px 24px; text-indent: -999em; }
+.tnc_tw { background: url('dark-icons/twitter.svg') no-repeat left; background-size: 24px 24px; text-indent: -999em; }
+.tnc_lin { background: url('dark-icons/linkedin.svg') no-repeat left; background-size: 24px 24px; text-indent: -999em; }
+.tnc_whatsapp { background: url('dark-icons/whatsapp.svg') no-repeat left; background-size: 24px 24px; text-indent: -999em; }
+.tnc_email { background: url('dark-icons/email.svg') no-repeat left; background-size: 24px 24px; text-indent: -999em; }
+.logo_text a { font-size: 18px; color: #fff; padding: 8px 10px 0 0; font-weight: bold; text-decoration: none; }
+.logo_block { margin-right: 20px; margin-top: 7px; }
+
+/* popup form */
+.popup_content input[type="text"] { border: 1px solid #ddd; border-radius: 5px; padding: 5px 0; margin: 7px 0; color: #666; }
+.popup_content textarea { border: 1px solid #ddd; border-radius: 5px; padding: 2px 0; margin: 7px 0; color: #666; }
+.popup_content h3 { color: #666; text-align: center; margin-bottom: 10px; }
+
+/* Retina */
+@media screen and (-webkit-min-device-pixel-ratio: 2), screen and (min-resolution: 2dppx){
+
+	/* Rules for Retina screens */
+	.toolbarButton::before { -webkit-transform: scale(0.5); transform: scale(0.5); top: -6px; }
+	.secondaryToolbarButton::before { -webkit-transform: scale(0.5); transform: scale(0.5); top: -10px; }
+	html[dir='ltr'] .toolbarButton::before,
+	html[dir='rtl'] .toolbarButton::before { left: -1px; }
+	html[dir='ltr'] .secondaryToolbarButton::before { left: -2px; }
+	html[dir='rtl'] .secondaryToolbarButton::before { left: 186px; }
+	.toolbarField.pageNumber.visiblePageIsLoading,
+	.dropdownToolbarButton { background: url(dark-icons/toolbarButton-menuArrows@2x.png) no-repeat; background-size: 7px 16px; background: unset; }
+	html[dir='ltr'] .toolbarButton#sidebarToggle::before { content: url(dark-icons/toolbarButton-sidebarToggle.svg); width: 46px; height: 46px; }
+	html[dir='rtl'] .toolbarButton#sidebarToggle::before { content: url(dark-icons/toolbarButton-sidebarToggle-rtl.svg); width: 46px; height: 46px; }
+	html[dir='ltr'] .toolbarButton#secondaryToolbarToggle::before { content: url(dark-icons/toolbarButton-secondaryToolbarToggle.svg); width: 46px; height: 46px; }
+	html[dir='rtl'] .toolbarButton#secondaryToolbarToggle::before { content: url(dark-icons/toolbarButton-secondaryToolbarToggle-rtl.svg); width: 46px; height: 46px; }
+	html[dir='ltr'] .toolbarButton.findPrevious::before { content: url(dark-icons/findbarButton-previous.svg); width: 46px; height: 46px; }
+	html[dir='rtl'] .toolbarButton.findPrevious::before { content: url(dark-icons/findbarButton-previous-rtl.svg); width: 46px; height: 46px; }
+	html[dir='ltr'] .toolbarButton.findNext::before { content: url(dark-icons/findbarButton-next.svg); width: 46px; height: 46px; }
+	html[dir='rtl'] .toolbarButton.findNext::before { content: url(dark-icons/findbarButton-next-rtl.svg); width: 46px; height: 46px; }
+	html[dir='ltr'] .toolbarButton.pageUp::before { content: url(dark-icons/toolbarButton-pageUp.svg); width: 46px; height: 46px; }
+	html[dir='rtl'] .toolbarButton.pageUp::before { content: url(dark-icons/toolbarButton-pageUp-rtl.svg); width: 46px; height: 46px; }
+	html[dir='ltr'] .toolbarButton.pageDown::before { content: url(dark-icons/toolbarButton-pageDown.svg); width: 48px; height: 48px; }
+	html[dir='rtl'] .toolbarButton.pageDown::before { content: url(dark-icons/toolbarButton-pageDown-rtl.svg); width: 46px; height: 46px; }
+	.toolbarButton.zoomIn::before { content: url(dark-icons/toolbarButton-zoomIn.svg); width: 46px; height: 46px; }
+	.toolbarButton.zoomOut::before { content: url(dark-icons/toolbarButton-zoomOut.svg); width: 46px; height: 46px; }
+	.toolbarButton.presentationMode::before,
+	.secondaryToolbarButton.presentationMode::before { content: url(dark-icons/toolbarButton-presentationMode.svg); width: 46px; height: 46px; }
+	.toolbarButton.print::before,
+	.secondaryToolbarButton.print::before { content: url(dark-icons/toolbarButton-print.svg); width: 46px; height: 46px; }
+	.toolbarButton.openFile::before,
+	.secondaryToolbarButton.openFile::before { content: url(dark-icons/toolbarButton-openFile.svg); width: 46px; height: 46px; }
+	.toolbarButton.download::before,
+	.secondaryToolbarButton.download::before { content: url(dark-icons/toolbarButton-download.svg); width: 46px; height: 46px; }
+	.toolbarButton.bookmark::before,
+	.secondaryToolbarButton.bookmark::before { content: url(dark-icons/toolbarButton-bookmark.svg); width: 46px; height: 46px; }
+	#viewThumbnail.toolbarButton::before { content: url(dark-icons/toolbarButton-viewThumbnail.svg); width: 46px; height: 46px; }
+	html[dir='ltr'] #viewOutline.toolbarButton::before { content: url(dark-icons/toolbarButton-viewOutline.svg); width: 46px; height: 46px; }
+	html[dir='rtl'] #viewOutline.toolbarButton::before { content: url(dark-icons/toolbarButton-viewOutline-rtl.svg); width: 46px; height: 46px; }
+	#viewAttachments.toolbarButton::before { content: url(dark-icons/toolbarButton-viewAttachments.svg); width: 46px; height: 46px; }
+	#viewFind.toolbarButton::before { content: url(dark-icons/toolbarButton-search.svg); width: 46px; height: 46px; }
+	.secondaryToolbarButton.firstPage::before { content: url(dark-icons/secondaryToolbarButton-firstPage.svg); width: 46px; height: 46px; }
+	.secondaryToolbarButton.lastPage::before { content: url(dark-icons/secondaryToolbarButton-lastPage.svg); width: 46px; height: 46px; }
+	.secondaryToolbarButton.rotateCcw::before { content: url(dark-icons/secondaryToolbarButton-rotateCcw.svg); width: 46px; height: 46px; }
+	.secondaryToolbarButton.rotateCw::before { content: url(dark-icons/secondaryToolbarButton-rotateCw.svg); width: 46px; height: 46px; }
+	.secondaryToolbarButton.handTool::before { content: url(dark-icons/secondaryToolbarButton-handTool.svg); width: 46px; height: 46px; }
+	.secondaryToolbarButton.documentProperties::before { content: url(dark-icons/secondaryToolbarButton-documentProperties.svg); width: 46px; height: 46px; }
+	.outlineItemToggler::before { -webkit-transform: scale(0.5); transform: scale(0.5); top: -1px; content: url(dark-icons/treeitem-expanded.svg); width: 46px; height: 46px; }
+	html[dir='ltr'] .outlineItemToggler.outlineItemsHidden::before { content: url(dark-icons/treeitem-collapsed.svg); width: 46px; height: 46px; }
+	html[dir='rtl'] .outlineItemToggler.outlineItemsHidden::before { content: url(dark-icons/treeitem-collapsed-rtl.svg); width: 46px; height: 46px; }
+	html[dir='ltr'] .outlineItemToggler::before { right: 0; }
+	html[dir='rtl'] .outlineItemToggler::before { left: 0; }
+	.social_icon_d { background: url('dark-icons/share.svg') no-repeat; background-size: 23px 23px; margin: 10px 0; width: 23px; height: 23px; }
+	.tnc_fb { background: url('dark-icons/facebook.svg') no-repeat left; background-size: 46px 46px; text-indent: -999em; }
+	.tnc_tw { background: url('dark-icons/twitter.svg') no-repeat left; background-size: 46px 46px; text-indent: -999em; }
+	.tnc_lin { background: url('dark-icons/linkedin.svg') no-repeat left; background-size: 46px 46px; text-indent: -999em; }
+	.tnc_whatsapp { background: url('dark-icons/whatsapp.svg') no-repeat left; background-size: 46px 46px; text-indent: -999em; }
+	.tnc_email { background: url('dark-icons/email.svg') no-repeat left; background-size: 46px 46px; text-indent: -999em; }
+	.tnc_social_share ul li a {
+		width:46px;
+		height:40px;
+	}
+
+	.dropdownToolbarButton::after {
+		content: url(dark-icons/toolbarButton-menuArrow@3x.svg);
+	}
+}
+.spread .page, .pdfViewer.scrollHorizontal .page, .pdfViewer.scrollWrapped .page{
+	margin-left: 6px;
+	margin-right: 6px;
+}
+
+.tnc-pdf-back-to-btn{
+  background: #00000050;
+  padding: 15px 30px;
+  position: fixed;
+  right: 10px;
+  bottom: 10px;
+  color: #fff;
+  text-decoration: none;
+}
+
+
+
+.toolbarButton:hover {
+	background-color: #eee;
+}
+
+.secondaryToolbarButton:hover  {
+	background-color:rgba(237, 237, 237, 1);
+}
+
+
+.secondaryToolbarButton.toggled {
+	background-color:rgba(237, 237, 237, 1);
+	box-shadow: none;
+}
+
+.toolbarButton.toggled {
+	background-color:rgba(237, 237, 237, 1);
+	box-shadow: none;
+}
+
+#loadingBar {
+    background-color: #eee;
+    border-bottom: 1px solid #eee;
+    top: 12px;
+}
+
+.tnc_social_share {
+    padding: 8px 8px !important;
+}
+
+.findbar .toolbarLabel {
+	 color:#000;
+}
+
+.dropdownToolbarButton::after {
+    content: url(dark-icons/toolbarButton-menuArrow.svg);
+    width: 24px;
+    height: 24px;
+    position: absolute;
+    top: 7px;
+    right: -3px;
+}
+

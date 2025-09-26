@@ -1,0 +1,118 @@
+/* ==========================================================================
+	Blog Meta
+============================================================================= */
+
+.blog_meta {
+	padding-top: 20px;
+
+	@media #{$min_md} {
+		padding-top: 32px;
+	}
+}
+
+.blog_meta_inner {
+}
+
+.blog_meta_body {
+
+	@media #{$min_md} {
+		display: flex;
+
+		align-items: center;
+		gap: 30px;
+	}
+
+	@media #{$min_lg} {
+		justify-content: center;
+	}
+}
+
+.blog_meta_details {
+	display: flex;
+
+	align-items: center;
+	gap: 30px;
+	margin-bottom: 10px;
+
+	@media #{$min_md} {
+		margin-bottom: 0;
+	}
+}
+
+.blog_meta_detail {
+	@include caption_text;
+	display: block;
+
+	&:not(:first-child) {
+		position: relative;
+
+		&:before {
+			width: 8px;
+			height: 1px;
+			display: block;
+
+			position: absolute;
+			left: -18px;
+			top: 50%;
+
+			background: $turquoise;
+			content: '';
+		}
+	}
+}
+
+.blog_meta_date {
+}
+
+.blog_meta_detail_hint {
+	@include visually_hide;
+}
+
+.blog_meta_detail_label {
+}
+
+.blog_meta_author {
+}
+
+.blog_meta_categories_block {
+	position: relative;
+
+	@media #{$min_md} {
+
+		&:before {
+			width: 8px;
+			height: 1px;
+			display: block;
+
+			position: absolute;
+			left: -18px;
+			top: 50%;
+
+			background: $turquoise;
+			content: '';
+		}
+	}
+}
+
+.blog_meta_categories_icon {
+	position: absolute;
+	top: 2px;
+	left: 0;
+}
+
+.blog_meta_categories {
+}
+
+.blog_meta_category {
+	@include caption_text;
+}
+
+.blog_meta_category_link {
+	color: $turquoise_medium;
+	text-decoration: underline;
+	transition: color $base_speed;
+
+	@include hover {
+		text-decoration: none;
+	}
+}

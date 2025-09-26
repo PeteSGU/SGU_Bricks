@@ -1,0 +1,54 @@
+{#
+	{% include "navigation/breadcrumb.twig" with {
+		modifier: "lg",
+		links: [{ title: "Page Title", url: "#" }],
+		icon_divider: "angle_right",
+		icon_end: "angle_down",
+		icon_home: "home"
+	} %}
+#}
+
+<div class="breadcrumb">
+	<nav class="breadcrumb_nav{% if modifier %} breadcrumb_nav_{{ modifier }}{% endif %}" aria-labelledby="breadcrumb_nav_title{% if modifier %}_{{ modifier }}{% endif %}">
+		<div class="breadcrumb_nav_header">
+			<h2 class="breadcrumb_nav_title" id="breadcrumb_nav_title{% if modifier %}_{{ modifier }}{% endif %}">You are here:</h2>
+		</div>
+		<ol class="breadcrumb_list" aria-labelledby="breadcrumb_nav_title{% if modifier %}_{{ modifier }}{% endif %}">
+			<li class="breadcrumb_item breadcrumb_item_home">
+				<a class="breadcrumb_pill breadcrumb_pill_link" href="{{ constant("HOME_ROOT") }}">
+					<span class="breadcrumb_pill_inner">
+						{% if icon_home %}
+							<span class="breadcrumb_pill_icon" aria-hidden="true">{{ icon(icon_home) }}</span>
+						{% endif %}
+						<span class="breadcrumb_pill_label">Home</span>
+					</span>
+				</a>
+				{% if icon_divider %}
+					<span class="breadcrumb_divider" aria-hidden="true">{{ icon(icon_divider) }}</span>
+				{% endif %}
+			</li>
+			{% for link in links %}
+				<li class="breadcrumb_item">
+					<a class="breadcrumb_pill breadcrumb_pill_link" href="{{ link.url ?: '#' }}">
+						<span class="breadcrumb_pill_inner">
+							<span class="breadcrumb_pill_label">{{ link.title ?: link }}</span>
+						</span>
+					</a>
+					{% if icon_divider %}
+						<span class="breadcrumb_divider" aria-hidden="true">{{ icon(icon_divider) }}</span>
+					{% endif %}
+				</li>
+			{% endfor %}
+			<li class="breadcrumb_item">
+				<span class="breadcrumb_pill">
+					<span class="breadcrumb_pill_inner">
+						<span class="breadcrumb_pill_label">{{ page.title_short ?: page.title }}</span>
+					</span>
+				</span>
+				{% if icon_end %}
+					<span class="breadcrumb_end" aria-hidden="true">{{ icon(icon_end) }}</span>
+				{% endif %}
+			</li>
+		</ol>
+	</nav>
+</div>

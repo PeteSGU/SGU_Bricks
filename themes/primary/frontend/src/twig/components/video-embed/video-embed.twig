@@ -1,0 +1,43 @@
+{#
+	{% include '@component-video-embed' with {
+		image: '1',
+		video: {
+			type: '',
+			id: '',
+			title: ''
+		}
+	} %}
+#}
+
+<!-- Video Embed -->
+<div class="video_embed_block">
+	<div class="fs-row">
+		<div class="fs-cell fs-lg-10 fs-xl-8 fs-lg-justify-center">
+			<figure class="video_embed_figure">
+				{% include '@partial-image' with {
+					class: 'video_embed',
+					alt: '',
+					image: image,
+					loading: 'lazy',
+					sources: [
+						img.wide.xlrg,
+						img.wide.lrg,
+						img.wide.med,
+						img.wide.sml,
+						img.wide.xsml,
+						img.wide.xxsml
+					]
+				} %}
+				{% include "@partial-lazy-video" with {
+					class: "video_embed",
+					id: video.id,
+					type: video.type,
+					autoplay: video.autoplay|default(false),
+					title: video.title,
+					playerVars: {}
+				} %}
+			</figure>
+		</div>
+	</div>
+</div>
+<!-- END: Video Embed -->

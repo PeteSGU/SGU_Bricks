@@ -1,0 +1,40 @@
+{#
+	{% include '@component-link-group' with {
+		title: 'Title',
+		items: [
+			{
+				title: 'Item Title',
+				url: '#',
+				icon: 'caret_right'
+			}
+		]
+	} %}
+#}
+
+<!-- Link Group -->
+<div class="link_group">
+	<div class="fs-row">
+		<div class="fs-cell">
+			<div class="link_group_inner">
+				<div class="link_group_header">
+					<h2 class="link_group_title">{{ title }}</h2>
+				</div>
+				<ul class="link_group_list">
+					{% for item in items %}
+						<li class="link_group_item">
+							<a class="link_group_link" href="{{ item.url }}" {% if item.icon %} target="_blank" {% endif %}>
+								<span class="link_group_link_inner">
+									<span class="link_group_link_label">{{ item.title }}</span>
+									{% if item.icon %}
+										<span class="link_group_link_icon">{{ icon(item.icon) }}</span>
+									{% endif %}
+								</span>
+							</a>
+						</li>
+					{% endfor %}
+				</ul>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- END: Link Group -->

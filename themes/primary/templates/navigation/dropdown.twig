@@ -1,0 +1,77 @@
+{#
+	{% include '@navigation-dropdown' with {
+		class: 'class',
+		modifier: 'modifier',
+		title: 'Title',
+		toggle_icon: 'icon_toggle',
+		active_index: '1',
+		links: [{ 'title': 'Page Title', 'url': '#', 'children': [] }],
+		icon: 'icon_item',
+		child_icon: 'icon_child'
+	} %}
+#}
+
+{% set js_class = 'js-' ~ class|replace({ '_': '-' }) %}
+{% set id = uniqid('dropdown_nav_title') %}
+{% set icon = icon ?? null %}
+{% set toggle_icon = toggle_icon ?? "chevron_down" %}
+{% set child_icon = child_icon ?? null %}
+
+<nav class="js-nav-collapse {{ js_class }}-nav{% if modifier %} {{ js_class }}-nav-{{ modifier }}{% endif %} dropdown_nav {{ class }}_nav{% if modifier %} {{ class }}_nav_{{ modifier }}{% endif %}" aria-labelledby="{{ id }}">
+	<div class="dropdown_nav_header {{ class }}_nav_header">
+		<h2 class="dropdown_nav_title {{ class }}_nav_title" id="{{ id }}">{{ title }}</h2>
+	</div>
+	<ul class="js-nav-collapse-list {{ js_class }}-nav-list dropdown_nav_list {{ class }}_nav_list" aria-labelledby="{{ id }}">
+		{% for link in links %}
+			{% set link_icon = link.icon ?: icon ?: null %}
+			{% set active = link.current or link.current_item_ancestor %}
+
+			<li class="{{ link.classes|join(' ') }}  {% if link.class %}{{ link.class }} {% endif %}js-nav-collapse-item {{ js_class }}-nav-item {{ js_class }}-nav-item-{{ loop.index }} dropdown_nav_item {{ class }}_nav_item{% if link.children %} has_children{% endif %}{% if active %} active{% endif %}">
+				<div class="dropdown_nav_item_inner {{ class }}_nav_item_inner">
+				{% if not link.url %}
+					<div class="js-nav-collapse-link {{ js_class }}-nav-link dropdown_nav_link {{ class }}_nav_link{% if active %} active{% endif %}">
+						<div class="dropdown_nav_link_inner {{ class }}_nav_link_inner">
+							{% if link_icon and link.children %}
+								<span class="dropdown_nav_icon {{ class }}_nav_link_icon" aria-hidden="true">{{ icon(link_icon) }}</span>
+							{% endif %}
+							<span class="dropdown_nav_label {{ class }}_nav_link_label">{{ link.title }}</span>
+						</div>
+					</div>
+				{% else %}
+					<a class="{{ link.classes|join(' ') }} js-nav-collapse-link {{ js_class }}-nav-link dropdown_nav_link {{ class }}_nav_link{% if link.current %} active{% endif %}" href="{{ link.url ?: '#' }}"{% if link.current %} aria-current="page"{% endif %}>
+						<div class="dropdown_nav_link_inner {{ class }}_nav_link_inner">
+							{% if link_icon and link.children %}
+								<span class="dropdown_nav_icon {{ class }}_nav_link_icon" aria-hidden="true">{{ icon(link_icon) }}</span>
+							{% endif %}
+							<span class="dropdown_nav_label {{ class }}_nav_link_label">{{ link.title }}</span>
+						</div>
+					</a>
+				{% endif %}
+					{% if link.children %}
+						<button class="js-swap js-nav-collapse-toggle {{ js_class }}-nav-toggle dropdown_nav_toggle {{ class }}_nav_toggle" data-swap-target=".{{ js_class }}-nav-item-{{ loop.index }}" data-swap-group="{{ class }}_nav{% if modifier %}_{{ modifier }}{% endif %}" aria-label="{{ link.title }}" aria-haspopup="true" aria-expanded="false">
+							<span class="dropdown_nav_toggle_inner {{ class }}_nav_toggle_inner">
+								<span class="dropdown_nav_icon {{ class }}_nav_toggle_icon">{{ icon(toggle_icon) }}</span>
+							</span>
+						</button>
+					{% endif %}
+				</div>
+				{% if link.children %}
+					<ul class="js-nav-collapse-children {{ js_class }}-nav-children dropdown_nav_children {{ class }}_nav_children" aria-label="{{ link.title }}">
+						{% for child in link.children %}
+							<li class="{{ child.classes|join(' ') }} js-nav-collapse-child-item {{ js_class }}-nav-child-item dropdown_nav_child_item {{ class }}_nav_child_item">
+								<a class="{{ child.classes|join(' ') }} js-nav-collapse-child-link {{ js_class }}-nav-child-link dropdown_nav_child_link {{ class }}_nav_child_link" href="{{ child.url ?: '#' }}"{% if child.aria %} aria-label="{{ child.aria }}"{% endif %}>
+									<div class="dropdown_nav_link_inner {{ class }}_nav_child_link_inner">
+										{% if child_icon %}
+											<span class="dropdown_nav_child_link_icon {{ class }}_nav_child_link_icon" aria-hidden="true">{{ icon(child_icon) }}</span>
+										{% endif %}
+										<span class="dropdown_nav_child_link_label {{ class }}_nav_child_link_label">{{ child.title }}</span>
+									</div>
+								</a>
+							</li>
+						{% endfor %}
+					</ul>
+				{% endif %}
+			</li>
+		{% endfor %}
+	</ul>
+</nav>

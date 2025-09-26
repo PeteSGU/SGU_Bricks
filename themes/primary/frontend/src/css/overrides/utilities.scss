@@ -1,0 +1,67 @@
+/* ==========================================================================
+	Accessibility
+============================================================================= */
+
+.clearfix {
+	@include clearfix;
+}
+
+.visually_hide {
+	@include visually_hide;
+}
+
+/* ==========================================================================
+	Headings
+============================================================================= */
+
+body {
+	.typography-h1 {
+		@include h1;
+	}
+
+	.typography-h1-small {
+		@include h1_small;
+	}
+
+	.typography-h2 {
+		@include h2;
+	}
+
+	.typography-h3 {
+		@include h3;
+	}
+
+	.typography-h4 {
+		@include h4;
+	}
+
+	.typography-h5 {
+		@include h5;
+	}
+
+	.typography-h6 {
+		@include h6;
+	}
+
+	.typography-intro {
+		@include intro_text;
+	}
+
+	.typography-body-text {
+		@include body_text;
+	}
+
+	.typography-small-text {
+		@include small_text;
+	}
+
+	.typography-caption-text {
+		@include caption_text;
+	}
+
+	.typography-link {
+		font-size: 18px;
+		font-weight: 700;
+		line-height: calc(18 / 18);
+	}
+}

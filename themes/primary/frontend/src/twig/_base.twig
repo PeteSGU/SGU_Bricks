@@ -1,0 +1,53 @@
+{% set page = _target.context.page %}
+
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+	<head>
+		{% render '@layout-head' with {
+			label: _target.label,
+			page: page
+		} %}
+	</head>
+
+	<body class="preload fs-grid theme-{{ page.theme|default('default') }} {% for class in page.classes %} body_{{class }}{% endfor %}">
+		{{ init_uniqid() }}
+
+		{% block content %}
+			<div>
+				{{ yield }}
+			</div>
+		{% endblock %}
+
+		<script>
+			var WWW_ROOT = "";
+			var STATIC_ROOT = "{{ '/'|path }}";
+			var STATIC_ICONS_PATH = "{{ '/images/icons.svg'|path }}";
+		</script>
+
+		<script src="{{ '/vendor/jquery/jquery.3.5.1.min.js'|path }}"></script>
+
+		{% block footer_scripts_above %}
+			{#  #}
+		{% endblock %}
+
+		<script src="{{ '/js/site.js'|path }}"></script>
+
+		{% block footer_scripts_below %}
+			{#  #}
+		{% endblock %}
+
+		{% if page.scripts %}
+			{% for script in page.scripts %}
+				<script src="{{ script }}"></script>
+			{% endfor %}
+		{% endif %}
+
+		<link id="fs-grid-styles" rel="stylesheet" href="{{ '/vendor/formstone/bookmarklet/bookmarklet.1.2.1.css'|path }}" type="text/css" media="all">
+		<script src="{{ '/vendor/formstone/bookmarklet/bookmarklet.1.2.1.js'|path }}"></script>
+		<script>
+			$(window).on('load', function () {
+				new FSGridBookmarklet();
+			});
+		</script>
+	</body>
+</html>

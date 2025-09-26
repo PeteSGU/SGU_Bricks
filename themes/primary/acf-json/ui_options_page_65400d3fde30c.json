@@ -1,0 +1,23 @@
+{
+    "key": "ui_options_page_65400d3fde30c",
+    "title": "FS - People Listing",
+    "active": false,
+    "menu_order": 0,
+    "page_title": "FS - People Listing",
+    "menu_slug": "people-listing",
+    "parent_slug": "edit.php?post_type=person",
+    "advanced_configuration": 0,
+    "icon_url": "",
+    "menu_title": "",
+    "position": "",
+    "redirect": false,
+    "description": "",
+    "menu_icon": [],
+    "update_button": "Update",
+    "updated_message": "Options Updated",
+    "capability": "edit_posts",
+    "data_storage": "options",
+    "post_id": "",
+    "autoload": 0,
+    "modified": 1725470417
+}

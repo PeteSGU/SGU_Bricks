@@ -1,0 +1,84 @@
+/* ==========================================================================
+	Main Dropdown Nav
+============================================================================= */
+
+.main_dropdown_nav {
+}
+
+.main_dropdown_nav_header {
+	@include visually_hide;
+}
+
+.main_dropdown_nav_title {
+}
+
+.main_dropdown_nav_list {
+	display: flex;
+	gap: 20px;
+}
+
+.main_dropdown_nav_item {
+}
+
+.main_dropdown_nav_item_inner {
+}
+
+.main_dropdown_nav_link {
+	@include h5;
+
+	display: block;
+	padding-block: 20px;
+	padding-right: 20px;
+	text-decoration: underline;
+	transition: color $base_speed;
+
+	@include hover {
+		color: $black;
+	}
+}
+
+.main_dropdown_nav_link_inner {
+}
+
+.main_dropdown_nav_link_label {
+}
+
+.main_dropdown_nav_toggle {
+}
+
+.main_dropdown_nav_toggle_inner {
+}
+
+.main_dropdown_nav_toggle_icon {
+}
+
+.main_dropdown_nav_children {
+	width: 200px;
+
+	background-color: $gray_05;
+}
+
+.main_dropdown_nav_child_item {
+}
+
+.main_dropdown_nav_child_link {
+	@include label_text;
+
+	display: block;
+	padding: 10px 20px;
+	text-decoration: underline;
+	transition: color $base_speed;
+
+	@include hover {
+		color: $black;
+	}
+}
+
+.main_dropdown_nav_child_link_inner {
+}
+
+.main_dropdown_nav_child_link_icon {
+}
+
+.main_dropdown_nav_child_link_label {
+}

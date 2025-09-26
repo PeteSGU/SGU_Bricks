@@ -1,0 +1,67 @@
+<div class="hero">
+	<div class="fs-row">
+		<div class="fs-cell">
+			<div class="hero_inner">
+				<div class="hero_header">
+					<h1 class="hero_title" id="page_title" tabindex="-1">{{ page.title }}</h1>
+					<p class="hero_description">{{ page.description }}</p>
+				</div>
+				<div class="hero_body">
+					<figure class="hero_figure">
+						{% include '@partial-image' with {
+							class: 'hero_figure',
+							alt: '',
+							image: page.hero_image,
+							loading: 'eager',
+							sources: [
+								img.wide.xlrg,
+								img.wide.lrg,
+								img.wide.med,
+								img.wide.sml,
+								img.wide.xsml,
+								img.wide.xxsml
+							],
+							sizes: [
+								'(min-width: 1394px) 1260px',
+								'(min-width: 1220px) 1100px',
+								'(min-width: 980px) 880px',
+								'(min-width: 740px) 694px',
+								'(min-width: 500px) 48vw',
+								'90vw'
+							]
+						} %}
+						{% set video_options = {
+							display: "background",
+							id: page.hero_video.id,
+							type: page.hero_video.type,
+							title: page.hero_video.title,
+							autoplay: true
+						} %}
+						<div class="js-background-video-wrapper hero_video" data-background-video='{{ video_options|json_encode }}'>
+							<div class="hero_video_iframe_wrap">
+								<div class="hero_video_iframe_target js-iframe-target"></div>
+							</div>
+
+							<div class="hero_video_controls">
+								{% render '@partial-button' with {
+									class: 'hero_video_play',
+									title: 'Play Video',
+									icon: 'play',
+									js: true
+								} %}
+
+								{% render "@partial-button" with {
+									class: 'hero_video_pause',
+									title: 'Pause Video',
+									icon: 'pause',
+									js: true
+								} %}
+							</div>
+						</div>
+					</figure>
+					<div class="hero_decoration"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

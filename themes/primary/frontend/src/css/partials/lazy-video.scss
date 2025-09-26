@@ -1,0 +1,93 @@
+/* ==========================================================================
+	Inline Video
+============================================================================= */
+
+.lazy_video {
+	--icon-size: 60px;
+	--icon-background-color: #{$white};
+	--icon-color: #{$orange};
+
+	@media #{$min_lg} {
+		--icon-size: 100px;
+	}
+
+	.lazy_video_toggle_btn {
+		@include hover {
+			--icon-color: #{$turquoise_dark};
+		}
+	}
+}
+
+.lazy_video {
+	@include cover;
+
+	display: none;
+
+	.js & {
+		display: block;
+
+		@media print {
+			display: none;
+		}
+	}
+}
+
+.lazy_video_toggle_btn {
+	@include center;
+
+	width: var(--icon-size);
+
+	align-items: center;
+
+	color: var(--icon-color);
+	display: flex;
+	justify-content: center;
+
+	&::before {
+		position: absolute;
+		top: 2px;
+		right: 2px;
+		bottom: 2px;
+		left: 2px;
+
+		background-color: $white;
+		border-radius: 50%;
+		content: '';
+		display: block;
+	}
+
+	.icon {
+		width: 100%;
+
+		position: relative;
+
+		transition: $base_speed $base_timing;
+	}
+}
+
+.lazy_video_iframe_wrap {
+	aspect-ratio: $wide;
+	transition: $base_speed opacity $base_timing, 0ms visibility $base_speed;
+
+	display: block;
+	opacity: 0;
+	visibility: hidden;
+
+	@media print {
+		display: none;
+	}
+
+	.lazy_video.ready & {
+		opacity: 1;
+		visibility: visible;
+		transition: $base_speed opacity $base_timing;
+	}
+
+	iframe {
+		@include cover;
+	}
+}
+
+.lazy_video_iframe_target {
+	height: 100%;
+}

@@ -1,0 +1,16 @@
+<div class="js-share-tools share_tools_detail">
+	<div class="share_tools_detail_header">
+		<h2 class="share_tools_detail_title">{{ title }}</h2>
+	</div>
+	<ul class="share_tools_detail_list" aria-label="Share Options">
+		{% for item in items %}
+			{% set icon = (item == 'Facebook') ? 'facebook_alt' : item %}
+			<li class="js-share-tool-item share_tool_detail_item">
+				<a class="js-share-tool js-share-{{ item|lower }} share_tool_detail" href="#" target="_blank" rel="noopener">
+					<span class="share_tool_detail_icon">{{ icon(icon|lower) }}</span>
+					<span class="share_tool_detail_label">Share to {{ item }}</span>
+				</a>
+			</li>
+		{% endfor %}
+	</ul>
+</div>

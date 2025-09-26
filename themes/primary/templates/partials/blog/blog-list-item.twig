@@ -1,0 +1,65 @@
+<div class="blog_list_item">
+	{% if item.thumbnail %}
+		<div class="blog_list_item_media">
+			<figure class="blog_list_item_figure">
+				<a class="blog_list_item_figure_link" href="{{ item.url }}" aria-label="Read more about {{ item.title }}" tabindex="-1">
+					{% include "partials/image.twig" with {
+						class: 'blog_list_item',
+						alt: '',
+						image: item.thumbnail,
+						loading: 'lazy',
+						sources: [
+							"classic-med",
+							"classic-sml",
+							"classic-xsml",
+							"classic-xxsml"
+						]
+					} %}
+				</a>
+				{% if item.video %}
+					<span class="blog_list_item_media_icon">{{ icon("video") }}</span>
+				{% elseif item.podcast %}
+					<span class="blog_list_item_media_icon">{{ icon("podcast") }}</span>
+				{% endif %}
+			</figure>
+		</div>
+	{% endif %}
+
+	<div class="blog_list_item_wrapper">
+		<div class="blog_list_item_header">
+			<h2 class="blog_list_item_title">
+				{% include "partials/link.twig" with {
+					class: "blog_list_item_title",
+					title: item.title,
+					url: item.link
+				} %}
+			</h2>
+			<div class="blog_list_item_details">
+				<div class="blog_list_item_detail blog_list_item_date">
+					<span class="blog_list_item_detail_hint">Published:&nbsp;</span>
+					<time class="blog_list_item_detail_label" datetime="{{ item.fw_date }}">{{ item.fw_date|date('F j, Y') }}</time>
+				</div>
+
+				{% if item.fw_categories %}
+					<div class="blog_list_item_detail blog_list_item_categories">
+						<div class="blog_list_item_detail_hint">Categories</div>
+						<ul class="blog_list_item_detail_label" aria-label="Categories">
+							{% for category in item.fw_categories %}
+								<li class="blog_list_item_category">
+									<a class="blog_list_item_category_link" href="{{ page_link }}?category[]={{ category.slug }}">
+										{{ category.name }}
+									</a>
+								</li>
+							{% endfor %}
+						</ul>
+					</div>
+				{% endif %}
+			</div>
+		</div>
+		<div class="blog_list_item_body">
+			<div class="blog_list_item_description">
+				<p>{{ item.introduction }}</p>
+			</div>
+		</div>
+	</div>
+</div>

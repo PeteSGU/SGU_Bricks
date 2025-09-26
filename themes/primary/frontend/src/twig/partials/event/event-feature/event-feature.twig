@@ -1,0 +1,110 @@
+{#
+	{% include '@partial-event-feature' with {
+		item: {
+			image: '1',
+			date: {
+				same_day: true,
+				all_day: false,
+				from: '2023-05-31 17:00:00',
+				to: '2023-05-31 19:00:00'
+			},
+			title: 'Title',
+			url: '#',
+			description: 'Description',
+			location: 'Location',
+			categories: [
+				{
+					label: 'Category',
+					url: '#'
+				}
+			]
+		}
+	} %}
+#}
+<!-- Event Feature -->
+<div class="event_feature">
+	<div class="fs-row">
+		<div class="fs-cell">
+			<div class="event_feature_inner">
+				<div class="event_feature_item">
+					{% if item.image %}
+						<figure class="event_feature_item_figure">
+							<a class="event_feature_item_figure_link" href="{{ item.url }}" aria-label="Read more about {{ item.title }}" tabindex="-1">
+								{% include '@partial-image' with {
+									class: 'event_feature_item',
+									alt: '',
+									image: item.image,
+									loading: 'lazy',
+									sources: [
+										img.classic.med,
+										img.classic.sml,
+										img.classic.xsml,
+										img.classic.xxsml
+									]
+								} %}
+							</a>
+						</figure>
+					{% endif %}
+					<div class="event_feature_item_wrapper">
+						<div class="event_feature_item_header">
+							<h2 class="event_feature_item_title">
+								{% include '@partial-link' with {
+									class: 'event_feature_item_title',
+									title: item.title,
+									url: item.url
+								} %}
+							</h2>
+							<div class="event_feature_item_time_wrapper">
+								<time class="event_feature_item_time" datetime="{{ item.date.from }}">
+									<span class="event_feature_item_time_start">{{ item.date.from|date('M d') }}</span>
+									{% if item.date.same_day == false %}
+										<span class="event_feature_item_time_end"> - {{ item.date.to|date('M d') }}</span>
+									{% endif %}
+								</time>
+							</div>
+						</div>
+						<div class="event_feature_item_body">
+							{% if item.description %}
+								<div class="event_feature_item_description">
+									<p>{{ item.description }}</p>
+								</div>
+							{% endif %}
+							<div class="event_feature_item_details">
+								{% if item.date.all_day == false %}
+									<div class="event_feature_item_detail">
+										<span class="event_feature_item_detail_icon">{{ icon('clock') }}</span>
+										<span class="event_feature_item_detail_hint">Time:&nbsp;</span>
+										<span class="event_feature_item_detail_label">
+											<span class="event_feature_item_detail_label_date">{{ item.date.from|date('g:i A') }} - {{ item.date.to|date('g:i A') }}</span>
+										</span>
+									</div>
+								{% endif %}
+								{% if item.location %}
+									<div class="event_feature_item_detail">
+										<span class="event_feature_item_detail_icon">{{ icon('place') }}</span>
+										<span class="event_feature_item_detail_hint">Location:&nbsp;</span>
+										<span class="event_feature_item_detail_label">{{ item.location }}</span>
+									</div>
+								{% endif %}
+								{% if item.categories %}
+									<div class="event_feature_item_detail event_feature_item_detail_category">
+										<span class="event_feature_item_detail_icon">{{ icon('label') }}</span>
+										<span class="event_feature_item_detail_hint">Categories:&nbsp;</span>
+										<ul class="event_feature_item_detail_list" aria-label="Categories">
+											{% for category in item.categories %}
+												<li class="event_feature_item_detail_item">
+													<a class="event_feature_item_detail_link" href="{{ category.url }}">{{ category.label }}</a>
+												</li>
+											{% endfor %}
+										</ul>
+									</div>
+								{% endif %}
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- END: Event Feature -->

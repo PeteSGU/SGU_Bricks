@@ -1,0 +1,32 @@
+{#
+	{% include '@partial-event-actions' with {
+		items: [
+			{
+				title: 'Action Title',
+				url: '#'
+			}
+		]
+	} %}
+#}
+<!-- Event Actions -->
+<div class="event_actions">
+	<div class="event_actions_header">
+		<h2 class="event_actions_title" id="event_actions_title">
+			<span class="event_actions_title_label">Event Actions</span>
+		</h2>
+	</div>
+	<div class="event_actions_body">
+		<ul class="event_actions_list" aria-labelledby="event_actions_title">
+			{% for item in items %}
+				<li class="event_action">
+					{% include '@partial-link' with {
+						class: 'event_action',
+						title: item.title,
+						url: item.url
+					} %}
+				</li>
+			{% endfor %}
+		</ul>
+	</div>
+</div>
+<!-- END: Event Actions -->

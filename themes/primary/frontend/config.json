@@ -1,0 +1,541 @@
+{
+	"twig_variables": {
+		"namespace": "sgu",
+		"color": "#1e1e64",
+		"name": "St. George's University",
+		"description": "St. George's University",
+		"images": "generic",
+		"domain": "https://static.sgu.dev.fastspot.com/",
+		"schema_type": "CollegeOrUniversity",
+		"twitter": "stgeorgesu",
+		"cse_key": "011737558837375720776:mbfrjmyam1g",
+		"place_id": "ChIJofvP7nsEyIkRAppsAwqW4SQ",
+		"street": "3500 Sunrise Highway",
+		"street2": "Building 300",
+		"city": "Great River",
+		"state": "NY",
+		"zip": "11739",
+		"email": "",
+		"phone": "",
+		"fax": ""
+	},
+	"navigation": {
+		"main": [
+			{
+				"title": "Medicine",
+				"icon": "chevron_right",
+				"children": [
+					{
+						"title": "Programs",
+						"aria": "Medicine Programs",
+						"url": "#"
+					},
+					{
+						"title": "Admissions & Aid",
+						"aria": "Medicine Admissions & Aid",
+						"url": "#"
+					},
+					{
+						"title": "Life at St. George's",
+						"aria": "Life at the Medical School",
+						"url": "#"
+					},
+					{
+						"title": "About",
+						"aria": "About the Medical School",
+						"url": "#"
+					},
+					{
+						"title": "Apply",
+						"aria": "Apply to the Medical School",
+						"class": "featured_button",
+						"url": "#"
+					},
+					{
+						"title": "Request Info",
+						"aria": "Request Info for Medical School",
+						"class": "button",
+						"url": "#"
+					}
+				]
+			},
+			{
+				"title": "Veterinary",
+				"icon": "chevron_right",
+				"children": [
+					{
+						"title": "Programs",
+						"aria": "Veterinary Programs",
+						"url": "#"
+					},
+					{
+						"title": "Admissions & Aid",
+						"aria": "Veterinary Admissions & Aid",
+						"url": "#"
+					},
+					{
+						"title": "Life at St. George's",
+						"aria": "Life at the Veterinary School",
+						"url": "#"
+					},
+					{
+						"title": "About",
+						"aria": "About the Veterinary School",
+						"url": "#"
+					},
+					{
+						"title": "Apply",
+						"aria": "Apply to the Veterinary School",
+						"class": "featured_button",
+						"url": "#"
+					},
+					{
+						"title": "Request Info",
+						"aria": "Request Info for Veterinary School",
+						"class": "button",
+						"url": "#"
+					}
+				]
+			},
+			{
+				"title": "Undergraduate School",
+				"icon": "chevron_right",
+				"children": [
+					{
+						"title": "Core Curriculum",
+						"aria": "Undergraduate School Core Curriculum",
+						"url": "#"
+					},
+					{
+						"title": "Programs & Certificates",
+						"aria": "Undergraduate School Programs & Certificates",
+						"url": "#"
+					},
+					{
+						"title": "Admissions & Aid",
+						"aria": "Undergraduate School Admissions & Aid",
+						"url": "#"
+					},
+					{
+						"title": "About",
+						"aria": "About the Undergraduate School",
+						"url": "#"
+					},
+					{
+						"title": "Apply",
+						"aria": "Apply to the Undergraduate School",
+						"class": "featured_button",
+						"url": "#"
+					},
+					{
+						"title": "Request Info",
+						"aria": "Request Info for Undergraduate School",
+						"class": "button",
+						"url": "#"
+					}
+				]
+			},
+			{
+				"title": "Graduate School",
+				"icon": "chevron_right",
+				"children": [
+					{
+						"title": "Programs",
+						"aria": "Graduate School Core Curriculum",
+						"url": "#"
+					},
+					{
+						"title": "Financial Aid & Scholarships",
+						"aria": "Graduate School Programs & Certificates",
+						"url": "#"
+					},
+					{
+						"title": "About",
+						"aria": "About the Graduate School",
+						"url": "#"
+					},
+					{
+						"title": "Apply",
+						"aria": "Apply to the Graduate School",
+						"class": "featured_button",
+						"url": "#"
+					},
+					{
+						"title": "Request Info",
+						"aria": "Request Info for Graduate School",
+						"class": "button",
+						"url": "#"
+					}
+				]
+			}
+		],
+		"mainSchool": [
+			{
+				"title": "Programs",
+				"icon": "chevron_right",
+				"children": [
+					{
+						"title": "Doctor of Medicine",
+						"aria": "",
+						"url": "#"
+					},
+					{
+						"title": "Pre-Med + MD",
+						"aria": "",
+						"url": "#"
+					},
+					{
+						"title": "Medical PhD",
+						"aria": "",
+						"url": "#"
+					},
+					{
+						"title": "MD + MPH",
+						"aria": "",
+						"url": "#"
+					},
+					{
+						"title": "MD + MSc",
+						"aria": "",
+						"class": "",
+						"url": "#"
+					},
+					{
+						"title": "MD + BSc",
+						"aria": "",
+						"class": "",
+						"url": "#"
+					}
+				]
+			},
+			{
+				"title": "Admissions & Aid",
+				"icon": "chevron_right",
+				"children": [
+					{
+						"title": "Application Process",
+						"aria": "",
+						"url": "#"
+					},
+					{
+						"title": "Dates & Deadlines",
+						"aria": "",
+						"url": "#"
+					},
+					{
+						"title": "Information Sessions",
+						"aria": "",
+						"url": "#"
+					},
+					{
+						"title": "Financial Aid & Scholarships",
+						"aria": "",
+						"url": "#"
+					}
+				]
+			},
+			{
+				"title": "Life at St. George's",
+				"icon": "chevron_right",
+				"children": [
+					{
+						"title": "Life on Campus",
+						"aria": "",
+						"url": "#"
+					},
+					{
+						"title": "Life in Granada",
+						"aria": "",
+						"url": "#"
+					},
+					{
+						"title": "Student Blog",
+						"aria": "",
+						"url": "#"
+					},
+					{
+						"title": "Virtual Tour",
+						"aria": "",
+						"url": "#"
+					}
+				]
+			},
+			{
+				"title": "About",
+				"icon": "chevron_right",
+				"children": [
+					{
+						"title": "News & Events",
+						"aria": "",
+						"url": "#"
+					},
+					{
+						"title": "Accreditations & Approvals",
+						"aria": "",
+						"url": "#"
+					},
+					{
+						"title": "Leadership & Administration",
+						"aria": "",
+						"url": "#"
+					},
+					{
+						"title": "Enrollment & Demographics",
+						"aria": "",
+						"class": "",
+						"url": "#"
+					}
+				]
+			}
+		],
+		"school": [
+			{
+				"title": "SGU",
+				"aria": "SGU Homepage",
+				"icon": "shield",
+				"children": ""
+			},
+			{
+				"title": "Medicine",
+				"aria": "Medicine Homepage",
+				"icon": "",
+				"children": ""
+			},
+			{
+				"title": "Veterinary",
+				"aria": "Veterinary Homepage",
+				"icon": "",
+				"children": ""
+			},
+			{
+				"title": "Undergraduate School",
+				"aria": "Undergraduate School Homepage",
+				"icon": "",
+				"children": ""
+			},
+			{
+				"title": "Graduate School",
+				"aria": "Graduate School Homepage",
+				"icon": "",
+				"children": ""
+			}
+		],
+		"secondary": [
+			{
+				"title": "Info Sessions",
+				"url": false,
+				"class": "",
+				"children": [
+					{
+						"title": "Medicine",
+						"aria": "Medicine Info Sessions",
+						"url": "#"
+					},
+					{
+						"title": "Veterinary",
+						"aria": "Veterinary Info Sessions",
+						"url": "#"
+					},
+					{
+						"title": "Undergraduate School",
+						"aria": "Undergraduate School Info Sessions",
+						"url": "#"
+					},
+					{
+						"title": "Graduate School",
+						"aria": "Graduate School Info Sessions",
+						"url": "#"
+					}
+				]
+			},
+			{
+				"title": "Request Info",
+				"class": "",
+				"children": ""
+			},
+			{
+				"title": "Apply",
+				"url": false,
+				"class": "featured",
+				"children": [
+					{
+						"title": "Medicine",
+						"aria": "Apply to Medicine",
+						"url": "#"
+					},
+					{
+						"title": "Veterinary",
+						"aria": "Apply to Veterinary",
+						"url": "#"
+					},
+					{
+						"title": "Undergraduate School",
+						"aria": "Apply to Undergraduate School",
+						"url": "#"
+					},
+					{
+						"title": "Graduate School",
+						"aria": "Apply to Graduate School",
+						"url": "#"
+					}
+				]
+			}
+		],
+		"secondarySchool": [
+			{
+				"title": "Info Sessions",
+				"url": "#",
+				"class": "",
+				"children": ""
+			},
+			{
+				"title": "Request Info",
+				"url": "#",
+				"class": "",
+				"children": ""
+			},
+			{
+				"title": "Apply",
+				"url": "#",
+				"class": "featured",
+				"children": ""
+			}
+		],
+		"ctaSchool": [
+			{
+				"title": "Apply",
+				"url": "#",
+				"class": "featured",
+				"children": ""
+			},
+			{
+				"title": "Request Info",
+				"url": "#",
+				"class": "",
+				"children": ""
+			},
+			{
+				"title": "Contact",
+				"url": "#",
+				"class": "",
+				"children": ""
+			}
+		],
+		"audience": [
+			"Faculty",
+			"Staff",
+			"Current Students",
+			"Prospective Student",
+			"Alumni",
+			"Parents & Families",
+			"Visitors"
+		],
+		"utility": ["Consumer Disclosures", "Privacy Policy", "Web Accessibility"],
+		"footer": [
+			"People Directory",
+			"Department Directory",
+			"Faculty Job Opportunities",
+			"Staff Job Opportunities",
+			"Emergency Plan"
+		],
+		"social": [
+			{
+				"title": "Facebook",
+				"url": "//www.facebook.com/StGeorgesU"
+			},
+			{
+				"title": "Youtube",
+				"url": "//www.youtube.com/user/StGeorgesU"
+			},
+			{
+				"title": "Twitter",
+				"url": "//www.twitter.com/stgeorgesu"
+			},
+			{
+				"title": "Instagram",
+				"url": "//www.instagram.com/StGeorgesU/"
+			},
+			{
+				"title": "Pinterest",
+				"url": "//www.pinterest.com/stgeorgesu/"
+			},
+			{
+				"title": "Linkedin",
+				"url": "//www.linkedin.com/school/st.-george's-university/"
+			},
+			{
+				"title": "Flickr",
+				"url": "//www.flickr.com/photos/sguedu"
+			}
+		],
+		"experience": [
+			{
+				"title": "Photos & Videos of Campus",
+				"icon": "photos"
+			},
+			{
+				"title": "Statistics & Results",
+				"icon": "statistics"
+			},
+			{
+				"title": "Our Global Presence",
+				"icon": "newspaper"
+			},
+			{
+				"title": "Take a Virtual Tour",
+				"icon": "360"
+			}
+		],
+		"about": [
+			{
+				"title": "About SGU",
+				"icon": "chevron_right"
+			},
+			{
+				"title": "Life at SGU",
+				"icon": ""
+			},
+			{
+				"title": "News",
+				"icon": ""
+			},
+			{
+				"title": "Events",
+				"icon": ""
+			},
+			{
+				"title": "Directory",
+				"icon": ""
+			},
+			{
+				"title": "History",
+				"icon": ""
+			},
+			{
+				"title": "Leadership & Administration",
+				"icon": ""
+			},
+			{
+				"title": "Grenada Partnerships",
+				"icon": ""
+			}
+		],
+		"sub": ["Life on Campus", "Life in Grenada", "Student Blog", "Virtual Tour"]
+	},
+	"accessibility": {
+		"cms_urls": [
+			"https://static.framework.fastspot.com/components/preview/template-home.html",
+
+			"https://static.framework.fastspot.com/components/preview/template-general-content--default.html",
+
+			"https://static.framework.fastspot.com/components/preview/template-event-listing--default.html",
+			"https://static.framework.fastspot.com/components/preview/template-event-detail--default.html",
+
+			"https://static.framework.fastspot.com/components/preview/template-news-listing--default.html",
+			"https://static.framework.fastspot.com/components/preview/template-news-detail--default.html",
+
+			"https://static.framework.fastspot.com/components/preview/template-people-listing.html",
+			"https://static.framework.fastspot.com/components/preview/template-people-detail.html"
+		]
+	}
+}

@@ -1,0 +1,19 @@
+/* ==========================================================================
+	Event Entry
+============================================================================= */
+
+.event_entry {
+}
+
+.event_entry_figure {
+	@include responsive_image;
+
+	margin-block: 30px;
+}
+
+.event_entry_image {
+}
+
+.event_entry_actions {
+	@include margined_lg;
+}

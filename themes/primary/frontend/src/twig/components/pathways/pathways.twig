@@ -1,0 +1,72 @@
+{% set id = uniqid('js-pathways') %}
+{% set group_id = uniqid('pathways-group') %}
+
+<div class="pathways">
+	<div class="fs-row">
+		<div class="fs-cell">
+			<div class="pathways_inner">
+				<div class="pathways_accordion_wrapper">
+					<div class="pathways_accordion_header">
+						<h2 class="pathways_accordion_title">{{ group_title }}</h2>
+					</div>
+					<div class="pathways_accordion">
+						{% for item in items %}
+							<div class="pathway pathway_{{ id }}_{{ loop.index }} js-pathway">
+								<figure class="pathway_figure">
+									{% include '@partial-image' with {
+										class: 'pathway',
+										alt: '',
+										image: item.image,
+										loading: 'lazy',
+										sources: [
+											img.classic.lrg,
+											img.classic.med,
+											img.classic.sml,
+											img.classic.xsml,
+											img.classic.xxsml
+										],
+										sizes: [
+											'(min-width: 740px) 0',
+											'90vw'
+										]
+									} %}
+								</figure>
+								<button class="pathway_title js-swap" data-swap-target=".pathway_{{ id }}_{{ loop.index }}" data-swap-options='{"collapse":false}' data-swap-group="{{ group_id }}">{{ item.title }}</button>
+								{% if item.description %}
+									<span class="pathway_description">{{ item.description }}</span>
+								{% endif %}
+								{% if item.link %}
+									<a href="{{ item.link.url }}" class="pathway_link">{{ item.link.label }}</a>
+								{% endif %}
+							</div>
+						{% endfor %}
+					</div>
+				</div>
+				<div class="pathways_visuals_wrapper">
+					{% for item in items %}
+						<figure class="pathways_figure pathway_{{ id }}_{{ loop.index }}">
+							{% include '@partial-image' with {
+								class: 'pathways',
+								alt: '',
+								image: item.image,
+								loading: 'lazy',
+								sources: [
+									img.portraitFull.xlrg,
+									img.portraitFull.lrg,
+									img.portraitFull.med,
+									img.portraitFull.sml,
+									img.portraitFull.xsml,
+									img.portraitFull.xxsml
+								],
+								sizes: [
+									'(min-width: 740px) 50vw',
+									'0'
+								]
+							} %}
+						</figure>
+					{% endfor %}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

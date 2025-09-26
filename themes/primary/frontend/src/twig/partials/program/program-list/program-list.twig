@@ -1,0 +1,112 @@
+{#
+	{% include '@partial-program-list' with {
+		grouped: false,
+		items: [
+			{
+				title: 'Title',
+				description: 'Description',
+				url: '#',
+				mode: ['Mode'],
+				level: ['Level'],
+				department: {
+					url: '#',
+					label: 'Department'
+				},
+				degree: ['Degree']
+			}
+		]
+	} %}
+#}
+
+{% set id = uniqid('js-program-item') %}
+{% set group_id = uniqid('program-group') %}
+
+<!-- Program List -->
+<div class="js-accordion program_list">
+	<div class="fs-row">
+		<div class="fs-cell">
+			<div class="program_list_inner">
+				<ul class="program_list_items" id="item_list" aria-label="{{ page.title }}">
+					{% for item in items %}
+						<li class="js-accordion-item {{ id }}-{{ loop.index }} program_item">
+							<h2 class="program_item_heading">
+								<button class="js-accordion-swap js-swap program_item_button" data-swap-target=".{{ id }}-{{ loop.index }}" {% if grouped == true %} data-swap-group="{{ group_id }}" {% endif %}>
+									<span class="program_item_heading_inner">
+										<span class="program_item_heading_label">
+											<span class="program_item_heading_title">{{ item.title }}</span>
+											<span class="program_item_heading_mode">
+												<span class="program_item_heading_mode_label">Learning Mode<span class="program_item_heading_mode_label_hint">:</span>&nbsp;</span>
+												<span class="program_item_heading_mode_data">
+													{% for item in item.mode %}
+														{{ item }}{% if not loop.last %}, {% endif %}
+													{% endfor %}
+												</span>
+											</span>
+										</span>
+										<span class="program_item_heading_icon"></span>
+									</span>
+								</button>
+							</h2>
+							<div class="js-accordion-content program_item_content" aria-label="{{ item.title }}">
+								<div class="program_item_content_inner">
+									<div class="program_item_content_group">
+										<div class="program_item_description typography">
+											<p>{{ item.description }}</p>
+										</div>
+										{% if item.url %}
+											<div class="program_item_links">
+												{% include '@partial-link' with {
+													class: 'program_item',
+													title: 'Program Detail',
+													url: item.url,
+													aria: item.title + ' Program Detail'
+												} %}
+											</div>
+										{% endif %}
+									</div>
+									<div class="program_item_details">
+										{% if item.level %}
+											<div class="program_item_detail">
+												<span class="program_item_detail_label">Degree Level<span class="program_item_detail_label_hint">:</span>&nbsp;</span>
+												<span class="program_item_detail_data">
+													{% for item in item.level %}
+														{{ item }}{% if not loop.last %}, {% endif %}
+													{% endfor %}
+												</span>
+											</div>
+										{% endif %}
+										{% if item.department %}
+											<div class="program_item_detail">
+												<span class="program_item_detail_label">Department<span class="program_item_detail_label_hint">:</span>&nbsp;</span>
+												<span class="program_item_detail_data">
+													<a class="program_item_detail_data_link" href="{{ item.department.url }}">{{ item.department.label }}</a>
+												</span>
+											</div>
+										{% endif %}
+										{% if item.degree %}
+											<div class="program_item_detail">
+												<span class="program_item_detail_label">Degree<span class="program_item_detail_label_hint">:</span>&nbsp;</span>
+												<span class="program_item_detail_data">
+													{% for item in item.degree %}
+														{{ item }}{% if not loop.last %}, {% endif %}
+													{% endfor %}
+												</span>
+											</div>
+										{% endif %}
+									</div>
+								</div>
+							</div>
+						</li>
+					{% endfor %}
+				</ul>
+				<div class="program_list_pagination">
+					{% include '@partial-pagination' with {
+						title: 'Program Pagination',
+						pages: 50
+					} %}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- END: Program List -->

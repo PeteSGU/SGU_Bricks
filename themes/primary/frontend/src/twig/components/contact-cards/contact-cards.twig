@@ -1,0 +1,95 @@
+{#
+	{% include '@component-cards' with {
+		group_title: 'Group Title',
+		group_description: 'Group Description',
+		items: [
+			{
+				image: '1',
+				name: 'Full Name',
+				job_title: 'Job Title',
+				department: [
+					'Department'
+				],
+				url: '#'
+			}
+		]
+	} %}
+#}
+
+<!-- Contact Cards -->
+<div class="contact_cards">
+	{% if group_title or group_description %}
+		<div class="contact_cards_header">
+			<div class="fs-row">
+				<div class="fs-cell fs-lg-10 fs-all-justify-center">
+					<div class="contact_cards_header_inner">
+						{% if group_title %}
+							<h2 class="contact_cards_title">{{ group_title }}</h2>
+						{% endif %}
+						{% if group_description %}
+							<p class="contact_cards_description">{{ group_description }}</p>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+		</div>
+	{% endif %}
+	<div class="contact_cards_body">
+		<div class="fs-row">
+			<div class="fs-cell">
+				<div class="contact_cards_body_inner">
+					<ul class="contact_cards_list" aria-label="{% if group_title %}{{ group_title }}{% else %}{{ page.title }} Contact{% endif %}">
+						{% for item in items %}
+							<li class="contact_cards_list_item">
+								<div class="contact_card">
+									<div class="contact_card_header">
+										<div class="contact_card_header_group">
+											<h3 class="contact_card_title">
+												{% if item.url %}
+													<a href="{{ item.url }}" class="contact_card_title_link">{{ item.name }}</a>
+												{% else %}
+													{{ item.name }}
+												{% endif %}
+											</h3>
+											<p class="contact_card_department">
+												{% for department in item.departments %}
+													{{ department }}{% if not loop.last %}<br> {% endif %}
+												{% endfor %}
+											</p>
+										</div>
+										<p class="contact_card_job">{{ item.job_title }}</p>
+									</div>
+									<div class="contact_card_media">
+										<figure class="contact_card_figure">
+											{% include '@partial-image' with {
+												class: 'contact_card',
+												alt: '',
+												image: item.image,
+												loading: 'lazy',
+												sources: [
+													img.square.sml,
+													img.square.xsml,
+													img.square.xxsml,
+													img.square.thumb
+												],
+												sizes: [
+													'(min-width: 1394px) 290px',
+													'(min-width: 1220px) 254px',
+													'(min-width: 980px) 284px',
+													'(min-width: 740px) 212px',
+													'(min-width: 500px) 48vw',
+													'90vw'
+												]
+											} %}
+										</figure>
+									</div>
+								</div>
+							</li>
+						{% endfor %}
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- END: Contact Cards -->

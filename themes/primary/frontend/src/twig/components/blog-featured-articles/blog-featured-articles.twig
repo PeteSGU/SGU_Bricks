@@ -1,0 +1,78 @@
+<div class="featured_articles">
+	<div class="fs-row">
+		<div class="fs-cell">
+			<div class="featured_articles_inner">
+				<div class="featured_articles_header">
+					<h2 class="featured_articles_title">{{ group_title }}</h2>
+				</div>
+				<div class="featured_articles_body">
+					<div class="featured_articles_main_feature">
+						<figure class="main_feature_figure">
+							{% include '@partial-image' with {
+								class: 'main_feature',
+								alt: '',
+								image: feature.image,
+								loading: 'lazy',
+								sources: [
+									img.wide.med,
+									img.wide.sml,
+									img.wide.xsml,
+									img.wide.xxsml
+								]
+							} %}
+						</figure>
+						<div class="main_feature_wrapper">
+							<h3 class="main_feature_title">
+								<a href="{{ feature.url }}" class="main_feature_title_link">{{ feature.title }}</a>
+							</h3>
+							{% if feature.categories %}
+								<div class="main_feature_categories">
+									{% for category in feature.categories %}
+										<a href="#" class="main_feature_category">{{ category }}</a>
+									{% endfor %}
+								</div>
+							{% endif %}
+							{% if feature.description %}
+							<span class="main_feature_description">{{ feature.description }}</span>
+							{% endif %}
+						</div>
+					</div>
+					<div class="featured_articles_list">
+						{% for item in items %}
+							<div class="featured_articles_item">
+								<figure class="featured_articles_item_figure">
+									{% include '@partial-image' with {
+										class: 'featured_articles_item',
+										alt: '',
+										image: item.image,
+										loading: 'lazy',
+										sources: [
+											img.wide.sml,
+											img.wide.xsml,
+											img.wide.xxsml
+										]
+									} %}
+								</figure>
+								<div class="featured_articles_item_wrapper">
+									<h3 class="featured_articles_item_title">
+										<a href="{{ item.url }}" class="featured_articles_item_title_link">{{ item.title }}</a>
+									</h3>
+									{% if item.categories %}
+										<div class="featured_articles_item_categories">
+											{% for category in item.categories %}
+												<a href="#" class="featured_articles_item_category">{{ category }}</a>
+											{% endfor %}
+										</div>
+									{% endif %}
+								</div>
+							</div>
+						{% endfor %}
+						{% if more_link %}
+						<a href="{{ more_link.url }}" class="featured_articles_view_more_link">{{ more_link.label }}</a>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

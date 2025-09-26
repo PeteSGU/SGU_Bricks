@@ -1,0 +1,31 @@
+<div class="department_list_item">
+	<div class="department_list_item_header">
+		<div class="department_list_item_info">
+			<h2 class="department_list_item_name">
+				{% if item.link %}
+					<a class="department_list_item_name_link" href="{{ item.link }}">
+						<span class="department_list_item_name_link_label">{{ item.title }}</span>
+						<span class="department_list_item_name_link_icon">{{ icon('caret_right') }}</span>
+					</a>
+				{% else %}
+					{{ item.title }}
+				{% endif %}
+			</h2>
+
+			{% if item.introduction %}
+				<div class="department_list_item_description">{{ item.introduction }}</div>
+			{% endif %}
+		</div>
+	</div>
+	
+	{% if item.email_address %}
+		<div class="department_list_item_body">
+			<div class="department_list_item_email">
+				<a class="department_list_item_email_link" href="mailto:{{ item.email_address }}">
+					<span class="department_list_item_email_link_icon">{{ icon('mail') }}</span>
+					<span class="department_list_item_email_link_label">{{ item.email_address }}</span>
+				</a>
+			</div>
+		</div>
+	{% endif %}
+</div>

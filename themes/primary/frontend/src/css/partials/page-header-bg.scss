@@ -1,0 +1,153 @@
+/* ==========================================================================
+	Page Header BG
+============================================================================= */
+
+.page_header_bg {
+}
+
+.page_header_bg_inner {
+}
+
+.page_header_bg_group {
+	min-height: 56.25vw;
+
+	position: relative;
+
+	background-color: $black;
+	color: $white;
+	display: flex;
+	margin-bottom: 30px;
+	overflow: hidden;
+
+	@media #{$min_lg} {
+		height: min(56.25vw, 810px);
+		min-height: auto;
+	}
+
+	@media print {
+		height: auto;
+		min-height: auto;
+	}
+}
+
+.page_header_bg_content {
+	width: 100%;
+
+	position: relative;
+	z-index: 1;
+
+	display: flex;
+	flex-direction: column;
+}
+
+.page_header_bg_media {
+	@media print {
+		display: none;
+	}
+}
+
+.page_header_bg_media_inner {
+}
+
+.page_header_bg_figure {
+	display: block;
+}
+
+.page_header_bg_image {
+	@include cover;
+
+	object-fit: cover;
+}
+
+/* Video
+============================================================================= */
+
+.page_header_bg_video_iframe_wrap {
+	width: 100%;
+	height: 100%;
+}
+
+.page_header_bg_video_iframe_target {
+	width: 100%;
+	height: 100%;
+}
+
+.page_header_bg_video {
+	--iframe-opacity: 0;
+
+	display: none;
+
+	&.loaded {
+		--iframe-opacity: 1;
+	}
+
+	@media #{$min_lg} {
+		@include cover;
+
+		display: block;
+	}
+}
+
+.page_header_bg_video iframe {
+	@include center;
+
+	opacity: var(--iframe-opacity);
+	pointer-events: none;
+	transition: opacity 0.5s;
+}
+
+.page_header_bg_video_controls {
+	width: 45px;
+
+	position: absolute;
+	right: 40px;
+	bottom: 40px;
+	z-index: 5;
+
+	aspect-ratio: 1;
+
+	@media print {
+		display: none;
+	}
+
+	.icon_video_play,
+	.icon_video_pause {
+		width: 100%;
+		height: 100%;
+	}
+}
+
+.page_header_bg_video_play_button,
+.page_header_bg_video_pause_button {
+	width: 100%;
+	height: 100%;
+
+	position: absolute;
+
+	color: blue;
+	opacity: 1;
+	transition: color $base_speed, opacity $base_speed, visibility $base_speed;
+	visibility: visible;
+
+	@include hover {
+		color: $white;
+	}
+
+	&.pressed {
+		opacity: 0;
+		visibility: hidden;
+	}
+}
+
+.page_header_bg_video_play_button_inner,
+.page_header_bg_video_pause_button_inner {
+}
+
+.page_header_bg_video_play_button_label,
+.page_header_bg_video_pause_button_label {
+	@include visually_hide;
+}
+
+.page_header_bg_video_play_button_icon,
+.page_header_bg_video_pause_button_icon {
+}

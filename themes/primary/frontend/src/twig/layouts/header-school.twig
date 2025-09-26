@@ -1,0 +1,168 @@
+<!-- Header -->
+<header class="js-header header theme_{{ page.theme ?: 'blue' }}{% if page.background %} has_background_image{% endif %}{% if ('layout_detail' not in page.classes and page.image) or ('layout_detail' not in page.classes and page.video) %} has_content_image{% endif %}{% if page.cta %} has_cta{% endif %}{% if page.hero_school_portrait == true %} size_portrait{% else %} size_landscape{% endif %}" id="header">
+	<noscript>
+		<iframe src="//www.googletagmanager.com/ns.html?id=GTM-K6P58WP" height="0" width="0" style="display:none;visibility:hidden"></iframe>
+	</noscript>
+
+	<a class="skip_link skip_main" id="skip_main_link" href="#page_title">Skip Main Navigation</a>
+
+	{% if page.alert == true %}
+		<a class="js-skip-alert skip_link skip_alert" id="skip_alert_link" href="#alert_title">Skip to site alert</a>
+	{% endif %}
+
+	{% if page.theme != 'blue' %}
+		{% set logo = logo ~ '_dark' %}
+	{% endif %}
+	<div class="header_main">
+		{% if page.background %}
+			<figure class="header_bg_figure">
+				{% include '@partial-image' with {
+					class: 'header_bg',
+					alt: '',
+					image: page.background,
+					loading: 'eager',
+					sources: [
+						img.wide.xlrg,
+						img.wide.lrg,
+						img.wide.med,
+						img.wide.sml,
+						img.wide.xsml,
+						img.wide.xxsml
+					],
+					sizes: [
+						'(min-width: 1394px) 574px',
+						'(min-width: 1220px) 500px',
+						'(min-width: 980px) 320px',
+						'(min-width: 740px) 332px',
+						'90vw'
+					]
+				} %}
+			</figure>
+		{% endif %}
+		<div class="header_main_texture"></div>
+		<div class="header_main_group">
+			<div class="header_ribbon">
+				<div class="fs-row">
+					<div class="fs-cell">
+						<div class="header_ribbon_inner">
+							<div class="header_school_nav">
+								{% include '@navigation-basic' with {
+									class: "school",
+									modifier: "",
+									title: "School",
+									links: navigation.school,
+									active_index: '2'
+								} %}
+							</div>
+							<div class="header_ribbon_group">
+								<button class="header_chat_button">
+									<span class="header_chat_button_label">Chat</span>
+									<span class="header_chat_button_icon">{{ icon("chat") }}</span>
+								</button>
+								<div class="header_search">
+									{% include '@partial-search' with {
+										modifier: 'header',
+										aria: 'Site Search',
+										label: 'Search',
+										placeholder: 'Search...',
+										button_text: 'Submit'
+									} %}
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="header_primary">
+				<div class="fs-row">
+					<div class="fs-cell">
+						<div class="header_primary_inner">
+							<div class="header_logo">
+								{% include '@partial-logo' with {
+									modifier: 'header',
+									icon: logo,
+									print: ''
+								} %}
+							</div>
+							<div class="header_primary_group">
+								<div class="header_secondary_nav">
+									{% include '@navigation-dropdown' with {
+										class: 'secondary_dropdown',
+										modifier: '',
+										title: 'Secondary',
+										active_index: '',
+										links: navigation.secondarySchool,
+										icon: 'chevron_down'
+									} %}
+								</div>
+								<div class="header_menu">
+									{% include '@partial-link-toggle' with {
+										class: 'menu',
+										js: true,
+										title: 'Menu',
+										url: '#menu',
+										icon: 'menu',
+										swap_target: '.menu',
+										swap_link: 'menu'
+									} %}
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			{% if 'layout_home' in page.classes %}
+				{% render '@partial-page-header--school' with {
+					page: page
+				} %}
+			{% else %}
+				{% render '@partial-page-header' with {
+					page: page
+				} %}
+			{% endif %}
+		</div>
+		{% if not page.no_decoration %}
+			<div class="header_main_decoration"></div>
+		{% endif %}
+	</div>
+	{% if page.subNav != false  %}
+		<div class="header_suppliment">
+			<div class="page_nav">
+				<div class="fs-row">
+					<div class="fs-cell">
+						<div class="page_nav_inner">
+							<a class="skip_link skip_subnav" id="skip_sub_link" href="#page_content">Skip Sub Navigation</a>
+							<div class="page_nav_flat">
+								{% include '@navigation-basic' with {
+									class: 'sub_flat',
+									modifier: '',
+									title: page.title,
+									active_index: '1',
+									links: page.subNav
+								} %}
+							</div>
+							<div class="page_nav_toggle">
+								{% include '@navigation-toggle' with {
+									class: 'sub',
+									modifier: '',
+									title: page.title|lower,
+									links: page.subNav,
+									icon: '',
+									child_icon: '',
+									toggle: {
+										title: 'Explore This Section',
+										icon: 'chevron_down',
+										title_active: 'Explore This Section',
+										icon_active: 'chevron_down',
+										swap_target: '.js-sub-nav-group'
+									}
+								} %}
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	{% endif %}
+</header>
+<!-- END: Header -->

@@ -1,0 +1,65 @@
+/* ==========================================================================
+	WYSIWYG
+============================================================================= */
+
+.wysiwyg_block {
+	@include margined_xl;
+
+	@include inside_gutenberg_column {
+
+		.fs-row	{
+
+			@media #{$min_lg} {
+				@include destroy_row;
+			}
+		}
+
+		.fs-cell {
+
+			@media #{$min_lg} {
+				@include destroy_cell;
+			}
+		}
+	}
+}
+
+.wysiwyg_block_inner {
+	> :first-child {
+		margin-top: 0;
+	}
+
+	> :last-child {
+		margin-bottom: 0;
+	}
+
+	@include inside_gutenberg_column(3) {
+
+		h3 {
+			margin-block: 25px;
+		}
+
+		h4 {
+			margin-block: 20px;
+		}
+
+		h5,
+		h6 {
+			margin-block: 20px 10px;
+		}
+
+		@media (min-width: 780px) {
+
+			h2 {
+				@include h3;
+			}
+
+			h3 {
+				@include h4;
+			}
+
+			h4 {
+				@include h5;
+			}
+		}
+	}
+}

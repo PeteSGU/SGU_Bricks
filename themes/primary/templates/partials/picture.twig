@@ -1,0 +1,51 @@
+{#
+	{% include '@partial-picture' with {
+		class: 'media',
+		image: item.image,
+		alt: '',
+		loading: 'lazy',
+		default: img.square.xsml,
+		sources: {
+			'1200px': img.wide.med,
+			'500px': img.wide.sml
+		}
+	} %}
+#}
+
+{% set is_external = url_helper.is_url(image) ? url_helper.is_external(image) : false %}
+
+<picture class="{{ class }}_picture">
+	{% if is_external %}
+		{% set ratio = sources|first|split('-')[0] %}
+
+		<img
+			class="{{ class }}_image ratio_{{ ratio }} {% if is_external %} is_external {% endif %}"
+			src="{{ image }}"
+			loading="{{ loading ?: 'lazy' }}"
+		/>
+	{% else %}
+		{% set image = instanceof(image, "\Timber\Image") ? image : Image(image)%}
+		{% set image_meta = framework_fn("get_picture_attributes", image, sources, default, alt|default(image.alt)) %}
+
+		{% for source in image_meta.srcset %}
+			<source
+				media="(min-width: {{ source.min_width }})"
+				srcset="{{ source.src }}"
+				width="{{ source.width }}"
+				height="{{ source.height }}"
+				type="{{ source.type }}"
+			/>
+		{% endfor %}
+
+		<img
+			class="{{ class }}_image"
+			src="{{ image_meta.default_size }}"
+			{% if image_meta.alt %}
+			alt="{{ image_meta.alt|e('html_attr') }}"
+			{% endif %}
+			loading="{{ loading ?: 'lazy' }}"
+			width="{{ image_meta.width }}"
+			height="{{ image_meta.height }}"
+		/>
+	{% endif %}
+</picture>

@@ -1,0 +1,35 @@
+<div class="news_list">
+	<div class="fs-row">
+		<div class="fs-cell">
+			<div class="news_list_inner">
+				<span class="news_list_header">
+					Showing{% if results_text%} results for:{% endif%}
+					<span>{{ results_text|default('All')  }}</span>
+				</span>
+
+				<ul class="news_list_rows" id="item_list" aria-label="{{ page.title|e('html_attr') }}">
+					{% for item in items %}
+						<li class="news_list_row">
+							{% include "partials/news/news-list-item.twig" with {
+								item: item
+							} %}
+						</li>
+					{% endfor %}
+				</ul>
+
+				{% if pagination.pages %}
+					<div class="news_list_pagination">
+						{% include "partials/pagination.twig" with {
+							"pagination": pagination,
+							"page_link": page_link
+						} %}
+					</div>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+</div>
+
+{% if not items|length %}
+	{% include "partials/no-results-message.twig" %}
+{% endif %}

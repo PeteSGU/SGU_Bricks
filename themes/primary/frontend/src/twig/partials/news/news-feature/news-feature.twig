@@ -1,0 +1,102 @@
+{#
+	{% include '@partial-news-feature' with {
+		item: {
+			image: '1',
+			categories: [
+				{
+					label: 'Category',
+					url: '#'
+				}
+			],
+			title: 'Title',
+			url: '#',
+			date: '2019-01-01 17:00:00',
+			author: 'Author',
+			description: 'Description'
+		}
+	} %}
+#}
+<!-- News Feature -->
+<div class="news_feature">
+	<div class="fs-row">
+		<div class="fs-cell">
+			<div class="news_feature_inner">
+				<div class="news_feature_header">
+					<h2 class="news_feature_title">{{ group_title }}</h2>
+					{% if view_all %}
+						<a href="{{ view_all.url }}" class="news_feature_view_all_link">{{ view_all.label }}</a>
+					{% endif %}
+				</div>
+				<div class="news_feature_item">
+					{% if item.image %}
+						<figure class="news_feature_item_figure">
+							<a class="news_feature_item_figure_link" href="{{ item.url }}" aria-label="Read more about {{ item.title }}" tabindex="-1">
+								{% include '@partial-image' with {
+									class: 'news_feature_item',
+									alt: '',
+									image: item.image,
+									loading: 'lazy',
+									sources: [
+										img.wide.med,
+										img.wide.sml,
+										img.wide.xsml,
+										img.wide.xxsml
+									]
+								} %}
+							</a>
+						</figure>
+					{% endif %}
+					<div class="news_feature_item_wrapper">
+						<div class="news_feature_item_header">
+							{% if group_title %}
+								<h3 class="news_feature_item_title">
+							{% else %}
+								<h2 class="news_feature_item_title">
+							{% endif %}
+								{% include '@partial-link' with {
+									class: 'news_feature_item_title',
+									title: item.title,
+									url: item.url
+								} %}
+							{% if group_title %}
+								</h3>
+							{% else %}
+								</h2>
+							{% endif %}
+							{% if item.date or item.categories %}
+								<div class="news_feature_item_details">
+									{% if item.date %}
+										<div class="news_feature_item_detail news_feature_item_date">
+											<span class="news_feature_item_detail_hint">Published:&nbsp;</span>
+											<time class="news_feature_item_detail_label" datetime="{{ item.date }}">{{ item.date|date('F j, Y') }}</time>
+										</div>
+									{% endif %}
+									{% if item.categories %}
+										<div class="news_feature_item_categories">
+											<div class="news_feature_item_category_hint">Categories</div>
+											<ul class="news_feature_item_category_list" aria-label="Categories">
+												{% for category in item.categories %}
+													<li class="news_feature_item_category">
+														<a class="news_feature_item_category_link" href="{{ category.url }}">{{ category.label }}</a>
+													</li>
+												{% endfor %}
+											</ul>
+										</div>
+									{% endif %}
+								</div>
+							{% endif %}
+						</div>
+						<div class="news_feature_item_body">
+							{% if item.description %}
+								<div class="news_feature_item_description">
+									<p>{{ item.description }}</p>
+								</div>
+							{% endif %}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- END: News Feature -->

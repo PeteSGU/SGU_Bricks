@@ -1,0 +1,28 @@
+<div class="event_list">
+	<div class="fs-row">
+		<div class="fs-cell">
+			<div class="event_list_inner">
+				<ul class="event_list_rows" id="item_list" aria-label="Events">
+					{% for item in items %}
+						<li class="event_list_row">
+							{% include "partials/events/event-list-item.twig" with {
+								item: item
+							} %}
+						</li>
+					{% endfor %}
+				</ul>
+
+				{% if pagination.pages %}
+					{% include "partials/pagination.twig" with {
+						"pagination": pagination,
+						"page_link": page_link
+					} %}
+				{% endif %}
+			</div>
+		</div>
+	</div>
+</div>
+
+{% if not items|length %}
+	{% include "partials/no-results-message.twig" %}
+{% endif %}

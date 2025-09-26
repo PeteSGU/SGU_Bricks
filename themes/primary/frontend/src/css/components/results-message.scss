@@ -1,0 +1,19 @@
+/* ==========================================================================
+	Results Message
+============================================================================= */
+
+.results_message {
+	@include margined_xl;
+}
+
+.results_message_inner {
+	p {
+		&:first-child {
+			margin-top: 0;
+		}
+
+		&:last-child {
+			margin-bottom: 0;
+		}
+	}
+}

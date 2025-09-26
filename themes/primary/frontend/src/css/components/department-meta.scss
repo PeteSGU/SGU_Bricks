@@ -1,0 +1,104 @@
+/* ==========================================================================
+	Department Meta
+============================================================================= */
+
+.department_meta {
+}
+
+.department_meta_inner {
+	border-bottom: 1px solid;
+	padding: 30px 0;
+}
+
+.department_meta_details {
+}
+
+.department_meta_details {
+	display: grid;
+	gap: 20px;
+
+	@media #{$min_lg} {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 40px;
+	}
+}
+
+.department_meta_detail {
+	align-content: start;
+	display: grid;
+	gap: 20px;
+	grid-template-rows: max-content;
+}
+
+.department_meta_detail_label {
+	@include h6;
+}
+
+.department_meta_detail_item {
+}
+
+.department_meta_detail_item_header {
+	align-items: center;
+	display: flex;
+	gap: 10px;
+	margin-bottom: 4px;
+}
+
+.department_meta_detail_icon {
+}
+
+.department_meta_detail_hint {
+	@include label_text;
+}
+
+.department_meta_detail_info {
+	@include small_text;
+
+	display: block;
+}
+
+.department_meta_detail_info_link {
+	text-decoration: underline;
+	transition: color $base_speed;
+
+	@include hover {
+		color: $black;
+	}
+
+	&:after {
+		@media print {
+			content: normal;
+		}
+	}
+}
+
+.department_meta_socials {
+	display: grid;
+	gap: 10px;
+}
+
+.department_meta_social {
+}
+
+.department_meta_social_link {
+	align-items: center;
+	display: inline-flex;
+	gap: 10px;
+	text-decoration: underline;
+	transition: color $base_speed;
+
+	@include hover {
+		color: $black;
+	}
+}
+
+.department_meta_social_link_icon {
+}
+
+.department_meta_social_link_label {
+}
+
+.department_meta_social_punctuation {
+	display: none;
+}

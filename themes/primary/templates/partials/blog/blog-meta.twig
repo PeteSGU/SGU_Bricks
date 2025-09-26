@@ -1,0 +1,45 @@
+<div class="blog_meta" id="meta" data-type="blog" data-category="{{ item.fw_categories|map(i => i.name)|join(', ')|e('html_attr') }}">
+	<div class="fs-row">
+		<div class="fs-cell">
+			<div class="blog_meta_inner">
+				<div class="blog_meta_body">
+					{% if item.fw_date or item.fw_author or item.fw_duration %}
+						<div class="blog_meta_details">
+							{% if item.fw_date %}
+								<div class="blog_meta_detail blog_meta_date">
+									<span class="blog_meta_detail_hint">Published:&nbsp;</span>
+									<time class="blog_meta_detail_label" datetime="{{ item.fw_date }}">{{ item.fw_date|date('F j, Y') }}</time>
+								</div>
+							{% endif %}
+							{% if item.fw_author %}
+								<div class="blog_meta_detail blog_meta_author">
+									<span class="blog_meta_detail_hint">- by&nbsp;</span>
+									<span class="blog_meta_detail_label">{{ item.fw_author }}</span>
+								</div>
+							{% endif %}
+							{% if item.fw_minutes_to_read %}
+								<div class="blog_meta_detail blog_meta_duration">
+									<span class="blog_meta_detail_label">{{ item.fw_minutes_to_read }} min read</span>
+								</div>
+							{% endif %}
+						</div>
+					{% endif %}
+
+					{% if item.fw_categories %}
+						<div class="blog_meta_categories_block">
+							<ul class="blog_meta_categories" aria-label="Categories">
+								{% for category in item.fw_categories %}
+									{% set link = archive_link ~ "?category[]=" ~ category.slug %}
+
+									<li class="blog_meta_category">
+										<a class="blog_meta_category_link" href="{{ link }}">{{ category.name }}</a>
+									</li>
+								{% endfor %}
+							</ul>
+						</div>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,45 @@
+/* ==========================================================================
+	Call to Action
+============================================================================= */
+
+.cta {
+	@include padded_xl;
+
+	background-color: $gray_10;
+}
+
+.cta_inner {
+	display: grid;
+	gap: 20px;
+}
+
+.cta_description {
+	@include body_text;
+
+	p {
+		margin-block: 0;
+	}
+}
+
+.cta_action {
+}
+
+.cta_link {
+	@include button_fill('blue');
+	@include button_mixed_block;
+
+	text-decoration: underline;
+}
+
+.cta_link_inner {
+	align-items: center;
+	display: flex;
+	gap: 10px;
+}
+
+.cta_link_label {
+	@include h6;
+}
+
+.cta_link_icon {
+}

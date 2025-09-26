@@ -1,0 +1,51 @@
+{% extends "_base.twig" %}
+
+{% block content %}
+	{% include "partials/page-header.twig" %}
+
+	<div class="people_entry">
+		<script type="application/ld+json">
+			{{ post.fw_ld_json }}
+		</script>
+
+		<!-- Page Feature -->
+		<div class="page_feature" id="page_content" tabindex="-1" aria-labelledby="page_title">
+			{% include 'partials/people/people-meta.twig' with {
+				item: {
+					email_address: post.fw_email_address,
+					phone_numbers: post.fw_phone_numbers,
+					location: post.fw_location,
+					office_hours: post.fw_office_hours,
+					social_links: post.fw_social_links,
+					departments: post.fw_departments
+				}
+			} %}
+		</div>
+		<!-- END: Page Feature -->
+
+		<div class="page_content">
+			<div class="fs-row">
+				<div class="fs-cell {{ cell }}">
+					{% if post.image %}
+						<figure class="news_entry_figure">
+							{% include "partials/image.twig" with {
+								class: "people_entry",
+								alt: "",
+								image: post.image,
+								sources: [
+									"square-xsml",
+									"square-xxsml",
+									"square-thumb"
+								]
+							} %}
+						</figure>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+
+		<div class="full_width_callouts">
+			{{ post.content }}
+		</div>
+	</div>
+{% endblock %}

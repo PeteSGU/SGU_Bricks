@@ -1,0 +1,64 @@
+<footer class="footer" id="footer">
+	<div class="footer_ribbon">
+		<div class="fs-row">
+			<div class="fs-cell">
+				<div class="footer_ribbon_inner">
+					<div class="footer_logo">
+						{% include 'partials/logo.twig' with {
+							modifier: 'footer',
+							icon: page_logo,
+							print: ''
+						} %}
+					</div>
+
+					<div class="footer_social_nav">
+						{% include 'navigation/social.twig' with {
+							title: 'Social',
+							links: menu.social_navigation.count ? menu.social_navigation.items : global.menu.social_navigation.items
+						} %}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="footer_primary">
+		<div class="fs-row">
+			<div class="fs-cell">
+				<div class="footer_primary_inner">
+					<div class="footer_primary_group">
+						<div class="footer_footer_nav">
+							{% include 'navigation/basic.twig' with {
+								class: 'footer',
+								modifier: '',
+								title: 'Footer',
+								active_index: '',
+								links: global.menu.footer_navigation.items
+							} %}
+						</div>
+
+						<div class="footer_meta">
+							{% include 'partials/meta.twig' %}
+						</div>
+					</div>
+
+					<div class="footer_primary_row">
+						<div class="footer_utility_nav">
+							{% include 'navigation/basic.twig' with {
+								class: 'utility',
+								modifier: '',
+								title: 'Utility',
+								active_index: '',
+								links: global.menu.utility_navigation.items
+							} %}
+						</div>
+
+						<div class="footer_copyright">
+							{% include 'partials/copyright.twig' %}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</footer>

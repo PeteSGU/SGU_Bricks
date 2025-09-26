@@ -1,0 +1,24 @@
+{#
+	{% include "@partial-lazy-video" with {
+		class: '',
+		id: '306272054',
+		type: 'vimeo',
+		title: 'Some Video Title',
+	} %}
+#}
+
+{% set config = {
+	id: id,
+	type: type,
+	title: title
+} %}
+
+<div class="{{ class }}_lazy_video lazy_video js-video-lazy-load {{ toggle ? "has_toggle" : "" }}" data-video-lazy-load='{{ config|json_encode }}'>
+	<button type="button" class="lazy_video_toggle_btn js-play-btn" aria-label="Video Play Button">
+		{{ icon('video_play') }}
+	</button>
+	
+	<div class="lazy_video_iframe_wrap">
+		<div class="lazy_video_iframe_target js-iframe-target"></div>
+	</div>
+</div>

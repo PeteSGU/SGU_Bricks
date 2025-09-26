@@ -1,0 +1,42 @@
+<!-- Department List -->
+<div class="department_list">
+	<div class="fs-row">
+		<div class="fs-cell">
+			<div class="department_list_inner">
+				<span class="news_list_header">
+					Showing{% if results_text%} results for:{% endif%}
+					<span>{{ results_text|default('All')  }}</span>
+				</span>
+				
+				<div class="department_list_header">
+					<p class="department_list_header_label">Name</p>
+					<p class="department_list_header_label">Contact</p>
+				</div>
+
+				<ul class="department_list_items" id="item_list" aria-label="{{ title }}">
+					{% for item in items %}
+						<li class="department_list_row">
+							{% include 'partials/department/department-item.twig' with {
+								item: item
+							} %}
+						</li>
+					{% endfor %}
+				</ul>
+
+				{% if pagination.pages %}
+					<div class="department_list_pagination">
+						{% include "partials/pagination.twig" with {
+							"pagination": pagination,
+							"page_link": page_link
+						} %}
+					</div>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+</div>
+<!-- END: Department List -->
+
+{% if not items|length %}
+	{% include "partials/no-results-message.twig" %}
+{% endif %}

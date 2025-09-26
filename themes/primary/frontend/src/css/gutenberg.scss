@@ -1,0 +1,61 @@
+// =============================================================================
+// Imports
+// =============================================================================
+
+@import 'settings/variables';
+@import 'settings/colors';
+
+@import 'tools/functions';
+@import 'tools/mixins';
+
+@import 'generic/normalize';
+@import 'generic/fonts';
+
+@import 'plugins/grid';
+
+@import 'partials/icons';
+@import 'partials/type';
+@import 'partials/buttons';
+
+// .interface-complementary-area.edit-post-sidebar {
+// 	@media (min-width: 782px) {
+// 		width: min(30vw, 550px);
+// 	}
+// }
+
+.wp-block.wp-block[class*='wp-block-acf'] {
+	@import 'components/*';
+
+	:where(ul, ol) {
+		@include remove_list;
+	}
+
+	a {
+		color: reset;
+		font: reset;
+	}
+
+	.filter {
+		margin-block: 0;
+	}
+
+	&:not(.alignfull, .alignwide) .fs-row {
+		width: 100%;
+	}
+
+	.accordion {
+		.accordion_item_content_figure,
+		.accordion_item_description {
+			opacity: 1;
+		}
+	}
+
+	.expandable_topics {
+		.expandable_topics_figure,
+		.expandable_topic_description,
+		.expandable_topic_link {
+			display: block;
+			opacity: 1;
+		}
+	}
+}

@@ -1,0 +1,64 @@
+/* ==========================================================================
+	Google Translate
+============================================================================= */
+
+#google_translate_element {
+	clear: both;
+
+	.goog-te-gadget {
+		font-size: 12px;
+	}
+
+	.goog-te-gadget-simple {
+		background-color: $white;
+		border: 0;
+		border-radius: 4px;
+		padding: 10px;
+		transition: background-color $base_speed;
+
+		@include hover {
+			background-color: rgba($white, 0.85);
+		}
+	}
+
+	.goog-te-gadget-icon {
+	}
+
+	.goog-te-gadget-icon + span {
+	}
+
+	.goog-te-menu-value {
+		[style*='border-left'] {
+			display: none;
+		}
+
+		span:last-child {
+			position: relative;
+
+			color: transparent !important;
+
+			&:before {
+				position: absolute;
+				top: 50%;
+				left: 50%;
+
+				border: 6px solid transparent;
+				border-top-color: black;
+				content: '';
+				margin-top: 3px;
+				rotate: x 0deg;
+				scale: 0.75 1;
+				translate: -50% -50%;
+			}
+
+			&[style*='213'] {
+				&:before {
+					margin-top: -2px;
+					rotate: x 180deg;
+					scale: 0.75 1;
+					translate: -50% -50%;
+				}
+			}
+		}
+	}
+}

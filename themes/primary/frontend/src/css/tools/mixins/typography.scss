@@ -1,0 +1,107 @@
+/* ==========================================================================
+	Typography
+============================================================================= */
+
+@mixin sans($weight: null) {
+	font-family: 'Montserrat', 'montserrat', 'Source Sans', 'Helvetica Neue', Helvetica,
+		'Arial Black', Arial, sans-serif;
+
+	@if $weight != null {
+		font-weight: $weight;
+	}
+}
+
+@mixin serif($weight: null) {
+	font-family: serif;
+
+	@if $weight != null {
+		font-weight: $weight;
+	}
+}
+
+// Headings
+// =============================================================================
+
+@mixin h1 {
+	font-size: font_size_clamp(38px, 80px);
+	font-weight: 800;
+	line-height: calc(84 / 80);
+}
+
+@mixin h1_small {
+	font-size: font_size_clamp(30px, 58px);
+	font-weight: 800;
+	line-height: calc(72 / 58);
+}
+
+@mixin h2 {
+	font-size: font_size_clamp(32px, 54px);
+	font-weight: 800;
+	line-height: calc(66 / 54);
+}
+
+@mixin h3 {
+	font-size: font_size_clamp(28px, 42px);
+	font-weight: 800;
+	line-height: calc(52 / 42);
+}
+
+@mixin h4 {
+	font-size: font_size_clamp(24px, 32px);
+	font-weight: 700;
+	line-height: calc(42 / 32);
+}
+
+@mixin h5 {
+	font-size: font_size_clamp(18px, 24px);
+	font-weight: 700;
+	line-height: calc(32 / 24);
+}
+
+@mixin h6 {
+	font-size: 14px;
+	font-weight: 500;
+	letter-spacing: 1px;
+	line-height: calc(18 / 14);
+	text-transform: uppercase;
+}
+
+@mixin intro_text {
+	font-size: font_size_clamp(21px, 24px);
+	font-weight: 300;
+	line-height: calc(36 / 24);
+}
+
+@mixin body_text {
+	font-size: font_size_clamp(16px, 18px);
+	line-height: calc(30 / 18);
+}
+
+@mixin small_text {
+	font-size: 16px;
+	line-height: calc(24 / 16);
+}
+
+@mixin label_text {
+	font-size: 12px;
+	line-height: calc(22 / 14);
+}
+
+@mixin caption_text {
+	font-size: font_size_clamp(14px, 16px);
+	font-weight: 500;
+	line-height: calc(24 / 16);
+}
+
+@mixin type_link() {
+	text-decoration: underline;
+	transition: color $base_speed;
+}
+
+@mixin type_button() {
+	font-size: 12px;
+	font-weight: 700;
+	letter-spacing: 0.06em;
+	line-height: 1;
+	text-transform: uppercase;
+}

@@ -1,0 +1,76 @@
+// =============================================================================
+// Colors
+// =============================================================================
+
+// theme colors
+$blue_navy: #1e1e64;
+$turquoise: #b2ebee;
+$turquoise_dark: #00a5ad;
+$turquoise_medium: #b2ebee;
+$turquoise_light: #e8f9fa;
+$red_brand: #b30838;
+$orange: #ff6400;
+
+$black: #000;
+$gray: #393939;
+$gray_medium: #a9a9a9;
+$white: #fff;
+
+$gray_light: #f4f4f4;
+$red: #a70034;
+
+$theme_colors: (
+	'red_brand': (
+		'background': $red_brand,
+		'foreground': $white
+	),
+	'turquoise': (
+		'background': $turquoise,
+		'foreground': $blue_navy
+	),
+	'blue_navy': (
+		'background': $blue_navy,
+		'foreground': $white
+	),
+	'orange': (
+		'background': $orange,
+		'foreground': $black
+	),
+	'white': (
+		'background': $white,
+		'foreground': $blue_navy
+	)
+);
+
+$gray_05: #f2f2f2;
+$gray_10: #eaeaea;
+$gray_20: #cccccc;
+$gray_30: #b2b2b2;
+$gray_40: #999999;
+$gray_50: #808080;
+$gray_60: #666666;
+$gray_70: #4d4d4d;
+$gray_80: #333333;
+$gray_90: #222222;
+
+// Themes
+// =============================================================================
+
+@mixin theme($list: $theme_colors) {
+	@each $key, $item in $list {
+		$background: map-get($item, 'background');
+		$foreground: map-get($item, 'foreground');
+
+		.body_theme_#{$key} {
+			--page-bg: #{$background};
+			--page-fg: #{$foreground};
+		}
+
+		.theme_#{$key} {
+			--theme-bg: #{$background};
+			--theme-fg: #{$foreground};
+		}
+	}
+}
+
+@include theme($theme_colors);

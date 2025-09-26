@@ -1,0 +1,127 @@
+/* ==========================================================================
+	Alert
+============================================================================= */
+
+.alert {
+	width: 100%;
+	min-height: 80px;
+
+	background-color: $red_brand;
+	color: $white;
+	display: none;
+
+	@media print {
+		@include margined_xl_bottom;
+	}
+
+	&.enabled {
+		display: block;
+	}
+
+	&.visible {
+		@media print {
+			position: relative;
+		}
+	}
+}
+
+.alert_inner {
+	position: relative;
+
+	padding-block: 20px;
+}
+
+.alert_header {
+	@include visually_hide;
+}
+
+.alert_title {
+}
+
+.alert_title_label {
+}
+
+.alert_body {
+	margin-right: 60px;
+
+	@media #{$min_md} {
+		max-width: 87%;
+
+		margin-right: 0;
+	}
+
+	@media #{$min_lg} {
+		max-width: 90%;
+	}
+}
+
+.alert_description {
+	font-weight: 700;
+	font-size: 14px;
+	line-height: calc(24 / 14);
+
+	p:first-child {
+		margin-top: 0;
+	}
+
+	p:last-child {
+		margin-bottom: 0;
+	}
+
+	a {
+		color: inherit;
+		text-decoration: underline;
+
+		&:hover,
+		&:focus {
+			text-decoration: none;
+		}
+	}
+}
+
+.alert_close {
+	width: 40px;
+
+	position: absolute;
+	top: 10px;
+	right: 0;
+
+	aspect-ratio: 1;
+	background-color: $white;
+	border-radius: 4px;
+	box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.1);
+	color: $red_brand;
+	display: none;
+	text-decoration: none;
+	transition: box-shadow $base_speed, color $base_speed;
+
+	filter: drop-shadow(4px 4px 0px rgba(0, 0, 0, 0.1));
+
+	@media #{$min_lg} {
+		top: 20px;
+		right: 0;
+	}
+
+	@include hover {
+		box-shadow: 0 0 0 rgba(0, 0, 0, 0.1);
+	}
+
+	.js & {
+		display: block;
+
+		@media print {
+			display: none;
+		}
+	}
+}
+
+.alert_close_inner {
+}
+
+.alert_close_icon {
+	@include center;
+}
+
+.alert_close_label {
+	@include visually_hide;
+}

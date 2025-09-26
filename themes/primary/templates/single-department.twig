@@ -1,0 +1,44 @@
+{% extends "_base.twig" %}
+
+{% block content %}
+	{% include "partials/page-header.twig" %}
+
+	<article class="news_entry">
+		<script type="application/ld+json">
+			{{ post.fw_ld_json }}
+		</script>
+	</article>
+
+	<div class="page_feature" id="skip_content" tabindex="-1">
+		{% include "partials/department/department-meta.twig" with {
+			item: {
+				phone_numbers: [
+					{
+						label: 'Phone',
+						number: post.phone_number
+					}
+				],
+				email: post.email_address,
+				location: post.location,
+				office_hours: post.fw_office_hours,
+				social_links: post.fw_social_links,
+				data_departments: post.fw_data_departments,
+			}
+		} %}
+	</div>
+
+	<div class="page_content">
+		{{ post.content }}
+	</div>
+
+	{% if components|length %}
+		<div class="full_width_callouts">
+			{% for component in components %}
+				{% include [
+					"components/" ~ component.acf_fc_layout ~ ".twig",
+					"components/not-found.twig"
+				] with component %}
+			{% endfor %}
+		</div>
+	{% endif %}
+{% endblock %}

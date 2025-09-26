@@ -1,0 +1,16 @@
+<div class="js-site-search site_search{% if modifier %} site_search_{{ modifier }}{% endif %}" id="site_search{% if modifier %}_{{ modifier }}{% endif %}" role="search" itemscope itemtype="https://schema.org/WebSite" aria-label="{{ aria }}">
+	<meta itemprop="url" content="http://{{ framework.config.domain }}">
+	<form class="site_search_form" action="{{ site.url }}/search" itemprop="potentialAction" itemscope itemtype="http://schema.org/SearchAction">
+		<meta itemprop="target" content="{{ site.url }}/search?q={q}">
+		<label class="js-site-search-label site_search_label" for="search_string_{% if modifier %}_{{ modifier }}{% endif %}">{{ label ?: "Search" }}</label>
+		<div class="site_search_field">
+			<input class="js-site-search-input site_search_input" itemprop="query-input" type="search" id="search_string_{% if modifier %}_{{ modifier }}{% endif %}" name="q" {% if placeholder %} placeholder="{{ placeholder }}" {% endif %} required>
+			<button class="site_search_button" type="submit" {% if not button_text %} aria-label="Search" {% endif %}>
+				{% if button_text %}
+					<span class="site_search_button_label">{{ button_text }}</span>
+				{% endif %}
+				<span class="site_search_button_icon">{{ icon("search") }}</span>
+			</button>
+		</div>
+	</form>
+</div>

@@ -1,0 +1,285 @@
+{#
+	{% include '@component-highlights' with {
+		title: 'Title',
+		description: 'Description',
+		rows: [
+			{
+				layout: 'cards',
+				items: [
+					{
+						type: 'image',
+						image: '1',
+						alt: ''
+					},
+					{
+						type: 'stat',
+						figure: 'NUM',
+						label: 'Label',
+						description: '<p>Description</p>',
+						link: {
+							url: '#',
+							label: 'Link Label'
+						}
+					},
+					{
+						type: 'text',
+						title: 'Title',
+						description: 'Description',
+						links: [
+							{
+								url: '#',
+								label: 'Link Label'
+							}
+						]
+					}
+				]
+			},
+			{
+				layout: 'single',
+				item: {
+					image: '1',
+					alt: '',
+					title: 'Title',
+					description: 'Description',
+					links: [
+						{
+							url: '#',
+							label: 'Link Label'
+						}
+					]
+				}
+			},
+			{
+				layout: 'double',
+				items: [
+					{
+						title: 'Title',
+						image: '1',
+						alt: '',
+						description: 'Description',
+						link: {
+							url: '#',
+							label: 'Link Label'
+						}
+					},
+					{
+						title: 'Title',
+						image: '1',
+						alt: '',
+						description: 'Description',
+						link: {
+							url: '#',
+							label: 'Link Label'
+						}
+					}
+				]
+			}
+		]
+	} %}
+#}
+
+<!-- Highlights -->
+<div class="highlights">
+	<div class="highlights_header">
+		<div class="fs-row">
+			<div class="fs-cell fs-lg-9">
+				<div class="highlights_header_inner">
+					<h2 class="highlights_title">{{ title }}</h2>
+					<div class="highlights_description">
+						<p>{{ description }}</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="highlights_body">
+		<div class="fs-row">
+			<div class="fs-cell">
+				<div class="highlights_body_inner">
+					{% for row in rows %}
+						{% if row.layout == 'cards' %}
+							<div class="highlights_items highlights_layout_three">
+								{% for item in row.items %}
+									{% if item.type == 'image' %}
+										<div class="highlights_item highlights_card highlights_item_third highlights_card_media">
+											<div class="highlights_card_inner">
+												<figure class="highlights_card_figure">
+													{% include '@partial-image' with {
+														class: 'highlights_card',
+														alt: item.alt,
+														image: item.image,
+														loading: 'lazy',
+														sources: [
+															img.portraitFull.xlrg,
+															img.portraitFull.lrg,
+															img.portraitFull.med,
+															img.portraitFull.sml,
+															img.portraitFull.xsml,
+															img.portraitFull.xxsml
+														],
+														sizes: [
+															'(min-width: 1394px) 404px',
+															'(min-width: 1220px) 354px',
+															'(min-width: 980px) 300px',
+															'(min-width: 740px) 334px',
+															'90vw'
+														]
+													} %}
+												</figure>
+											</div>
+										</div>
+									{% elseif item.type == 'stat' %}
+										<div class="highlights_item highlights_card highlights_item_third highlights_card_stat">
+											<div class="highlights_card_inner">
+												<div class="highlights_card_header">
+													<h3 class="highlights_card_stat_title">
+														<strong class="highlights_card_stat_title_figure">{{ item.figure }}</strong>
+														<span class="highlights_card_stat_title_label">{{ item.label }}</span>
+													</h3>
+												</div>
+												<div class="highlights_card_body">
+													<div class="highlights_card_stat_description">{{ item.description }}</div>
+												</div>
+												{% if item.link %}
+													<div class="highlights_card_footer">
+														<div class="highlights_card_stat_link_item">
+															<a class="highlights_card_stat_link" href="{{ item.link.url }}">{{ item.link.label }}</a>
+														</div>
+													</div>
+												{% endif %}
+											</div>
+										</div>
+									{% elseif item.type == 'text' %}
+										<div class="highlights_item highlights_card highlights_item_third highlights_card_text">
+											<div class="highlights_card_inner">
+												<div class="highlights_card_header">
+													<h3 class="highlights_card_text_title">{{ item.title }}</h3>
+												</div>
+												<div class="highlights_card_body">
+													<p class="highlights_card_text_description">{{ item.description }}</p>
+												</div>
+												<div class="highlights_card_footer">
+													{% for link in item.links %}
+														<div class="highlights_card_text_link_item">
+															{% include '@partial-link' with {
+																class: 'highlights_card_text',
+																title: link.label,
+																url: link.url,
+																icon: 'caret_right',
+																nowrap: true
+															} %}
+														</div>
+													{% endfor %}
+												</div>
+											</div>
+										</div>
+									{% endif %}
+								{% endfor %}
+							</div>
+						{% elseif row.layout == 'single' %}
+							<div class="highlights_items highlights_layout_single">
+								<div class="highlights_single_main">
+									<div class="highlights_single_header">
+										<h3 class="highlights_single_text_title">{{ row.item.title }}</h3>
+									</div>
+									<div class="highlights_single_body">
+										<p class="highlights_single_text_description">{{ row.item.description }}</p>
+									</div>
+									<div class="highlights_single_footer">
+										{% for link in row.item.links %}
+											<div class="highlights_single_text_link_item">
+												{% include '@partial-link' with {
+													class: 'highlights_single_text',
+													title: link.label,
+													url: link.url,
+													icon: 'caret_right',
+													nowrap: true
+												} %}
+											</div>
+										{% endfor %}
+									</div>
+								</div>
+								<div class="highlights_single_media">
+									<figure class="highlights_single_figure">
+										{% include '@partial-image' with {
+											class: 'highlights_single',
+											alt: row.item.alt,
+											image: row.item.image,
+											loading: 'lazy',
+											sources: [
+												img.wide.xlrg,
+												img.wide.lrg,
+												img.wide.med,
+												img.wide.sml,
+												img.wide.xsml,
+												img.wide.xxsml
+											],
+											sizes: [
+												'(min-width: 1394px) 864px',
+												'(min-width: 1220px) 754px',
+												'(min-width: 980px) 604px',
+												'(min-width: 740px) 694px',
+												'90vw'
+											]
+										} %}
+									</figure>
+								</div>
+							</div>
+						{% elseif row.layout == 'double' %}
+							<div class="highlights_items highlights_layout_double">
+								{% for item in row.items %}
+									<div class="highlights_item highlights_double">
+										<div class="highlights_double_inner">
+											<div class="highlights_double_header">
+												<h3 class="highlights_double_title">{{ item.title }}</h3>
+											</div>
+											<div class="highlights_double_body">
+												<figure class="highlights_double_figure">
+													{% include '@partial-image' with {
+														class: 'highlights_double',
+														alt: item.alt,
+														image: item.image,
+														loading: 'lazy',
+														sources: [
+															img.wide.lrg,
+															img.wide.med,
+															img.wide.sml,
+															img.wide.xsml,
+															img.wide.xxsml
+														],
+														sizes: [
+															'(min-width: 1394px) 514px',
+															'(min-width: 1220px) 434px',
+															'(min-width: 980px) 324px',
+															'(min-width: 740px) 272px',
+															'90vw'
+														]
+													} %}
+												</figure>
+												<div class="highlights_double_description">
+													<p>{{ item.description }}</p>
+												</div>
+											</div>
+											<div class="highlights_double_footer">
+												<div class="highlights_double_link_item">
+													{% include '@partial-link' with {
+														class: 'highlights_double',
+														title: item.link.label,
+														url: item.link.url,
+														icon: 'caret_right',
+														nowrap: true
+													} %}
+												</div>
+											</div>
+										</div>
+									</div>
+								{% endfor %}
+							</div>
+						{% endif %}
+					{% endfor %}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- END: Highlights -->

@@ -1,0 +1,25 @@
+{% extends "_base.twig" %}
+
+{% block content %}
+	<article class="news_entry">
+		<script type="application/ld+json">
+			{{ post.fw_ld_json }}
+		</script>
+	</article>
+
+	<div class="page_content">
+		<div class="fs-row">
+			<div class="fs-cell fs-lg-2 fs-xl-3">
+				{%  include "partials/news/news-meta.twig" with {
+					item: post
+				} %}
+			</div>
+			
+			<div class="fs-cell fs-lg-10 fs-xl-8">
+				<div class="wp-site-blocks">
+					{{ post.content }}
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

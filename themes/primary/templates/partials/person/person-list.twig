@@ -1,0 +1,38 @@
+<!-- People List -->
+<div class="people_list">
+	<div class="fs-row">
+		<div class="fs-cell">
+			<div class="people_list_inner">
+				<div class="people_list_header">
+					<p class="people_list_header_label">Name</p>
+					<p class="people_list_header_label">Contact</p>
+					<p class="people_list_header_label">School & Department</p>
+				</div>
+
+				<ul class="people_list_rows" id="item_list" aria-label="{{ title }}">
+					{% for item in items %}
+						<li class="people_list_row">
+							{% include "partials/person/person-item.twig" with {
+								item: item
+							} %}
+						</li>
+					{% endfor %}
+				</ul>
+
+				{% if pagination.pages %}
+					<div class="people_list_pagination">
+						{% include "partials/pagination.twig" with {
+							"pagination": pagination,
+							"page_link": page_link
+						} %}
+					</div>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+</div>
+<!-- END: People List -->
+
+{% if not items|length %}
+	{% include "partials/no-results-message.twig" %}
+{% endif %}

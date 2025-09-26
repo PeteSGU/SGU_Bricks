@@ -1,0 +1,82 @@
+<div class="news_related_categories news_related_stacked">
+	<div class="fs-row">
+		<div class="fs-cell">
+			<div class="news_related_categories_inner">
+				<div class="news_related_categories_header">
+					<div class="news_related_categories_header_inner">
+						<h2 class="news_related_categories_title">{{ group_title }}</h2>
+					</div>
+				</div>
+				<div class="news_related_categories_body">
+					<ul class="news_related_categories_items" aria-label="{% if group_title %}{{ group_title }}{% else %}Related News{% endif %}">
+						{% for item in items %}
+							<li class="news_related_categories_item">
+								{% if item.image %}
+									<figure class="news_related_categories_item_figure">
+										<a class="news_related_categories_item_figure_link" href="{{ item.url }}" aria-label="Read more about {{ item.title }}" tabindex="-1">
+											{% include '@partial-image' with {
+												class: 'news_related_categories_item',
+												alt: '',
+												image: item.image,
+												loading: 'lazy',
+												sources: [
+													img.classic.med,
+													img.classic.sml,
+													img.classic.xsml,
+													img.classic.xxsml
+												]
+											} %}
+										</a>
+										{% if item.video %}
+										<span class="news_related_categories_item_figure_icon">{{ icon("video") }}</span>
+										{% elseif item.podcast %}
+										<span class="news_related_categories_item_figure_icon">{{ icon("podcast") }}</span>
+										{% endif %}
+									</figure>
+								{% endif %}
+								<div class="news_related_categories_item_wrapper">
+									<div class="news_related_categories_item_header">
+										<h3 class="news_related_categories_item_title">
+											{% include '@partial-link' with {
+												class: 'news_related_categories_item_title',
+												title: item.title,
+												url: item.url
+											} %}
+										</h3>
+										<div class="news_related_categories_item_header_group">
+											{% if item.date %}
+												<div class="news_related_categories_item_date">
+													<span class="news_related_categories_item_date_hint">Published:&nbsp;</span>
+													<time class="news_related_categories_item_date_label" datetime="{{ item.date }}">{{ item.date|date('F j, Y') }}</time>
+												</div>
+											{% endif %}
+											{% if item.categories %}
+												<div class="news_related_categories_item_categories">
+													<div class="news_related_categories_item_category_hint">Categories</div>
+													<ul class="news_related_categories_item_category_list" aria-label="Categories">
+														{% for category in item.categories %}
+															<li class="news_related_categories_item_category">
+																<a class="news_related_categories_item_category_link" href="{{ category.url }}">{{ category.label }}</a>
+															</li>
+														{% endfor %}
+													</ul>
+												</div>
+											{% endif %}
+										</div>
+									</div>
+									<div class="news_related_categories_item_body">
+										{% if item.description %}
+											<div class="news_related_categories_item_description">
+												<p>{{ item.description }}</p>
+											</div>
+										{% endif %}
+									</div>
+								</div>
+							</li>
+						{% endfor %}
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

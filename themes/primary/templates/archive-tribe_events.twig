@@ -1,0 +1,21 @@
+{% extends "_base.twig" %}
+
+{% block content %}
+	<div class="full_width_callouts" id="skip_content" tabindex="-1">
+		{% if featured_post %}
+			{% include "partials/event/event-feature.twig" with {
+				item: featured_post[0],
+			} %}
+		{% endif %}
+
+		{% include "partials/event/event-list.twig" with {
+			items: posts,
+			page_link:  page_link,
+			pagination: posts.pagination,
+		} %}
+
+		{% if not posts|length %}
+			{% include "partials/no-results-message.twig" %}
+		{% endif %}
+	</div>
+{% endblock %}

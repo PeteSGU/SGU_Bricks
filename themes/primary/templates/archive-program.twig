@@ -1,0 +1,22 @@
+{% extends "_base.twig" %}
+
+{% block content %}
+	<div class="full_width_callouts" id="skip_content" tabindex="-1">
+		{% if featured_post %}
+			{% include "partials/news/news-feature.twig" with {
+				item: featured_post[0],
+			} %}
+		{% endif %}
+
+		{% include "partials/program/program-list.twig" with {
+			items: posts,
+			title: page_header.page.title,
+			page_link:  page_link,
+			pagination: posts.pagination,
+		} %}
+
+		{% if not posts|length %}
+			{% include "partials/no-results-message.twig" %}
+		{% endif %}
+	</div>
+{% endblock %}

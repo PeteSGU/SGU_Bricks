@@ -1,0 +1,85 @@
+/* ==========================================================================
+	Toggle Navigation
+============================================================================= */
+
+.toggle_nav_group {
+}
+
+.toggle_nav {
+	.toggle_nav_group.fs-swap-enabled & {
+		display: none;
+	}
+
+	.toggle_nav_group.fs-swap-active & {
+		display: block;
+	}
+}
+
+/* ==========================================================================
+	Collapse Navigation
+============================================================================= */
+
+.collapse_nav_toggle {
+	display: none;
+
+	&.fs-swap-enabled {
+		display: block;
+	}
+}
+
+.collapse_nav_children {
+	.collapse_nav_item.fs-swap-enabled & {
+		display: none;
+	}
+
+	.collapse_nav_item.fs-swap-active & {
+		display: block;
+	}
+}
+
+/* ==========================================================================
+	Dropdown Navigation
+============================================================================= */
+
+.dropdown_nav_item_inner {
+	position: relative;
+}
+
+.dropdown_nav_toggle {
+	display: none;
+
+	&.fs-swap-enabled {
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 0;
+
+		display: block;
+		opacity: 0;
+		pointer-events: none;
+		transition: opacity $base_speed;
+
+		&:focus {
+			opacity: 1;
+		}
+	}
+
+	&.fs-swap-active {
+		opacity: 1;
+	}
+}
+
+.dropdown_nav_children {
+	position: absolute;
+
+	opacity: 0;
+	pointer-events: none;
+	visibility: hidden;
+	transition: opacity $base_speed, visibility $base_speed;
+
+	@include nested_hover($selector: '.dropdown_nav_item', $swap: true) {
+		opacity: 1;
+		pointer-events: auto;
+		visibility: visible;
+	}
+}

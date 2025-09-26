@@ -1,0 +1,22 @@
+{
+    "key": "ui_options_page_65abfb93b74b7",
+    "title": "People Listing",
+    "active": true,
+    "menu_order": 0,
+    "page_title": "People Listing",
+    "menu_slug": "people-listing",
+    "parent_slug": "edit.php?post_type=person",
+    "advanced_configuration": 0,
+    "icon_url": "",
+    "menu_title": "",
+    "position": "",
+    "redirect": false,
+    "description": "",
+    "update_button": "Update",
+    "updated_message": "Options Updated",
+    "capability": "edit_posts",
+    "data_storage": "options",
+    "post_id": "",
+    "autoload": 0,
+    "modified": 1712849566
+}

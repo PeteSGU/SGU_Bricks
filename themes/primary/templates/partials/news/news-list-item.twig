@@ -1,0 +1,58 @@
+<div class="news_list_item">
+	{% if item.thumbnail %}
+		<figure class="news_list_item_figure">
+			<a class="news_list_item_figure_link" href="{{ item.link }}" aria-label="Read more about {{ item.title }}" tabindex="-1">
+				{% include "partials/image.twig" with {
+					class: "news_list_item",
+					alt: "",
+					image: item.thumbnail,
+					loading: "lazy",
+					sources: [
+						"classic-med",
+						"classic-sml",
+						"classic-xsml",
+						"classic-xxsml"
+					]
+				} %}
+			</a>
+		</figure>
+	{% endif %}
+	<div class="news_list_item_wrapper">
+		<div class="news_list_item_header">
+			<h2 class="news_list_item_title">
+				{% include "partials/link.twig" with {
+					class: "news_list_item_title",
+					title: item.title,
+					url: item.link
+				} %}
+			</h2>
+			{% if item.fw_date %}
+				<div class="news_list_item_date">
+					<span class="news_list_item_date_hint">Published:&nbsp;</span>
+					<time class="news_list_item_date_label" datetime="{{ item.fw_date }}">{{ item.fw_date|date("F j, Y") }}</time>
+				</div>
+			{% endif %}
+			{% if item.fw_categories %}
+				<div class="news_list_item_categories">
+					<div class="news_list_item_category_hint">Categories</div>
+					<ul class="news_list_item_category_list" aria-label="Categories">
+						{% for category in item.fw_categories %}
+							<li class="news_list_item_category">
+								<a class="news_list_item_category_link" href="{{ page_link }}?category[]={{ category.slug }}">
+									{{ category.name }}
+								</a>
+							</li>
+						{% endfor %}
+					</ul>
+				</div>
+			{% endif %}
+		</div>
+		<div class="news_list_item_body">
+			{% if item.introduction %}
+				<div class="news_list_item_description">
+					<p>{{ item.introduction }}</p>
+				</div>
+			{% endif %}
+		</div>
+	</div>
+</div>

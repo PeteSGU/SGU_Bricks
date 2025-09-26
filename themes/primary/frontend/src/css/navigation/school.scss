@@ -1,0 +1,77 @@
+/* ==========================================================================
+	School Navigation
+============================================================================= */
+
+.school_nav {
+	height: 100%;
+}
+
+.school_nav_header {
+	@include visually_hide;
+}
+
+.school_nav_title {
+}
+
+.school_nav_list {
+	@include type_button;
+
+	height: 100%;
+
+	display: flex;
+}
+
+.school_nav_item {
+}
+
+.school_nav_link {
+	height: 100%;
+
+	position: relative;
+
+	color: var(--navigation-color);
+	display: block;
+	padding-inline: 6px;
+	transition: color $base_speed;
+
+	@media #{$min_xl} {
+		padding-inline: 12px;
+	}
+
+	@include hover {
+		color: var(--navigation-hover-color);
+	}
+
+	&::after {
+		height: 2px;
+
+		position: absolute;
+		right: 12px;
+		bottom: -1px;
+		left: 12px;
+
+		background-color: var(--navigation-hover-color);
+		content: '';
+		display: block;
+		opacity: 0;
+	}
+
+	&.active {
+		color: var(--navigation-hover-color);
+
+		&::after {
+			opacity: 1;
+		}
+	}
+}
+
+.school_nav_link_inner {
+	height: 100%;
+
+	align-items: center;
+	display: flex;
+	gap: 10px;
+}
+
+.school_nav_link_label {
+}

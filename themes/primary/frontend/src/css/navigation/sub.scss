@@ -1,0 +1,195 @@
+/* ==========================================================================
+	Sub Navigation
+============================================================================= */
+
+.sub_nav_group {
+	position: relative;
+}
+
+.sub_nav_panel {
+	.sub_nav_group.fs-swap-enabled & {
+		width: 100%;
+
+		position: absolute;
+
+		display: block;
+		opacity: 0;
+		transition: opacity $base_speed, visibility $base_speed;
+		visibility: hidden;
+	}
+
+	.sub_nav_group.fs-swap-active & {
+		opacity: 1;
+		visibility: visible;
+	}
+}
+
+.sub_nav {
+}
+
+.sub_nav_header {
+	@include visually_hide;
+}
+
+.sub_nav_title {
+}
+
+.sub_nav_list {
+	background-color: $blue_navy;
+	box-shadow: 0 -6px 0 $blue_navy;
+	color: $white;
+	display: grid;
+	font-size: 14px;
+	font-weight: 700;
+	line-height: 1.2;
+	padding-bottom: 20px;
+}
+
+.sub_nav_item {
+}
+
+.sub_nav_link {
+	color: $turquoise;
+	display: block;
+	padding: 16px 20px 16px 33px;
+	transition: color $base_speed;
+
+	@media #{$min_lg} {
+		padding-inline: 0;
+	}
+
+	@include hover {
+		color: $white;
+	}
+}
+
+.sub_nav_link_inner {
+}
+
+.sub_nav_link_label {
+}
+
+/* Toggle
+============================================================================= */
+
+.sub_nav_toggle {
+	display: none;
+
+	&.fs-swap-enabled {
+		width: 100%;
+
+		position: relative;
+
+		background-color: $turquoise_light;
+		border-radius: 6px;
+		box-shadow: 4px 4px 0 rgba($black, 0.1);
+		color: $blue_navy;
+		display: block;
+		text-align: left;
+		transition: background-color $base_speed, border-radius $base_speed, box-shadow $base_speed,
+			color $base_speed;
+
+		@include hover {
+			background-color: $blue_navy;
+			color: $white;
+		}
+	}
+
+	&.fs-swap-active {
+		background-color: $blue_navy;
+		border-radius: 0;
+		box-shadow: 0 0 0 rgba($black, 0.1);
+		color: $white;
+	}
+}
+
+.sub_nav_toggle_inner {
+	width: 100%;
+
+	align-items: center;
+	display: flex;
+	gap: 10px;
+	padding: 20px;
+	transition: opacity $base_speed, visibility $base_speed;
+
+	&::before {
+		width: 3px;
+
+		aspect-ratio: 1;
+		background-color: $red_brand;
+		border-radius: 50%;
+		box-shadow: 0 -6px 0 $red_brand, 0 6px 0 $red_brand;
+		content: '';
+		display: block;
+		pointer-events: none;
+	}
+}
+
+.sub_nav_toggle_inner_default {
+	opacity: 1;
+	visibility: visible;
+
+	.sub_nav_toggle.fs-swap-active & {
+		opacity: 0;
+		visibility: hidden;
+	}
+}
+
+.sub_nav_toggle_inner_active {
+	position: absolute;
+	top: 0;
+
+	opacity: 0;
+	visibility: hidden;
+
+	.sub_nav_toggle.fs-swap-active & {
+		opacity: 1;
+		visibility: visible;
+	}
+}
+
+.sub_nav_toggle_label {
+	flex: 1;
+	font-size: 16px;
+	font-weight: 700;
+	line-height: 1.2;
+}
+
+.sub_nav_toggle_label_default {
+}
+
+.sub_nav_toggle_label_active {
+}
+
+.sub_nav_toggle_icon {
+	width: 24px;
+
+	position: relative;
+
+	aspect-ratio: 1;
+	border: 1px solid $turquoise_dark;
+	border-radius: 50%;
+	color: $red_brand;
+	transition: border $base_speed, color $base_speed, rotate $base_speed;
+
+	.icon {
+		@include center;
+	}
+
+	.sub_nav_toggle.fs-swap-active & {
+		border-color: $turquoise;
+		color: $turquoise;
+		rotate: 180deg;
+	}
+
+	@include nested_hover($selector: '.sub_nav_toggle') {
+		border-color: $turquoise;
+		color: $turquoise;
+	}
+}
+
+.sub_nav_toggle_icon_default {
+}
+
+.sub_nav_toggle_icon_active {
+}

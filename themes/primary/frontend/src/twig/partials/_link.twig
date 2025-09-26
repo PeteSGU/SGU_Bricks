@@ -1,0 +1,25 @@
+{#
+	{% include '@partial-link' with {
+		title: 'Button Text',
+		url: '#',
+		class: '',
+		js: false,
+		icon: '',
+		aria: '',
+		nowrap: false
+	} %}
+#}
+<a href="{{ url ?: '#' }}" class="{{ class }}_link{% if js %} js-{{ class|replace({ '_': '-'}) }}-link{% endif %}" {% if aria %} aria-label="{{ aria }}" {% endif %}>
+	<span class="{{ class }}_link_inner">
+		{% if nowrap == true %}
+			<span class="{{ class }}_link_label">{{ title }}</span><span class="icon_nowrap {{ class }}_link_icon" aria-hidden="true">&#xfeff;{{ icon(icon) }}</span>
+		{% else %}
+			<span class="{{ class }}_link_label">{{ title }}</span>
+			{% if icon %}
+				<span class="{{ class }}_link_icon" aria-hidden="true">
+					{{ icon(icon) }}
+				</span>
+			{% endif %}
+		{% endif %}
+	</span>
+</a>

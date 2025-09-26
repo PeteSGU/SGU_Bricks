@@ -1,0 +1,143 @@
+{
+    "key": "group_64b5a1d28dae0",
+    "title": "Blog Highlights OPTIONAL",
+    "fields": [
+        {
+            "key": "field_66f2ef8fdebab",
+            "label": "This Post Contains",
+            "name": "media",
+            "aria-label": "",
+            "type": "button_group",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "choices": {
+                "No Media": "No Media",
+                "Video": "Video",
+                "Audio": "Audio"
+            },
+            "default_value": "No Media",
+            "return_format": "value",
+            "allow_null": 0,
+            "layout": "horizontal"
+        },
+        {
+            "key": "field_64b5a2631d037",
+            "label": "Highlight 1",
+            "name": "highlight1",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "In text view (NOT visual) paste the following code before the section you would like the highlight to link to:<br>\r\n&lt;a id=\"highlight1\"&gt;&lt;\/a&gt;",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "allow_in_bindings": 1,
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_671facbb24f62",
+            "label": "Highlight 2",
+            "name": "highlight2",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "In text view (NOT visual) paste the following code before the section you would like the highlight to link to:<br>\r\n&lt;a id=\"highlight2\"&gt;&lt;\/a&gt;",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "allow_in_bindings": 1,
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_671faccb24f63",
+            "label": "Highlight 3",
+            "name": "highlight3",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "In text view (NOT visual) paste the following code before the section you would like the highlight to link to:<br>\r\n&lt;a id=\"highlight3\"&gt;&lt;\/a&gt;",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "allow_in_bindings": 1,
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_671facd924f64",
+            "label": "Highlight 4",
+            "name": "highlight4",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "In text view (NOT visual) paste the following code before the section you would like the highlight to link to:<br>\r\n&lt;a id=\"highlight4\"&gt;&lt;\/a&gt;",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "allow_in_bindings": 1,
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "post"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "acf_after_title",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": [
+        "excerpt",
+        "discussion",
+        "comments",
+        "revisions",
+        "slug",
+        "author",
+        "format",
+        "page_attributes",
+        "send-trackbacks"
+    ],
+    "active": true,
+    "description": "",
+    "show_in_rest": 0,
+    "modified": 1730129984
+}

@@ -1,0 +1,71 @@
+{#
+	{% include '@navigation-toggle' with {
+		class: 'class',
+		modifier: 'modifier',
+		title: 'Title',
+		links: [{ 'title': 'Page Title', 'url': '#', 'children': [] }],
+		icon: 'icon_item',
+		child_icon: 'icon_child',
+		toggle: {
+			title: 'Toggle Button Title',
+			icon: 'toggle_button_icon',
+			title_active: 'Toggle Button Active Title',
+			icon_active: 'toggle_button_active_icon',
+			swap_target: '.swap_target',
+			swap_link: 'swap_link'
+		}
+	} %}
+#}
+
+{% set js_class = 'js-' ~ class|replace({ '_': '-' }) %}
+{% set id = uniqid('toggle_nav_title') %}
+
+<div class="js-nav-toggle-group {{ js_class }}-nav-group{% if modifier %} {{ js_class }}-nav-group-{{ modifier }}{% endif %} toggle_nav_group {{ class }}_nav_group{% if modifier %} {{ class }}_nav_group_{{ modifier }}{% endif %}">
+	{% include '@partial-button-toggle' with {
+		class: class ~ '_nav',
+		js_class: 'js-nav-toggle-button',
+		title: toggle.title,
+		icon: toggle.icon,
+		active_title: toggle.title_active,
+		active_icon: toggle.icon_active,
+		swap_target: toggle.swap_target,
+		swap_link: toggle.swap_link
+	} %}
+	<div class="js-nav-toggle-panel {{ js_class }}-nav-panel{% if modifier %} {{ js_class }}-nav-panel-{{ modifier }}{% endif %} toggle_nav_panel {{ class }}_nav_panel{% if modifier %} {{ class }}_nav_panel_{{ modifier }}{% endif %}">
+		<nav class="js-nav-toggle {{ js_class }}-nav{% if modifier %} {{ js_class }}-nav-{{ modifier }}{% endif %} toggle_nav {{ class }}_nav{% if modifier %} {{ class }}_nav_{{ modifier }}{% endif %}" aria-labelledby="{{ id }}">
+			<div class="toggle_nav_header {{ class }}_nav_header">
+				<h2 class="toggle_nav_title {{ class }}_nav_title" id="{{ id }}">{{ title }}</h2>
+			</div>
+			<ul class="js-nav-toggle-list {{ js_class }}-nav-list toggle_nav_list {{ class }}_nav_list" aria-labelledby="{{ id }}">
+				{% for link in links %}
+					<li class="js-nav-toggle-item {{ js_class }}-nav-item toggle_nav_item {{ class }}_nav_item">
+						<a class="js-nav-toggle-link {{ js_class }}-nav-link toggle_nav_link {{ class }}_nav_link" href="{{ link.url ?: '#' }}">
+							<div class="toggle_nav_link_inner {{ class }}_nav_link_inner">
+								{% if icon %}
+									<span class="toggle_nav_link_icon {{ class }}_nav_link_icon" aria-hidden="true">{{ icon(icon) }}</span>
+								{% endif %}
+								<span class="{{ class }}_nav_link_label">{{ link.title ?: link }}</span>
+							</div>
+						</a>
+						{% if link.children %}
+							<ul class="{{ class }}_nav_children" aria-label="{{ link.title ?: link }}">
+								{% for child in link.children %}
+									<li class="{{ class }}_nav_child_item">
+										<a class="{{ class }}_nav_child_link" href="{{ child.url ?: '#' }}">
+											<div class="{{ class }}_nav_child_link_inner">
+												{% if child_icon %}
+													<span class="{{ class }}_nav_child_link_icon" aria-hidden="true">{{ icon(child_icon) }}</span>
+												{% endif %}
+												<span class="toggle_nav_link_label {{ class }}_nav_link_label">{{ link.title ?: link }}</span>
+											</div>
+										</a>
+									</li>
+								{% endfor %}
+							</ul>
+						{% endif %}
+					</li>
+				{% endfor %}
+			</ul>
+		</nav>
+	</div>
+</div>

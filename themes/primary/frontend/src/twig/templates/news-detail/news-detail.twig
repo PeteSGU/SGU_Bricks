@@ -1,0 +1,73 @@
+<article class="news_entry">
+	<script type="application/ld+json">
+		{
+			'@context': 'http://schema.org',
+			'@type': 'NewsArticle',
+			'url': '#',
+			'publisher': {
+				'@type': '{{ config.schema_type }}',
+				'name': '{{ config.name }}'
+			},
+			'headline': '{{ page.title }}',
+			'mainEntityOfPage': '#',
+			'image': '{{ page.image }}',
+			'datePublished': '2017-03-20T20:30:54+00:00',
+			'author': 'person',
+			'description': '{{ page.description }}'
+		}
+	</script>
+
+	<!-- Page Content -->
+	<div class="page_content">
+		<div class="fs-row">
+			<div class="fs-cell fs-lg-2 fs-xl-3">
+				{% render '@partial-news-meta' %}
+			</div>
+			<div class="fs-cell fs-lg-10 fs-xl-8">
+				{% if page.image %}
+				<figure class="news_entry_figure">
+					{% include '@partial-image' with {
+						class: 'news_entry',
+						alt: '',
+						image: page.image,
+						loading: 'eager',
+						sources: [
+							img.classic.xlrg,
+							img.classic.lrg,
+							img.classic.med,
+							img.classic.sml,
+							img.classic.xsml,
+							img.classic.xxsml
+						]
+					} %}
+				</figure>
+				{% endif %}
+
+				<!-- WYSIWYG -->
+				<div class="typography">
+					<p>This spring, St. George's University announced it has awarded merit-based scholarships to 110 incoming medical school students.</p>
+					<p>Fourteen new students earned the Chancellor's Circle Legacy of Excellence Scholarship, which provides $94,500 in tuition assistance. The recipients hail from several U.S. states and Canadian provinces as well as Jamaica.</p>
+					<p>Another 96 students received the Legacy of Excellence Scholarship. They also come from a variety of U.S. states and countries, including Canada, South Korea, Australia, and more. They'll each receive a minimum of $65,000 in assistance.</p>
+					<p>All the recipients demonstrated academic excellence in undergraduate, graduate, and post-baccalaureate studies.</p>
+					<figure class="quote">
+						<div class="quote_mark_open">{{ icon('quote') }}</div>
+						<blockquote class="quote_content">
+							<p>We’re excited to see what the future holds for our Legacy of Excellence Scholars</p>
+						</blockquote>
+						<figcaption class="quote_caption">
+							<span class="quote_caption_name">Dr. G. Richard Olds</span>
+							<span class="quote_caption_title">SGU President</span>
+						</figcaption>
+					</figure>
+					<p>“We're excited to see what the future holds for our Legacy of Excellence Scholars,” said Dr. G. Richard Olds, president of St. George's University. “At SGU, we strive to make medical school affordable and accessible, so that we can help educate the doctors the United States needs to address its looming physician shortage.”</p>
+					<p>According to the Association of American Medical Colleges, the United States could face a shortage of as many as 124,000 physicians by 2034. St. George's University is committed to enabling its students to begin post-residency careers in the United States and Canada, particularly in underserved communities.</p>
+					<p>Since St. George's University launched the Legacy of Excellence Scholarship program, hundreds of scholarship recipients have gone on to become successful physicians. Seventy-five percent of all entering four-year medical students received SGU scholarships in the 2020-2021 academic year, according to the latest available data.</p>
+					<p>“It fills me with pride to see our former students practicing medicine where they're needed most,” Olds said.</p>
+				</div>
+				<!-- END: WYSIWYG -->
+			</div>
+		</div>
+	</div>
+	<!-- END: Page Content -->
+
+</article>

@@ -1,0 +1,99 @@
+<div class="event_list_item">
+	<div class="event_list_item_col is_media">
+		{% if item.image %}
+			<figure class="event_list_item_figure">
+				<a class="event_list_item_figure_link" href="{{ item.url }}" aria-label="Read more about {{ item.title }}" tabindex="-1">
+					{% include "partials/image.twig" with {
+						class: "event_list_item",
+						alt: "",
+						image: item.image,
+						loading: "lazy",
+						sources: [
+							"classic-med",
+							"classic-sml",
+							"classic-xsml",
+							"classic-xxsml"
+						]
+					} %}
+				</a>
+			</figure>
+		{% endif %}
+	</div>
+
+	<div class="event_list_item_col is_date">
+		<time class="event_list_date_wrap" datetime="{{ item.fw_start }}">
+			<div class="event_list_date_wrap_item is_month">
+				{{ item.fw_start|date("M") }}
+			</div>
+
+			<div class="event_list_date_wrap_item is_day">
+				{{ item.fw_start|date("d") }}
+			</div>
+		</time>
+	</div>
+
+	<div class="event_list_item_col is_content">
+		<div class="event_list_item_wrapper">
+			<div class="event_list_item_header">
+				<div class="event_list_item_time_wrapper">
+					<time class="event_list_item_time" datetime="{{ item.fw_start }}">
+						<span class="event_list_item_time_start">{{ item.fw_start|date("M d") }}</span>
+						{% if not item.fw_same_day %}
+							<span class="event_list_item_time_end"> - {{ item.fw_end|date("M d") }}</span>
+						{% endif %}
+					</time>
+
+					{% if item.fw_categories|length %}
+						<div class="event_list_item_separator">&ndash;</div>
+
+						<div class="event_list_item_category_items">
+							{% for term in item.fw_categories %}
+								<div class="event_list_item_category_item">
+									<a href="{{ term.link }}" class="event_list_item_category_link">
+										{{ term.title }}
+									</a>
+								</div>
+							{% endfor %}
+						</div>
+					{% endif %}
+				</div>
+			</div>
+
+			<div class="event_list_item_body">
+				<h2 class="event_list_item_title">
+					{% include "partials/link.twig" with {
+						class: "event_list_item_title",
+						title: item.title,
+						url: item.link
+					} %}
+				</h2>
+
+				<div class="event_list_item_details">
+					{% if not item.fw_all_day %}
+						<div class="event_list_item_detail">
+							<span class="event_list_item_detail_icon">{{ icon("clock") }}</span>
+							<span class="event_list_item_detail_hint">Time:&nbsp;</span>
+							<span class="event_list_item_detail_label">
+								<span class="event_list_item_detail_label_date">{{ item.fw_start|date("g:i A") }} - {{ item.fw_end|date("g:i A") }}</span>
+							</span>
+						</div>
+					{% endif %}
+					
+					{% if item.fw_event_types %}
+						<div class="event_list_item_detail">
+							<span class="event_list_item_detail_icon">{{ icon("place") }}</span>
+							<span class="event_list_item_detail_hint">Location:&nbsp;</span>
+							<span class="event_list_item_detail_label">{{ item.fw_event_types|join(", ") }}</span>
+						</div>
+					{% endif %}
+				</div>
+
+				{% if item.fw_blurb %}
+					<div class="event_list_item_description">
+						<p>{{ item.fw_blurb }}</p>
+					</div>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+</div>

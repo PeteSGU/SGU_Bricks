@@ -1,0 +1,88 @@
+{#
+	{% include '@component-process-list' with {
+		title: 'Title',
+		rows: [
+			{
+				title: 'Row Title',
+				description: 'Row Description',
+				link: {
+					url: '#',
+					label: 'Row Link Label'
+				},
+				groups: [
+					{
+						title: 'Group Title',
+						items: [
+							{
+								title: 'Item Title',
+								label: 'Item Label',
+								sub_label: 'Item Sub Label',
+								description: 'Item Description'
+							}
+						]
+					}
+				]
+			}
+		]
+	} %}
+#}
+
+<!-- Process Based List -->
+<div class="process">
+	<ul class="process_block" aria-label="{{ group_title }}">
+		{% for row in rows %}
+			<li class="process_row">
+				<div class="fs-row">
+					<div class="fs-cell">
+						<div class="process_row_inner">
+							<div class="process_row_intro">
+								{% if loop.index == 1 %}
+									<h2 class="process_title">{{ title }}</h2>
+								{% endif %}
+								<h3 class="process_row_title">{{ row.title}}</h3>
+								{% if row.description %}
+									<p class="process_row_description">{{ row.description }}</p>
+								{% endif %}
+								{% if row.link %}
+									<div class="process_row_link_item">
+										<a class="process_row_link" href="{{ row.link.url }}">{{ row.link.label }}</a>
+									</div>
+								{% endif %}
+							</div>
+							<div class="process_row_main">
+								{% for group in row.groups %}
+									<div class="process_group">
+										{% if group.title %}
+											<h4 class="process_group_title">{{ group.title }}</h4>
+										{% endif %}
+										<ul class="process_items" aria-label="{{ group.title ?: title }}">
+											{% for item in group.items %}
+												<li class="process_item">
+													<div class="process_item_block">
+														{% if item.label %}
+															<p class="process_item_label">{{ item.label }}</p>
+														{% endif %}
+														<p class="process_item_title">{{ item.title }}</p>
+														{% if item.sub_label %}
+															<p class="process_item_sub_label">{{ item.sub_label }}</p>
+														{% endif %}
+													</div>
+													{% if item.description %}
+														<div class="process_item_description">
+															{{ item.description }}
+														</div>
+													{% endif %}
+												</li>
+											{% endfor %}
+										</ul>
+									</div>
+								{% endfor %}
+							</div>
+						</div>
+					</div>
+				</div>
+			</li>
+		{% endfor %}
+	</ul>
+</div>
+<!-- END: Process Based List -->

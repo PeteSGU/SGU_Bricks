@@ -1,0 +1,399 @@
+/* Typography
+============================================================================= */
+
+$typography_hook_classes: ':where(.typography)';
+
+#{$typography_hook_classes} {
+	@include body_text;
+
+	> :first-child {
+		margin-top: 0;
+	}
+
+	> :only-child {
+		margin-block: 0;
+	}
+
+	a {
+		@include type_link;
+
+		color: $blue_navy;
+
+		&:hover,
+		&:focus {
+			color: $black;
+		}
+	}
+
+	p {
+		margin: 30px 0;
+	}
+
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6 {
+		color: $black;
+
+		+ * {
+			margin-top: 0;
+		}
+	}
+
+	h1 {
+		@include h1;
+
+		margin-block: 50px 10px;
+	}
+
+	h2 {
+		@include h2;
+
+		margin-block: 50px 10px;
+	}
+
+	h3 {
+		@include h3;
+
+		margin-block: 50px 10px;
+	}
+
+	h4 {
+		@include h4;
+
+		margin-block: 50px 10px;
+	}
+
+	h5 {
+		@include h5;
+
+		margin-block: 50px 10px;
+	}
+
+	h6 {
+		@include h6;
+
+		margin-block: 50px 10px;
+	}
+
+	.intro {
+		@include intro_text;
+
+		color: $black;
+
+		p {
+			margin-block: 0;
+		}
+	}
+
+	.copy {
+		@include body_text;
+	}
+
+	.small {
+		@include small_text;
+	}
+
+	.label {
+		@include label_text;
+	}
+
+	.caption {
+		@include caption_text;
+	}
+}
+
+/* WYSIWYG Images
+============================================================================= */
+
+#{$typography_hook_classes} {
+	img {
+		height: auto;
+		max-width: 100%;
+	}
+
+	.block_left,
+	.block_right,
+	.block_center,
+	.alignleft,
+	.alignright,
+	.aligncenter,
+	.alignnone,
+	.align-left,
+	.align-right,
+	.align-center {
+		width: auto;
+
+		display: table;
+		margin-block: 20px;
+		table-layout: fixed;
+
+		img {
+			display: block;
+		}
+
+		figcaption,
+		.wp-caption-text {
+			@include small_text();
+
+			caption-side: bottom;
+			color: $black;
+			display: table-caption;
+			margin-top: 8px;
+		}
+	}
+
+	.block_left,
+	.block_right,
+	.alignleft,
+	.alignright,
+	.align-left,
+	.align-right {
+		max-width: 50%;
+
+		@media #{$max_sm} {
+			max-width: 100%;
+
+			float: none;
+			margin-inline: 0;
+		}
+
+		@media #{$min_sm} {
+			margin-block: 10px 30px;
+		}
+	}
+
+	.block_left,
+	.alignleft,
+	.align-left {
+		@media #{$min_sm} {
+			float: left;
+			margin-right: 30px;
+		}
+	}
+
+	.block_right,
+	.alignright,
+	.align-right {
+		@media #{$min_sm} {
+			float: right;
+			margin-left: 30px;
+		}
+	}
+
+	.block_center,
+	.aligncenter,
+	.align-center {
+		text-align: center;
+
+		img {
+			margin-inline: auto;
+		}
+	}
+
+	.alignleft,
+	.alignright,
+	.aligncenter,
+	.alignnone {
+		width: auto !important;
+	}
+
+	.block_left,
+	.block_right {
+		.body_layout_blog_detail & {
+			max-width: 100vw;
+			float: none;
+			margin: 0;
+			margin-block: 30px;
+
+			@media #{$min_lg} {
+				margin-block: 50px;
+			}
+
+			img {
+				border-radius: 5px;
+			}
+		}
+	}
+
+	.block_left {
+		.body_layout_blog_detail & {
+			@media #{$min_xl} {
+				width: calc(100% + 26.5%);
+
+				position: relative;
+				left: -26.5%;
+			}
+		}
+	}
+
+	.block_right {
+		.body_layout_blog_detail & {
+			@media #{$min_xl} {
+				width: calc(100% + 26.5%);
+			}
+		}
+	}
+}
+
+/* Blockquote
+============================================================================= */
+
+#{$typography_hook_classes} {
+	blockquote {
+		color: $black;
+		font-size: 24px;
+		font-weight: 700;
+		line-height: calc(42 / 28);
+		margin-block: 50px;
+
+		@media #{$min_md} {
+			font-size: 28px;
+		}
+
+		&:not(.quote_content) {
+		}
+
+		p {
+			margin-block: 0;
+		}
+	}
+
+	@include component_quote;
+}
+
+/* Lists
+============================================================================= */
+
+#{$typography_hook_classes} {
+	ol,
+	ul {
+		margin-block: 30px;
+		translate: -22px;
+
+		li {
+			margin-block: 12px;
+		}
+
+		ol,
+		ul {
+			margin-block: 0;
+			translate: 0;
+		}
+
+		::marker {
+			color: $turquoise_dark;
+			font-weight: bold;
+		}
+	}
+}
+
+/* Tables
+============================================================================= */
+
+#{$typography_hook_classes} {
+	table {
+		width: 100%;
+
+		border-collapse: collapse;
+		border: 1px solid #d8d8d8;
+
+		thead {
+			background: $blue_navy
+				linear-gradient(124.73deg, $blue_navy 37.25%, $turquoise_dark 142.62%);
+			color: $white;
+		}
+
+		tr {
+			border-bottom: 1px solid #d8d8d8;
+
+			&:nth-child(even) {
+			}
+		}
+
+		th {
+			background-color: $blue_navy;
+			color: $white;
+		}
+
+		thead th {
+			background-color: transparent;
+			color: currentColor;
+		}
+
+		th,
+		td {
+			padding: 10px 20px;
+			vertical-align: top;
+
+			@media #{$min_md} {
+				padding-block: 14px;
+			}
+		}
+
+		th,
+		thead td {
+			@include h5;
+
+			text-align: left;
+		}
+
+		td {
+			@include small_text;
+		}
+	}
+}
+
+.table_wrapper {
+	@include margined;
+
+	position: relative;
+}
+
+.table_wrapper_overflow {
+	position: relative;
+
+	border: 1px solid $gray_20;
+
+	&:after {
+		@include gradient_right(rgba($black, 0), rgba($black, 0.1));
+
+		width: 20px;
+		height: 100%;
+
+		position: absolute;
+		top: 0;
+		right: 0;
+
+		content: '';
+	}
+}
+
+.table_wrapper_inner {
+	overflow-y: hidden;
+	-webkit-overflow-scrolling: touch;
+	-ms-overflow-style: -ms-autohiding-scrollbar;
+}
+
+/* ==========================================================================
+   iframe
+============================================================================= */
+
+#{$typography_hook_classes} {
+	.video_frame {
+		aspect-ratio: 16 / 9;
+
+		iframe {
+			width: 100%;
+			height: 100%;
+
+			object-fit: cover;
+		}
+
+		@media print {
+			display: none;
+		}
+	}
+}

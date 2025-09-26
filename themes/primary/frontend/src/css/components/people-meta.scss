@@ -1,0 +1,122 @@
+/* ==========================================================================
+	People Meta
+============================================================================= */
+
+.people_meta {
+	margin-block: 40px;
+
+	@media #{$min_lg} {
+		position: sticky;
+		top: 60px;
+
+		margin-block: 0 34px;
+	}
+}
+
+.people_meta_inner {
+	padding-block: 5px 0;
+}
+
+.people_meta_body {
+}
+
+.people_meta_details {
+	display: flex;
+
+	flex-direction: column;
+	gap: 40px;
+}
+
+.people_meta_detail {
+	display: block;
+}
+
+.people_meta_detail_label {
+	@include h6;
+	display: block;
+
+	margin-bottom: 4px;
+}
+
+.people_meta_detail_item {
+	display: flex;
+
+	align-items: center;
+	gap: 10px;
+
+	.contact & {
+		margin-top: 9px;
+	}
+}
+
+.people_meta_detail_item_header {
+	align-items: center;
+	display: inline-flex;
+}
+
+.people_meta_detail_icon {
+	color: $orange;
+}
+
+.people_meta_detail_hint {
+	@include visually_hide;
+}
+
+.people_meta_detail_info {
+	@include small_text;
+
+	display: block;
+}
+
+.people_meta_detail_info_link {
+	color: $blue_navy;
+	font-size: 14px;
+	text-decoration: underline;
+	transition: color $base_speed;
+
+	@include hover {
+		text-decoration: none;
+	}
+
+	&:after {
+		@media print {
+			content: normal;
+		}
+	}
+}
+
+.people_meta_detail_info_button {
+	@include sgu_button;
+
+	margin-top: 5px;
+}
+
+.people_meta_socials {
+	display: grid;
+	gap: 10px;
+}
+
+.people_meta_social {
+}
+
+.people_meta_social_link {
+	align-items: center;
+	display: inline-flex;
+	gap: 10px;
+	text-decoration: underline;
+	transition: color $base_speed;
+
+	@include hover {
+		color: $black;
+	}
+}
+
+.people_meta_social_link_icon {
+}
+
+.people_meta_social_link_label {
+}
+
+.people_meta_social_punctuation {
+	display: none;
+}

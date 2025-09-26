@@ -1,0 +1,20 @@
+{#
+	{% include "@partial-button" with {
+		title: "Button Text",
+		class: "",
+		js: false,
+		icon: "",
+		aria: ""
+	} %}
+#}
+
+<button class="{{ class }}_button{% if js %} js-{{ class|replace({'_': '-'}) }}-button{% endif %}"{% if aria %} aria-label="{{ aria }}"{% endif %}>
+	<span class="{{ class }}_button_inner">
+		<span class="{{ class }}_button_label">{{ title }}</span>
+		{% if icon %}
+		<span class="{{ class }}_button_icon" aria-hidden="true">
+			{{ icon(icon) }}
+		</span>
+		{% endif %}
+	</span>
+</button>

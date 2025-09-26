@@ -1,0 +1,418 @@
+/* ==========================================================================
+	Custom Properties
+============================================================================= */
+
+:root {
+	--font_size_h1: #{font_size_clamp(38px, 80px)};
+	--font_size_h1_small: #{font_size_clamp(30px, 58px)};
+	--font_size_h2: #{font_size_clamp(32px, 54px)};
+	--font_size_h3: #{font_size_clamp(28px, 42px)};
+	--font_size_h4: #{font_size_clamp(24px, 32px)};
+	--font_size_h5: #{font_size_clamp(18px, 24px)};
+	--font_size_h6: 16px;
+	--font_size_intro: #{font_size_clamp(21px, 24px)};
+	--font_size_body: #{font_size_clamp(16px, 18px)};
+}
+
+/* ==========================================================================
+	HTML
+============================================================================= */
+
+html {
+	font-size: 100%;
+}
+
+/* ==========================================================================
+	Nav Menus
+============================================================================= */
+
+.brxe-nav-menu {
+	ul.bricks-nav-menu {
+		flex-wrap: wrap;
+	}
+}
+
+/* ==========================================================================
+	Form / Filter
+============================================================================= */
+
+label {
+	color: currentColor;
+}
+
+.input,
+input:not([type='submit']),
+select,
+textarea {
+	color: #000;
+	font-size: 16px;
+}
+
+.filter .input,
+.filter input:not([type='submit']) {
+	line-height: 1;
+	padding: 0.875rem 1.25rem;
+}
+
+input::placeholder {
+	color: #000;
+}
+
+/* ==========================================================================
+	Pagination
+============================================================================= */
+
+.pagination .pagination_arrow_icon svg {
+	min-width: auto;
+}
+
+/* ==========================================================================
+	Breadcrumbs
+============================================================================= */
+
+.brxe-breadcrumbs {
+	> .item:first-child {
+		width: 16px;
+		height: 16px;
+
+		visibility: hidden;
+
+		&:before {
+			width: 16px;
+			height: 16px;
+
+			background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10' width='16' height='16'%3E%3Cpath d='M9.99 5.087a.22.22 0 0 1-.2.127H8.75v4.58c0 .117-.093.21-.21.21H6.46a.208.208 0 0 1-.21-.21v-3.54h-2.5v3.54c0 .117-.093.21-.21.21H1.46a.208.208 0 0 1-.21-.21v-4.58H.21a.22.22 0 0 1-.2-.127.255.255 0 0 1 .048-.235l4.79-4.79a.215.215 0 0 1 .303 0l4.79 4.79a.255.255 0 0 1 .049.235Z' fill='%23ff6400'/%3E%3C/svg%3E");
+			background-size: 100%;
+			content: '';
+			display: block;
+			visibility: visible;
+		}
+	}
+}
+
+/* ==========================================================================
+	Utilities
+============================================================================= */
+
+/**/
+
+/* ==========================================================================
+	Components
+============================================================================= */
+
+// CTA Background
+
+.fw_component_cta_background {
+	.brxe-video {
+		position: relative;
+
+		&:after {
+			position: absolute;
+			inset: 0;
+
+			width: 100%;
+			height: 100%;
+
+			background: linear-gradient(180deg, rgba($blue_navy, 0) 0%, rgba($blue_navy, 0.8) 80%);
+			content: '';
+			pointer-events: none;
+		}
+	}
+
+	.bricks-video-overlay-icon {
+		inset: 30px 30px auto auto;
+		transform: none;
+
+		width: 40px;
+		height: 40px;
+
+		background-color: $white;
+		border-radius: 50%;
+		display: grid;
+		font-size: 20px;
+		place-items: center;
+	}
+}
+
+// Icon List
+
+.fw_icon_list {
+	span {
+		display: none;
+	}
+
+	i {
+		font-size: 22px;
+	}
+}
+
+// link group
+
+.fw_component_link_group {
+	.brxe-text-link {
+		.text {
+			flex: 1;
+			justify-content: flex-start;
+		}
+
+		.icon {
+			flex-shrink: 0;
+		}
+	}
+}
+
+// experience
+
+.fw_component_experience {
+	.brxe-block.brx-open {
+		.accordion-title-wrapper {
+			border-top-color: var(--bricks-color-orange) !important;
+		}
+
+		.brxe-icon {
+			color: var(--bricks-color-orange) !important;
+		}
+	}
+}
+
+// accordion nested
+
+.fw_component_accordion_nested {
+	--icon-default-display: block;
+	--icon-active-display: none;
+
+	.brxe-icon.default {
+		display: var(--icon-default-display) !important;
+	}
+
+	.brxe-icon.active {
+		display: var(--icon-active-display) !important;
+	}
+
+	.brxe-block.brx-open {
+		--icon-default-display: none;
+		--icon-active-display: block;
+	}
+}
+
+// post meta
+
+.brxe-post-meta {
+	a {
+		color: $blue_navy;
+		text-decoration: underline;
+
+		@include hover {
+			text-decoration: none;
+		}
+	}
+}
+
+/* ==========================================================================
+	Global Header
+============================================================================= */
+
+.fw-global-header {
+	--background-color: var(--bricks-color-blue-navy);
+	--color: var(--bricks-color-white);
+
+	--logo-light-display: block;
+	--logo-dark-display: none;
+
+	--search-background-color: #{rgba($turquoise_light, 0.15)};
+	--search-icon-color: var(--bricks-color-white);
+
+	--breadcrumb-accent-color: var(--bricks-color-turquoise);
+
+	--school-nav-shield-background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 13 16'%3E%3Cpath d='M11.179 5.483H7.426V1.877h3.753v3.606Zm-3.753 7.906V7.448h3.6s-.355 3.977-3.6 5.941ZM5.6 5.483H1.78V1.876H5.6v3.607Zm-.032 7.918c-3.195-1.91-3.606-5.959-3.606-5.959l3.6.003.006 5.956ZM6.49 16h.009S12.924 13.867 13 5.159L12.98 0H.02L0 5.159C.075 13.867 6.503 16 6.503 16h.01' fill='%23fff'/%3E%3C/svg%3E%0A");
+
+	--ribbon-border-color: #{rgba($white, 0.2)};
+
+	body.theme-turquoise & {
+		--background-color: var(--bricks-color-turquoise-light);
+		--color: var(--bricks-color-black);
+
+		--logo-light-display: none;
+		--logo-dark-display: block;
+
+		--search-background-color: #{rgba($white, 0.45)};
+		--search-icon-color: var(--bricks-color-turquoise-dark);
+
+		--breadcrumb-accent-color: var(--bricks-color-blue-navy);
+
+		--school-nav-shield-background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 13 16'%3E%3Cpath d='M11.179 5.483H7.426V1.877h3.753v3.606Zm-3.753 7.906V7.448h3.6s-.355 3.977-3.6 5.941ZM5.6 5.483H1.78V1.876H5.6v3.607Zm-.032 7.918c-3.195-1.91-3.606-5.959-3.606-5.959l3.6.003.006 5.956ZM6.49 16h.009S12.924 13.867 13 5.159L12.98 0H.02L0 5.159C.075 13.867 6.503 16 6.503 16h.01' fill='%231e1e64'/%3E%3C/svg%3E%0A");
+
+		--ribbon-border-color: #{rgba($black, 0.1)};
+	}
+
+	body.theme-light-gray & {
+		--background-color: var(--bricks-color-gray-light);
+		--color: var(--bricks-color-black);
+
+		--logo-light-display: none;
+		--logo-dark-display: block;
+
+		--search-background-color: #{rgba($white, 0.45)};
+		--search-icon-color: var(--bricks-color-turquoise-dark);
+
+		--breadcrumb-accent-color: var(--bricks-color-blue-navy);
+
+		--school-nav-shield-background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 13 16'%3E%3Cpath d='M11.179 5.483H7.426V1.877h3.753v3.606Zm-3.753 7.906V7.448h3.6s-.355 3.977-3.6 5.941ZM5.6 5.483H1.78V1.876H5.6v3.607Zm-.032 7.918c-3.195-1.91-3.606-5.959-3.606-5.959l3.6.003.006 5.956ZM6.49 16h.009S12.924 13.867 13 5.159L12.98 0H.02L0 5.159C.075 13.867 6.503 16 6.503 16h.01' fill='%231e1e64'/%3E%3C/svg%3E%0A");
+
+		--ribbon-border-color: #{rgba($black, 0.1)};
+	}
+
+	.fw-logo-dark {
+		display: var(--logo-dark-display);
+	}
+
+	.fw-logo-light {
+		display: var(--logo-light-display);
+	}
+}
+
+/* ==========================================================================
+	School Nav
+============================================================================= */
+
+.fw-school-nav {
+	li:first-child a {
+		display: flex;
+		gap: 0 9px;
+	}
+
+	li:first-child a:before {
+		width: 13px;
+		height: 16px;
+
+		background-image: var(--school-nav-shield-background-image);
+		content: '';
+		display: block;
+	}
+}
+
+/* ==========================================================================
+	Mega Menu
+============================================================================= */
+
+.fw-mega-menu-toggle-bth {
+	display: flex;
+	align-items: center;
+	gap: 0 10px;
+
+	&:before {
+		color: $black;
+		content: 'Menu';
+		font-size: 12px;
+		font-weight: 700;
+		letter-spacing: 0.06em;
+		line-height: 1;
+		text-transform: uppercase;
+	}
+}
+
+/* ==========================================================================
+	Related News - Categories
+============================================================================= */
+
+.fw-component-related-news-categories {
+	position: relative;
+
+	&:before {
+		width: calc(100% + 50px);
+		height: 30px;
+		display: block;
+
+		position: absolute;
+		left: -25px;
+		top: 0;
+
+		background: $white;
+		clip-path: ellipse(50% 20px at 50% 0%);
+		content: '';
+		transform: rotate(0.5deg) translateY(-6px);
+
+		@media #{$min_md} {
+			clip-path: ellipse(50% 30px at 50% 0%);
+		}
+
+		@media #{$min_lg} {
+			height: 50px;
+
+			clip-path: ellipse(50% 50px at 50% 0%);
+		}
+
+		@media #{$min_xl} {
+			height: 70px;
+
+			clip-path: ellipse(50% 70px at 50% 0%);
+		}
+	}
+
+	&:after {
+		width: calc(100% + 50px);
+		height: 30px;
+		display: block;
+
+		position: absolute;
+		left: -25px;
+		bottom: 0;
+
+		background: $white;
+		clip-path: ellipse(50% 20px at 50% 100%);
+		content: '';
+		transform: rotate(-0.5deg) translateY(6px);
+
+		@media #{$min_md} {
+			clip-path: ellipse(50% 30px at 50% 100%);
+		}
+
+		@media #{$min_lg} {
+			height: 50px;
+
+			clip-path: ellipse(50% 50px at 50% 100%);
+		}
+
+		@media #{$min_xl} {
+			height: 70px;
+
+			clip-path: ellipse(50% 70px at 50% 100%);
+		}
+	}
+}
+
+/* ==========================================================================
+	Utility Classes
+============================================================================= */
+
+.fw-overlayed-border-turquoise-medium {
+	position: relative;
+	overflow: visible;
+
+	&:before {
+		position: absolute;
+		inset: -13px 13px 13px;
+		z-index: 1;
+
+		border: 1px solid var(--bricks-color-turquoise-medium);
+		border-radius: 5px;
+		content: '';
+		pointer-events: none;
+	}
+}
+
+.fw-overlayed-border-red {
+	position: relative;
+	overflow: visible;
+
+	&:before {
+		position: absolute;
+		inset: -13px 13px 13px;
+		z-index: 1;
+
+		border: 1px solid var(--bricks-color-red-brand);
+		border-radius: 5px;
+		content: '';
+		pointer-events: none;
+	}
+}

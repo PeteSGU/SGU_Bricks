@@ -1,0 +1,67 @@
+<div>
+	<h2 class="program_item_heading">
+		<button class="js-accordion-swap js-swap program_item_button" data-swap-target=".{{ id }}-{{ loop.index }}" {% if grouped == true %} data-swap-group="{{ group_id }}" {% endif %}>
+			<span class="program_item_heading_inner">
+				<span class="program_item_heading_label">
+					<span class="program_item_heading_title">{{ item.title }}</span>
+
+					{% if item.fw_learning_modes|length %}
+						<span class="program_item_heading_mode">
+							<span class="program_item_heading_mode_label">Learning Mode<span class="program_item_heading_mode_label_hint">:</span>&nbsp;</span>
+							<span class="program_item_heading_mode_data">
+								{{ item.fw_learning_modes|column("name")|join(", ") }}
+							</span>
+						</span>
+					{% endif %}
+				</span>
+				<span class="program_item_heading_icon"></span>
+			</span>
+		</button>
+	</h2>
+	<div class="js-accordion-content program_item_content" aria-label="{{ item.title }}">
+		<div class="program_item_content_inner">
+			<div class="program_item_content_group">
+				<div class="program_item_description typography">
+					<p>{{ item.blurb }}</p>
+				</div>
+				
+				{% if item.link %}
+					<div class="program_item_links">
+						{% include 'partials/link.twig' with {
+							class: 'program_item',
+							title: 'Program Detail',
+							url: item.link,
+							aria: item.title ~ ' Program Detail'
+						} %}
+					</div>
+				{% endif %}
+			</div>
+			<div class="program_item_details">
+				{% if item.fw_degree_levels|length %}
+					<div class="program_item_detail">
+						<span class="program_item_detail_label">Degree Level<span class="program_item_detail_label_hint">:</span>&nbsp;</span>
+						<span class="program_item_detail_data">
+							{{ item.fw_degree_levels|column("name")|join(", ") }}
+						</span>
+					</div>
+				{% endif %}
+				{% if item.fw_department %}
+					<div class="program_item_detail">
+						<span class="program_item_detail_label">Department<span class="program_item_detail_label_hint">:</span>&nbsp;</span>
+						<span class="program_item_detail_data">
+							<a class="program_item_detail_data_link" href="{{ item.fw_department.link }}">{{ item.fw_department.title }}</a>
+						</span>
+					</div>
+				{% endif %}
+				{% if item.fw_degree_types|length %}
+					<div class="program_item_detail">
+						<span class="program_item_detail_label">Degree<span class="program_item_detail_label_hint">:</span>&nbsp;</span>
+						<span class="program_item_detail_data">
+							{{ item.fw_degree_types|column("name")|join(", ") }}
+						</span>
+					</div>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+</div>

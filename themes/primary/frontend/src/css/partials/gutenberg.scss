@@ -1,0 +1,21 @@
+/* Gutenberg
+============================================================================= */
+
+.wp-block-columns {
+	padding-inline: $fs_grid_margin;
+
+	@media #{$min_xxl} {
+		padding-inline: 26px;
+	}
+
+	.fs-row {
+		min-width: auto !important;
+	}
+
+	.fs-cell {
+		width: 100% !important;
+		max-width: 100% !important;
+
+		margin-inline: 0 !important;
+	}
+}

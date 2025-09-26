@@ -1,0 +1,13 @@
+<!-- Person Meta -->
+<div class="people_meta" id="meta" data-type="entity" data-departments="{{ item.fw_data_departments|e('html_attr') }}">
+	<div class="fs-row">
+		<div class="fs-cell">
+			<div class="people_meta_inner">
+				{% include 'partials/contact-details.twig' with {
+					item: item
+				} %}
+			</div>
+		</div>
+	</div>
+</div>
+<!-- END: Person Meta -->

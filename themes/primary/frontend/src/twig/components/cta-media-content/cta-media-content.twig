@@ -1,0 +1,45 @@
+<div class="cta_media">
+	<div class="fs-row">
+		<div class="fs-cell">
+			<div class="cta_media_inner">
+				<figure class="cta_media_figure">
+					{% include '@partial-image' with {
+						class: 'cta_media',
+						alt: '',
+						image: image,
+						loading: 'lazy',
+						sources: [
+							img.wide.med,
+							img.wide.sml,
+							img.wide.xsml,
+							img.wide.xxsml
+						]
+					} %}
+					{% if video %}
+					<a class="cta_media_video_trigger js-video-appender" href="{{ video }}">
+						<span class="cta_media_video_play">
+							<span class="cta_media_video_play_icon">{{ icon("play") }}</span>
+							<span class="cta_media_video_play_label">Watch Video</span>
+						</span>
+					</a>
+					{% endif %}
+				</figure>
+				<div class="cta_media_wrapper">
+					<h2 class="cta_media_title">{{ title }}</h2>
+					{% if description %}
+						<span class="cta_media_description">{{ description }}</span>
+					{% endif %}
+					{% if link %}
+						{% include '@partial-link' with {
+							class: 'cta_media',
+							title: link.label,
+							url: link.url,
+							icon: link.icon,
+							nowrap: true
+						} %}
+					{% endif %}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

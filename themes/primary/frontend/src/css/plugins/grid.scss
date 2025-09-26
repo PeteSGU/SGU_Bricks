@@ -1,0 +1,35 @@
+/* ==========================================================================
+	Formstone Grid
+============================================================================= */
+
+@import 'formstone/grid';
+
+[id='fs-grid-menu'] {
+	.fs-grid-status-lg {
+		@media #{$min_xl} {
+			background-color: transparent !important;
+			color: #ccc !important;
+		}
+	}
+
+	.fs-grid-status-xl {
+		@media #{$min_xxl} {
+			background-color: transparent !important;
+			color: #ccc !important;
+		}
+	}
+
+	.fs-grid-status-xxl {
+		@media #{$min_xxl} {
+			background-color: #ccc;
+			color: #333 !important;
+		}
+	}
+
+	.fs-grid-show,
+	.fs-grid-remove {
+		&:focus {
+			color: #eee;
+		}
+	}
+}

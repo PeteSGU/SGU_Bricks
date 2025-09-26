@@ -1,0 +1,56 @@
+// /* ==========================================================================
+// 	Gutenberg Blocks
+// ============================================================================= */
+
+.blocks_wrapper {
+	> .fs-row {
+		width: 100%;
+	}
+}
+
+.wp-site-blocks {
+	// padding-inline: $fs_grid_gutter;
+
+	h1 {
+		font-size: var(--wp--preset--font-size--heading-one);
+	}
+
+	:where(ul, ol) {
+		@include remove_list;
+	}
+
+	> :not(.alignfull, .alignwide) {
+		max-width: var(--wp--style--global--content-size);
+	}
+
+	> .alignwide {
+		max-width: var(--wp--style--global--wide-size);
+
+		// margin-inline: auto;
+	}
+
+	> :not(alignleft, alignright, alignfull) {
+		margin-left: auto;
+		margin-right: auto;
+	}
+
+	> :not(.alignfull, .alignwide) .fs-row {
+		width: 100%;
+	}
+
+	.wp-block-column .fs-row {
+		width: 100%;
+	}
+
+	img {
+		max-width: 100%;
+	}
+
+	:where(ul, ol) {
+		list-style: inside;
+	}
+
+	:where(ul[class], ol[class]) {
+		@include remove_list;
+	}
+}

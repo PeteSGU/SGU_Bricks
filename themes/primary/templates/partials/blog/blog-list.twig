@@ -1,0 +1,37 @@
+<!-- Blog List -->
+<div class="blog_list">
+	<div class="fs-row">
+		<div class="fs-cell">
+			<div class="blog_list_inner">
+				<span class="news_list_header">
+					Showing{% if results_text%} results for:{% endif%}
+					<span>{{ results_text|default('All')  }}</span>
+				</span>
+
+				<ul class="blog_list_rows" id="item_list" aria-label="{{ page.title }}">
+					{% for item in items %}
+						<li class="blog_list_row">
+							{% include "partials/blog/blog-list-item.twig" with {
+								item: item
+							} %}
+						</li>
+					{% endfor %}
+				</ul>
+
+				{% if pagination.pages %}
+					<div class="blog_list_pagination">
+						{% include "partials/pagination.twig" with {
+							"pagination": pagination,
+							"page_link": page_link
+						} %}
+					</div>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+</div>
+<!-- END: Blog List -->
+
+{% if not items|length %}
+	{% include "partials/no-results-message.twig" %}
+{% endif %}

@@ -1,0 +1,69 @@
+{#
+	{% include '@partial-event-meta' with {
+		item: {
+			date: {
+				same_day: false,
+				all_day: false,
+				from: '2023-05-31 17:00:00',
+				to: '2023-06-13 19:00:00'
+			},
+			location: 'Location',
+			categories: [
+				{
+					label: 'Category',
+					url: '#'
+				}
+			]
+		}
+	} %}
+#}
+<!-- Event Meta -->
+<div class="event_meta" id="meta" data-type="event" data-category="{% for item in item.categories %}{{ item.label }}{% if not loop.last %}, {% endif %}{% endfor %}">
+	<div class="fs-row">
+		<div class="fs-cell">
+			<div class="event_meta_inner">
+				<div class="event_meta_body">
+					<div class="event_meta_details">
+						<div class="event_meta_detail">
+							<span class="event_meta_detail_icon">{{ icon('clock') }}</span>
+							<span class="event_meta_detail_hint">Time:&nbsp;</span>
+							<span class="event_meta_detail_label">
+								<span class="event_meta_detail_label_date">{{ item.date.from|date('M d') }}{% if item.date.same_day == false %} - {{ item.date.to|date('M d') }}{% endif %}</span>
+								{% if item.date.same_day == false %}| <span class="event_meta_detail_label_time">{{ item.date.from|date('g:i A') }} - {{ item.date.to|date('g:i A') }}</span>{% endif %}
+							</span>
+						</div>
+						{% if item.location %}
+							<div class="event_meta_detail">
+								<span class="event_meta_detail_icon">{{ icon('place') }}</span>
+								<span class="event_meta_detail_hint">Location:&nbsp;</span>
+								<span class="event_meta_detail_label">{{ item.location }}</span>
+							</div>
+						{% endif %}
+						{% if item.categories %}
+							<div class="event_meta_detail event_meta_detail_category">
+								<span class="event_meta_detail_icon">{{ icon('label') }}</span>
+								<span class="event_meta_detail_hint">Categories:&nbsp;</span>
+								<ul class="event_meta_detail_list" aria-label="Categories">
+									{% for category in item.categories %}
+										<li class="event_meta_detail_item">
+											<a class="event_meta_detail_link" href="{{ category.url }}">{{ category.label }}</a>
+										</li>
+									{% endfor %}
+								</ul>
+							</div>
+						{% endif %}
+					</div>
+				</div>
+				<div class="event_meta_share">
+					{% include '@partial-share' with {
+						title: 'Share This',
+						direction: 'left',
+						icon: '',
+						items: ['Twitter', 'Facebook', 'Linkedin']
+					} %}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- END: Event Meta -->

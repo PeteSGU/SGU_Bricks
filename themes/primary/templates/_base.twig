@@ -1,0 +1,11 @@
+{{ fn("get_header") }}
+
+{% block bricks_content %}
+	{% if bricks_data %}
+		{{ fn("Bricks\\Frontend::render_content", bricks_data) }}
+	{% endif %}
+{% endblock %}
+
+{% block content %}{% endblock %}
+
+{{ fn("get_footer") }}

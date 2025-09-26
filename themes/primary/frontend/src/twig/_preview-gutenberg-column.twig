@@ -1,0 +1,66 @@
+{% extends '_base.twig' %}
+
+{% block content %}
+	{% set column_count = _target.context.gutenberg_column_count|default(2) %}
+
+	<div class="wp-site-blocks">
+		<div class="is-layout-flex wp-block-columns has_children child_count_{{ column_count }}">
+			{% for i in 1..column_count %}
+				<div class="is-layout-flow wp-block-column">
+					<div class="wp-block wp-block-{{ _target.component.name }}">
+						{{ yield }}
+					</div>
+
+					<div class="wp-block wp-block-{{ _target.component.name }}">
+						{{ yield }}
+					</div>
+				</div>
+			{% endfor %}
+		</div>
+	</div>
+
+	<style type="text/css">
+		:root {
+			--wp--custom--default-spacing: 1.875rem;
+			--wp--preset--spacing--extra-large: clamp(3.75rem, calc(2.88rem + 4.35vw), 6.25rem);
+			--wp--style--global--content-size: 85.875rem;
+		}
+
+		body.is-layout-flex > * {
+			margin: 0;
+		}
+
+		.wp-block-columns {
+			display: flex;
+			flex-wrap: wrap;
+			gap: var(--wp--custom--default-spacing) 4.09%;
+			margin-block-start: var(--wp--preset--spacing--extra-large);
+			margin-block-end: var(--wp--preset--spacing--extra-large);
+		}
+
+		.wp-block-column {
+			min-width: 0;
+			
+			word-break: break-word;
+			overflow-wrap: break-word;
+		}
+
+		@media (max-width: 781px) {
+			.wp-block-column {
+				flex-basis: 100% !important;
+			}
+		}
+
+		@media (min-width: 782px) {
+			.wp-block-column {
+				flex-basis: 0;
+				flex-grow: 1;
+			}
+		}
+
+		.wp-block-column.is-layout-flow > * + * {
+			margin-block-start: var(--wp--custom--default-spacing);
+			margin-block-end: 0;
+		}
+	</style>
+{% endblock %}

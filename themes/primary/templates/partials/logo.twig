@@ -1,0 +1,16 @@
+{#
+	Logo markup as defined by Google structured data
+	https://developers.google.com/structured-data/customize/logos
+#}
+
+<div class="logo{% if modifier %} logo_{{ modifier }}{% endif %}{% if icon %} logo_icon{% endif %}">
+	<a class="logo_link" href="{{ site.home }}">
+		<span class="logo_link_label">{{ config.name }}</span>
+		{% if icon %}
+			<span class="logo_link_icon">{{ icon(icon) }}</span>
+		{% endif %}
+	</a>
+	{% if print %}
+		<img class="logo_print" src="{{ print }}" alt="">
+	{% endif %}
+</div>

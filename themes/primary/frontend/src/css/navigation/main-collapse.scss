@@ -1,0 +1,177 @@
+/* ==========================================================================
+	Main Collapse Nav
+============================================================================= */
+
+.main_collapse_nav {
+}
+
+.main_collapse_nav_header {
+	@include visually_hide;
+}
+
+.main_collapse_nav_title {
+}
+
+.main_collapse_nav_list {
+	border-bottom: 1px solid rgba($white, 0.1);
+	display: grid;
+}
+
+.main_collapse_nav_item {
+	border-top: 1px solid rgba($white, 0.1);
+	box-shadow: 0 -1px 0 rgba($turquoise_dark, 0);
+	transition: border $base_speed, box-shadow $base_speed;
+
+	&.fs-swap-active {
+		border-top-color: rgba($turquoise_dark, 1);
+		box-shadow: 0 -1px 0 rgba($turquoise_dark, 1);
+	}
+}
+
+.main_collapse_nav_item_inner {
+	display: grid;
+	gap: 10px;
+	grid-template-columns: 1fr 48px; // minimum touch target size ~48
+}
+
+.main_collapse_nav_link {
+	color: $turquoise;
+	display: block;
+	font-size: 28px;
+	font-weight: 800;
+	padding-block: 22px;
+	transition: color $base_speed;
+
+	@include hover {
+		color: $white;
+	}
+}
+
+.main_collapse_nav_link_inner {
+}
+
+.main_collapse_nav_link_label {
+}
+
+.main_collapse_nav_toggle {
+	&.fs-swap-enabled {
+		position: relative;
+
+		color: $white;
+		transition: color $base_speed, rotate $base_speed;
+
+		@include hover {
+			color: $orange;
+		}
+	}
+}
+
+.main_collapse_nav_toggle_inner {
+}
+
+.main_collapse_nav_toggle_icon {
+	&::before,
+	&::after {
+		width: 18px;
+		height: 3px;
+
+		position: absolute;
+		top: 50%;
+		left: 50%;
+
+		background-color: currentColor;
+		content: '';
+		display: block;
+		opacity: 1;
+		transition: opacity $base_speed, rotate $base_speed;
+		translate: -50% -50% 0;
+	}
+
+	&::after {
+		rotate: 90deg;
+	}
+
+	.main_collapse_nav_toggle.fs-swap-active & {
+		&::after {
+			opacity: 0;
+			rotate: 0deg;
+		}
+	}
+
+	.icon {
+		display: none;
+	}
+}
+
+.main_collapse_nav_children {
+	overflow: hidden;
+	padding-bottom: 30px;
+}
+
+.main_collapse_nav_child_item {
+	&.button,
+	&.featured_button {
+		display: inline-block;
+		float: left;
+		margin-top: 14px;
+
+		&:not(:last-child) {
+			margin-right: 10px;
+		}
+	}
+}
+
+.main_collapse_nav_child_link {
+	color: $white;
+	display: block;
+	font-size: 18px;
+	line-height: calc(22 / 18);
+	padding-block: 14px;
+	transition: color $base_speed;
+
+	@include hover {
+		color: $turquoise;
+	}
+
+	.main_collapse_nav_child_item.button &,
+	.main_collapse_nav_child_item.featured_button & {
+		@include type_button;
+
+		border-radius: 4px;
+
+		padding: 15px 20px;
+		transition: background-color $base_speed, border $base_speed, box-shadow $base_speed,
+			color $base_speed;
+
+		@include hover {
+			background-color: $turquoise;
+			color: $blue_navy;
+		}
+	}
+
+	.main_collapse_nav_child_item.button & {
+		box-shadow: inset 0 0 0 1px $turquoise;
+	}
+
+	.main_collapse_nav_child_item.featured_button & {
+		background-color: $orange;
+		box-shadow: 4px 4px 0px rgba($black, 0.1);
+		color: $black;
+
+		@include hover {
+			box-shadow: 0px 0px 0px rgba($black, 0.1);
+		}
+	}
+}
+
+.main_collapse_nav_child_link_inner {
+	.main_collapse_nav_child_item.button &,
+	.main_collapse_nav_child_item.featured_button & {
+	}
+}
+
+.main_collapse_nav_child_link_icon {
+}
+
+.main_collapse_nav_child_link_label {
+}

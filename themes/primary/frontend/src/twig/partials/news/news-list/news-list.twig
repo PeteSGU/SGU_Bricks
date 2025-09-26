@@ -1,0 +1,99 @@
+{#
+	{% include '@partial-news-list' with {
+		items: [
+			{
+				image: '1',
+				categories: [
+					{
+						label: 'Category',
+						url: '#'
+					}
+				],
+				title: 'Title',
+				url: '#',
+				date: '2019-01-01 17:00:00',
+				author: 'Author',
+				description: 'Description'
+			}
+		]
+	} %}
+#}
+<!-- News List -->
+<div class="news_list">
+	<div class="fs-row">
+		<div class="fs-cell">
+			<div class="news_list_inner">
+				<span class="news_list_header">Showing <span>All News</span></span>
+				<ul class="news_list_rows" id="item_list" aria-label="{{ page.title }}">
+					{% for item in items %}
+						<li class="news_list_row">
+							<div class="news_list_item">
+								{% if item.image %}
+									<figure class="news_list_item_figure">
+										<a class="news_list_item_figure_link" href="{{ item.url }}" aria-label="Read more about {{ item.title }}" tabindex="-1">
+											{% include '@partial-image' with {
+												class: 'news_list_item',
+												alt: '',
+												image: item.image,
+												loading: 'lazy',
+												sources: [
+													img.classic.med,
+													img.classic.sml,
+													img.classic.xsml,
+													img.classic.xxsml
+												]
+											} %}
+										</a>
+									</figure>
+								{% endif %}
+								<div class="news_list_item_wrapper">
+									<div class="news_list_item_header">
+										<h2 class="news_list_item_title">
+											{% include '@partial-link' with {
+												class: 'news_list_item_title',
+												title: item.title,
+												url: item.url
+											} %}
+										</h2>
+										{% if item.date %}
+											<div class="news_list_item_date">
+												<span class="news_list_item_date_hint">Published:&nbsp;</span>
+												<time class="news_list_item_date_label" datetime="{{ item.date }}">{{ item.date|date('F j, Y') }}</time>
+											</div>
+										{% endif %}
+										{% if item.categories %}
+											<div class="news_list_item_categories">
+												<div class="news_list_item_category_hint">Categories</div>
+												<ul class="news_list_item_category_list" aria-label="Categories">
+													{% for category in item.categories %}
+														<li class="news_list_item_category">
+															<a class="news_list_item_category_link" href="{{ category.url }}">{{ category.label }}</a>
+														</li>
+													{% endfor %}
+												</ul>
+											</div>
+										{% endif %}
+									</div>
+									<div class="news_list_item_body">
+										{% if item.description %}
+											<div class="news_list_item_description">
+												<p>{{ item.description }}</p>
+											</div>
+										{% endif %}
+									</div>
+								</div>
+							</div>
+						</li>
+					{% endfor %}
+				</ul>
+				<div class="news_list_pagination">
+					{% include '@partial-pagination' with {
+						title: 'News Pagination',
+						pages: 50
+					} %}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- END: News List -->

@@ -1,0 +1,93 @@
+/* ==========================================================================
+	Facts / Stats Inline
+============================================================================= */
+
+.facts_stats_inline {
+	@include margined_xl;
+
+	@include inside_gutenberg_column {
+		@include margined_none;
+	}
+}
+
+.facts_stats_inline_inner {
+	position: relative;
+
+	&:before {
+		height: 5px;
+
+		background-color: $turquoise;
+		border-radius: 10px;
+		content: '';
+		display: block;
+		margin-bottom: 38px;
+	}
+}
+
+.facts_stats_inline_items {
+	@include remove_list;
+
+	--columns: 1;
+
+	@media #{$min_md} {
+		--columns: 2;
+	}
+
+	@media #{$min_lg} {
+		--columns: 4;
+	}
+
+	display: grid;
+	grid-template-columns: repeat(var(--columns), 1fr);
+	gap: 30px $fs_grid_gap;
+
+	@include inside_gutenberg_column {
+		--columns: 1;
+	}
+}
+
+.facts_stats_inline_item {
+	//
+}
+
+.facts_stats_inline_stat {
+	margin: 0;
+}
+
+.facts_stats_inline_stat_figure {
+	@include sans(800);
+
+	color: $blue_navy;
+	font-size: font_size_clamp(42px, 62px);
+	line-height: calc(72 / 62);
+}
+
+.facts_stats_inline_stat_context {
+	@include h5;
+
+	color: $gray;
+}
+
+.facts_stats_inline_desc {
+	@include caption_text;
+
+	border-top: 1px solid $turquoise;
+	color: $gray;
+	margin-top: 16px;
+	padding-top: 16px;
+}
+
+.facts_stats_inline_link_wrap {
+	margin-top: 16px;
+}
+
+.facts_stats_inline_link {
+	color: $blue_navy;
+	font-size: 14px;
+	line-height: calc(24 / 14);
+	text-decoration: underline;
+
+	@include hover {
+		text-decoration: none;
+	}
+}

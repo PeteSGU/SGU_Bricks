@@ -1,0 +1,74 @@
+/* ==========================================================================
+	Page
+============================================================================= */
+
+.page_wrapper {
+	width: 100%;
+	min-height: 100vh;
+
+	display: grid;
+	grid-template-rows: auto 1fr auto;
+	grid-template-columns: 100%;
+
+	@media print {
+		min-height: auto;
+
+		display: block;
+	}
+}
+
+.page {
+	display: flex;
+	flex-direction: column;
+}
+
+.page_feature {
+}
+
+.page_content {
+	flex: 1;
+
+	.body_layout_blog_detail & {
+		position: relative;
+
+		@media #{$min_lg} {
+			&:before {
+				width: 380px;
+				height: 696px;
+				display: block;
+
+				position: absolute;
+				left: 0;
+				top: 0;
+
+				background: url('../images/blob_left.png') no-repeat;
+				background-size: 100%;
+				content: '';
+			}
+		}
+
+		@media #{$min_xl} {
+			&:after {
+				width: 356px;
+				height: 911px;
+				display: block;
+
+				position: absolute;
+				right: 0;
+				top: 50%;
+
+				background: url('../images/blob_right.png') no-repeat;
+				background-size: 100%;
+				content: '';
+				transform: translateY(-50%);
+			}
+		}
+	}
+}
+
+.full_width_callouts {
+	.body_layout_home & {
+		position: relative;
+		z-index: 15;
+	}
+}

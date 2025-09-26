@@ -1,0 +1,43 @@
+
+{#
+	{% include '@partial-button-toggle' with {
+		class: 'button',
+		js_class: 'js-button',
+		title: 'Button Text',
+		icon: 'menu',
+		active_title: 'Active Button Title',
+		active_icon: 'close',
+		swap_target: '',
+		swap_link: '',
+		aria: '',
+		nowrap: false
+	} %}
+#}
+<button class="js-{{ class|replace({ '_': '-'}) }}-toggle {{ js_class }} {% if swap_target %}js-swap {% endif %}{{ class }}_toggle button_toggle" {% if aria %} aria-label="{{ aria }}" {% endif %} {% if swap_target %} data-swap-target="{{ swap_target }}" {% endif %} {% if swap_link %} data-swap-linked="{{ swap_link }}" {% endif %}>
+	<span class="{{ class }}_toggle_inner_default {{ class }}_toggle_inner button_toggle_inner_default button_toggle_inner">
+		{% if nowrap == true %}
+			<span class="{{ class }}_toggle_label_default {{ class }}_toggle_label button_toggle_label_default button_toggle_label">{{ title }}</span><span class="{{ class }}_toggle_icon_default {{ class }}_toggle_icon button_toggle_icon_default button_toggle_icon icon_nowrap" aria-hidden="true">&#xfeff;{{ icon(icon) }}</span>
+		{% else %}
+			<span class="{{ class }}_toggle_label_default {{ class }}_toggle_label button_toggle_label_default button_toggle_label">{{ title }}</span>
+			{% if icon %}
+				<span class="{{ class }}_toggle_icon_default {{ class }}_toggle_icon button_toggle_icon_default button_toggle_icon" aria-hidden="true">
+					{{ icon(icon) }}
+				</span>
+			{% endif %}
+		{% endif %}
+	</span>
+	{% if active_title %}
+		<span class="{{ class }}_toggle_inner_active {{ class }}_toggle_inner button_toggle_inner_active button_toggle_inner">
+			{% if nowrap == true %}
+				<span class="{{ class }}_toggle_label_active {{ class }}_toggle_label button_toggle_label_active button_toggle_label">{{ active_title }}</span><span class="{{ class }}_toggle_icon_active {{ class }}_toggle_icon button_toggle_icon_active button_toggle_icon icon_nowrap" aria-hidden="true">&#xfeff;{{ icon(active_icon) }}</span>
+			{% else %}
+				<span class="{{ class }}_toggle_label_active {{ class }}_toggle_label button_toggle_label_active button_toggle_label">{{ active_title }}</span>
+				{% if icon %}
+					<span class="{{ class }}_toggle_icon_active {{ class }}_toggle_icon button_toggle_icon_active button_toggle_icon" aria-hidden="true">
+						{{ icon(active_icon) }}
+					</span>
+				{% endif %}
+			{% endif %}
+		</span>
+	{% endif %}
+</button>

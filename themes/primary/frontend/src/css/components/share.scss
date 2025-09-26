@@ -1,0 +1,117 @@
+/* ==========================================================================
+	Share
+============================================================================= */
+
+.share_tools {
+	position: relative;
+
+	display: none;
+
+	.js & {
+		@media #{$min_lg} {
+			display: inline-block;
+		}
+
+		@media print {
+			display: none;
+		}
+	}
+}
+
+.share_tools_title {
+	@include visually_hide;
+}
+
+.share_tools_toggle {
+	@include button_fill('blue');
+	@include button_mixed_block;
+
+	position: relative;
+	z-index: 1;
+
+	text-decoration: underline;
+}
+
+.share_tools_toggle_inner {
+}
+
+.share_tools_toggle_label {
+}
+
+.share_tools_list {
+	position: absolute;
+
+	display: flex;
+
+	.direction_top & {
+		bottom: calc(100% + 10px);
+	}
+
+	.direction_right & {
+		top: 50%;
+		left: calc(100% + 10px);
+		translate: 0 -50% 0;
+	}
+
+	.direction_bottom & {
+		margin-top: 10px;
+	}
+
+	.direction_left & {
+		top: 50%;
+		right: calc(100% + 10px);
+		translate: 0 -50% 0;
+	}
+}
+
+.share_tool_item {
+	opacity: 0;
+
+	transition: opacity 0.3s, translate 0.3s;
+	visibility: hidden;
+
+	.direction_top & {
+		translate: 0 100px 0;
+	}
+
+	.direction_right & {
+		translate: -166px 0 0;
+	}
+
+	.direction_bottom & {
+		translate: 0 -100px 0;
+	}
+
+	.direction_left & {
+		translate: 166px 0 0;
+	}
+
+	.share_tools.fs-swap-active & {
+		opacity: 1;
+		translate: 0 0 0;
+		visibility: visible;
+	}
+}
+
+@for $i from 1 to 10 {
+	.share_tools.fs-swap-active .share_tool_item:nth-child(#{$i}) {
+		transition-delay: $i * 0.1s;
+	}
+}
+
+.share_tool {
+	display: block;
+	padding: 10px;
+	transition: color $base_speed;
+
+	@include hover {
+		color: $black;
+	}
+}
+
+.share_tool_icon {
+}
+
+.share_tool_label {
+	@include visually_hide;
+}

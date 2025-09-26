@@ -1,0 +1,81 @@
+{#
+	{% include '@component-accordion' with {
+		title: 'Title',
+		description: 'Description',
+		grouped: false,
+		items: [
+			{
+				title: 'Item Title',
+				subtitle: 'Item Subtitle',
+				description: '<p>Item Description</p>'
+			}
+		]
+	} %}
+#}
+
+{% set id = uniqid('js-accordion-item') %}
+{% set group_id = uniqid('accordion-group') %}
+
+<!-- Accordion -->
+<div class="js-accordion accordion">
+	<div class="fs-row">
+		<div class="fs-cell">
+			<div class="accordion_inner">
+				{% if title or description %}
+					<div class="accordion_header">
+						{% if title %}
+							<h2 class="accordion_title">
+								<span class="accordion_title_label">{{ title }}</span>
+							</h2>
+						{% endif %}
+					</div>
+				{% endif %}
+				<div class="accordion_items">
+					{% for item in items %}
+						<div class="js-accordion-item {{ id }}-{{ loop.index }} accordion_item">
+							{% if title %}
+								<h3 class="accordion_item_heading">
+							{% else %}
+								<h2 class="accordion_item_heading">
+							{% endif %}
+								<button class="js-accordion-swap js-swap accordion_item_button" data-swap-target=".{{ id }}-{{ loop.index }}" {% if grouped %} data-swap-group="{{ group_id }}"{% endif %}>
+									<span class="accordion_item_heading_inner">
+										<span class="accordion_item_heading_icon"></span>
+										<span class="accordion_item_heading_label">
+											<span class="accordion_item_heading_title">{{ item.title }}</span>
+										</span>
+									</span>
+								</button>
+							{% if item.title %}
+								</h3>
+							{% else %}
+								</h2>
+							{% endif %}
+							<div class="js-accordion-content accordion_item_content typography{% if item.image %} has_image{% endif %}" aria-label="{{ item.title }}{% if item.subtitle %} {{ item.subtitle }}{% endif %}">
+								{% if item.image %}
+								<figure class="accordion_item_content_figure">
+									{% include '@partial-image' with {
+										class: 'accordion_item_content',
+										alt: '',
+										image: item.image,
+										loading: 'lazy',
+										sources: [
+											img.wide.sml,
+											img.wide.xsml,
+											img.wide.xxsml
+										]
+									} %}
+								</figure>
+								{% endif %}
+								<div class="accordion_item_description">
+									<p>{{ item.description }}</p>
+								</div>
+							</div>
+						</div>
+					{% endfor %}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- END: Accordion -->

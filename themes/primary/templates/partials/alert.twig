@@ -1,0 +1,27 @@
+<div class="js-alert alert" id="alert" role="alert" data-time="{{ published }}" aria-labelledby="alert_title" tabindex="-1" aria-atomic="true">
+	<div class="fs-row">
+		<div class="fs-cell">
+			<div class="alert_inner">
+				<div class="alert_header">
+					<h2 class="alert_title" id="alert_title" tabindex="-1">
+						<span class="alert_title_label">Site Alerts</span>
+					</h2>
+				</div>
+				<div class="alert_body">
+					<div class="alert_description typography">
+						{{ description }}
+					</div>
+				</div>
+				<button class="js-alert-close alert_close" aria-label="close site alert">
+					<span class="alert_close_inner">
+						<span class="alert_close_label">Close</span>
+						<span class="alert_close_icon" aria-hidden="true">
+							<span class="alert_close_icon_inner">{{ icon('close') }}</span>
+						</span>
+					</span>
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- END: Alert -->

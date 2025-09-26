@@ -1,0 +1,167 @@
+/* ==========================================================================
+	Link Group
+============================================================================= */
+
+.link_group {
+	@include margined_xl;
+}
+
+.link_group_inner {
+	position: relative;
+
+	align-items: center;
+	border: 1px solid $turquoise;
+	border-radius: 5px;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+
+.link_group_header {
+	position: absolute;
+	left: 10px;
+	top: -12px;
+
+	@media #{$min_sm} {
+		left: 30px;
+	}
+
+	@media #{$min_md} {
+		top: -17px;
+	}
+
+	@media #{$min_lg} {
+		left: 30px;
+	}
+
+	@media #{$min_xl} {
+		left: calc((100% - 900px) / 2);
+	}
+
+	@include inside_gutenberg_column {
+
+		@media #{$min_xl} {
+			left: 18px;
+		}
+	}
+
+	@include inside_gutenberg_column {
+
+		@media (min-width: 780px) {
+			left: 14px;
+		}
+	}
+}
+
+.link_group_title {
+	@include h5;
+
+	background: $white;
+	color: $turquoise_dark;
+	margin-block: 0;
+	padding: 0 10px;
+
+	@media #{$min_md} {
+		padding: 0 20px;
+	}
+
+	@include inside_gutenberg_column(3) {
+
+		@media #{$min_md} {
+			padding: 0 10px;
+		}
+	}
+}
+
+.link_group_list {
+	width: 100%;
+	max-width: 860px;
+
+	display: grid;
+	column-gap: $fs_grid_gap;
+	list-style: none;
+	margin: 0;
+	padding: 20px 20px 40px;
+
+	@media #{$min_sm} {
+		padding: 20px 40px 40px;
+	}
+
+	@media #{$min_md} {
+		grid-template-columns: repeat(2, 1fr);
+		padding: 35px 50px 46px;
+	}
+
+	@media #{$min_lg} {
+		padding: 35px 20px 46px;
+	}
+
+	@media #{$min_xl} {
+		padding: 35px 0 46px;
+	}
+
+	@include inside_gutenberg_column {
+
+		@media #{$min_md} {
+			grid-template-columns: unset;
+			padding: 35px 40px 46px;
+		}
+	}
+
+	@include inside_gutenberg_column($count: 3) {
+
+		@media (min-width:780px) {
+			padding: 35px 25px 46px;
+		}
+	}
+}
+
+.link_group_item {
+	border-bottom: 1px solid #e0e0e0;
+}
+
+.link_group_link {
+
+	width: 100%;
+	height: 100%;
+
+	color: $blue_navy;
+	display: block;
+	font-size: 14px;
+	font-weight: 700;
+	line-height: calc(18 / 14);
+
+	padding-block: 20px;
+	transition: color $base_speed;
+
+	@include hover {
+		color: $black;
+	}
+}
+
+.link_group_link_inner {
+
+	@media #{$min_md} {
+		display: flex;
+
+		align-items: center;
+		justify-content: space-between;
+	}
+}
+
+.link_group_link_label {
+}
+
+.link_group_link_icon {
+	color: $turquoise_dark;
+	margin-left: 14px;
+	white-space: nowrap;
+
+	.icon {
+		display: inline;
+	}
+
+	.icon_external {
+		transform: translateY(-1px);
+	}
+}

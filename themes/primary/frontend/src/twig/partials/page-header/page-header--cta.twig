@@ -1,0 +1,74 @@
+<div class="page_header page_header_cta">
+	<div class="page_header_inner">
+		<div class="page_intro">
+			<div class="fs-row">
+				<div class="fs-cell">
+					<div class="page_cta_wrapper">
+						<div class="page_intro_inner">
+							{% if page.breadcrumbNav != false  %}
+								<div class="page_breadcrumb">
+									{% render '@navigation-breadcrumb' with {
+										page: page,
+										modifier: '',
+										links: page.breadcrumbNav,
+										icon_home: 'home',
+										icon_divider: 'minus',
+										icon_end: 'angle_down'
+									} %}
+								</div>
+							{% endif %}
+							<h1 class="page_title" id="page_title" tabindex="-1">{{ page.title }}</h1>
+							{% if page.description %}
+								<p class="page_description">{{ page.description }}</p>
+							{% endif %}
+							{% if page.positions %}
+								<p class="page_description">
+								{% for position in page.positions %}
+									{{ position }}{% if not loop.last %}, <br>{% endif %}
+								{% endfor %}
+								</p>
+							{% endif %}
+						</div>
+						<div class="page_cta">
+							<div class="page_cta_inner">
+								<figure class="page_cta_figure">
+									{% include '@partial-image' with {
+										class: 'page_cta',
+										alt: 'page.cta.alt',
+										image: page.cta.image,
+										loading: 'eager',
+										sources: [
+											img.square.sml,
+											img.square.xsml,
+											img.square.xxsml,
+											img.square.thumb
+										]
+									} %}
+								</figure>
+								{% if page.cta.title or page.cta.link %}
+								<div class="page_cta_body">
+									{% if page.cta.title %}
+									<p class="page_cta_title">{{ page.cta.title }}</p>
+									{% endif %}
+									{% if page.cta.link %}
+									<div class="page_cta_links">
+										<div class="page_cta_link_item">
+											{% include '@partial-link' with {
+												class: 'page_cta',
+												title: page.cta.link.label,
+												url: page.cta.link.url,
+												icon: ''
+											} %}
+										</div>
+									</div>
+									{% endif %}
+								</div>
+								{% endif %}
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

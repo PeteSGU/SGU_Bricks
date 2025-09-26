@@ -1,0 +1,47 @@
+<div class="news_meta" id="meta" data-type="news" data-category="{{ item.fw_categories|e('html_attr') }}">
+	<div class="fs-row">
+		<div class="fs-cell">
+			<div class="news_meta_inner">
+				<div class="news_meta_body">
+					{% if item.fw_date or item.author %}
+						<div class="news_meta_details">
+							{% if item.fw_date %}
+								<div class="news_meta_detail news_meta_date">
+									<span class="news_meta_detail_hint">Published:&nbsp;</span>
+									<time class="news_meta_detail_label" datetime="{{ item.fw_date }}">{{ item.fw_date|date('F j, Y') }}</time>
+								</div>
+							{% endif %}
+							{% if item.fw_author %}
+								<div class="news_meta_detail news_meta_author">
+									<span class="news_meta_detail_hint">- by&nbsp;</span>
+									<span class="news_meta_detail_label">{{ item.fw_author }}</span>
+								</div>
+							{% endif %}
+						</div>
+					{% endif %}
+
+					{% if item.fw_categories %}
+						<div class="news_meta_categories_block">
+							<ul class="news_meta_categories" aria-label="Categories">
+								{% for category in item.fw_categories %}
+									{% set link = fn("get_post_type_archive_link", "news") ~ "?category[]=" ~ category.slug %}
+									
+									<li class="news_meta_category">
+										<a class="news_meta_category_link" href="{{ link }}">{{ category.name }}</a>
+									</li>
+								{% endfor %}
+							</ul>
+						</div>
+					{% endif %}
+				</div>
+
+				<div class="news_meta_share">
+					{% include "partials/share--detail.twig" with {
+						title: 'Share This',
+						items: ['Twitter', 'Facebook']
+					} %}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

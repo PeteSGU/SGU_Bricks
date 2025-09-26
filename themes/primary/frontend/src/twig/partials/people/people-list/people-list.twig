@@ -1,0 +1,147 @@
+{#
+	{% include '@partial-people-list' with {
+		title: 'Title',
+		items: [
+				{
+				name: 'Name',
+				title: 'Title',
+				url: '#',
+				image: '1',
+				contact: {
+					email: 'email@address.com',
+					phone: '(410) 555-1234'
+				},
+				location: 'Location',
+				department: {
+					url: '#',
+					label: 'Department'
+				}
+			}
+		]
+	} %}
+#}
+<!-- People List -->
+<div class="people_list">
+	<div class="fs-row">
+		<div class="fs-cell">
+			<div class="people_list_inner">
+				<div class="people_list_header">
+					<p class="people_list_header_label">Name</p>
+					<p class="people_list_header_label">Contact</p>
+					<p class="people_list_header_label">School & Department</p>
+				</div>
+				<ul class="people_list_rows" id="item_list" aria-label="{{ title }}">
+					{% for item in items %}
+						<li class="people_list_row">
+							<div class="people_list_item">
+								<div class="people_list_item_header">
+									<div class="people_list_item_info">
+										<h2 class="people_list_item_name">
+											{% if item.url %}
+												<a class="people_list_item_name_link" href="{{ item.url }}">
+													<span class="people_list_item_name_link_label">{{ item.name }}</span>
+													<span class="people_list_item_name_link_icon">{{ icon('caret_right') }}</span>
+												</a>
+											{% else %}
+												{{ item.name }}
+											{% endif %}
+										</h2>
+										{% if item.job_title %}
+											<div class="people_list_item_title">{{ item.job_title }}</div>
+										{% endif %}
+									</div>
+									{% if item.image %}
+										<figure class="people_list_item_figure small">
+											{% include '@partial-image' with {
+												class: 'people_list_item',
+												alt: '',
+												image: item.image,
+												loading: 'lazy',
+												sources: [
+													img.square.xxsml,
+													img.square.thumb
+												]
+											} %}
+										</figure>
+									{% endif %}
+								</div>
+								<div class="people_list_item_body">
+									<div class="people_list_item_details">
+										{% if item.contact %}
+											<div class="people_list_item_detail contact">
+												{% if item.contact.phone or item.contact.email %}
+													<div class="people_list_item_detail_label">Contact</div>
+												{% endif %}
+												{% if item.contact.email %}
+													<div class="people_list_item_detail_item">
+														<div class="people_list_item_detail_item_header">
+															<div class="people_list_item_detail_icon">{{ icon('mail') }}</div>
+															<div class="people_list_item_detail_hint">Email: </div>
+														</div>
+														<div class="people_list_item_detail_info">
+															<a class="people_list_item_detail_info_link" href="mailto:{{ item.contact.email }}">
+																<span class="people_list_item_detail_info_label">{{ item.contact.email }}</span>
+															</a>
+														</div>
+													</div>
+												{% endif %}
+												{% if item.contact.phone %}
+													<div class="people_list_item_detail_item">
+														<div class="people_list_item_detail_item_header">
+															<div class="people_list_item_detail_icon">{{ icon('phone') }}</div>
+															<div class="people_list_item_detail_hint">Phone: </div>
+														</div>
+														<div class="people_list_item_detail_info">
+															<a class="people_list_item_detail_info_link" href="tel:{{ tel(item.contact.phone) }}">
+																<span class="people_list_item_detail_info_label">{{ item.contact.phone }}</span>
+															</a>
+														</div>
+													</div>
+												{% endif %}
+											</div>
+										{% endif %}
+										{% if item.department %}
+											<div class="people_list_item_detail department">
+												<div class="people_list_item_detail_label">School & Department</div>
+												{% for department in item.department %}
+													<div class="people_list_item_detail_item">
+														<div class="people_list_item_detail_info">
+															<a class="people_list_item_detail_info_link" href="{{ department.url }}">
+																<span class="people_list_item_detail_info_label">{{ department.label }}</span>
+															</a>
+														</div>
+													</div>
+												{% endfor %}
+											</div>
+										{% endif %}
+									</div>
+								</div>
+								{% if item.image %}
+									<figure class="people_list_item_figure large">
+										{% include '@partial-image' with {
+											class: 'people_list_item',
+											alt: '',
+											image: item.image,
+											loading: 'lazy',
+											sources: [
+												img.square.xxsml,
+												img.square.thumb
+											]
+										} %}
+									</figure>
+								{% endif %}
+							</div>
+						</li>
+					{% endfor %}
+				</ul>
+				<div class="people_list_pagination">
+					{% include '@partial-pagination' with {
+						title: 'Directory Pagination',
+						pages: '50'
+					} %}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- END: People List -->

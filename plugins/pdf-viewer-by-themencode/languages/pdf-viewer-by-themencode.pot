@@ -1,0 +1,798 @@
+# Copyright (C) 2023 ThemeNcode
+# This file is distributed under the same license as the PDF Viewer by ThemeNcode plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: PDF Viewer by ThemeNcode 1.3.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/pdf-viewer-by-themencode\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2023-01-23T11:37:00+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.7.1\n"
+"X-Domain: pdf-viewer-by-themencode\n"
+
+#. Plugin Name of the plugin
+msgid "PDF Viewer by ThemeNcode"
+msgstr ""
+
+#. Plugin URI of the plugin
+msgid "https://themencode.com/pdf-viewer-by-themencode/"
+msgstr ""
+
+#. Description of the plugin
+msgid "The best PDF Reader Plugin for WordPress since 2014, Powers up your WordPress website with a smart and modern PDF Reader."
+msgstr ""
+
+#. Author of the plugin
+msgid "ThemeNcode"
+msgstr ""
+
+#. Author URI of the plugin
+msgid "https://themencode.com"
+msgstr ""
+
+#: includes/cpt.php:16
+msgctxt "Post Type General Name"
+msgid "PDF Viewer"
+msgstr ""
+
+#: includes/cpt.php:17
+msgctxt "Post Type Singular Name"
+msgid "PDF Viewer"
+msgstr ""
+
+#: includes/cpt.php:18
+#: includes/cpt.php:19
+#: includes/cpt.php:45
+#: includes/pvfw-csf-sc.php:18
+msgid "PDF Viewer"
+msgstr ""
+
+#: includes/cpt.php:20
+msgid "PDF Viewer Archives"
+msgstr ""
+
+#: includes/cpt.php:21
+msgid "PDF Viewer Attributes"
+msgstr ""
+
+#: includes/cpt.php:22
+msgid "Parent PDF Viewer:"
+msgstr ""
+
+#: includes/cpt.php:23
+msgid "All PDF Viewers"
+msgstr ""
+
+#: includes/cpt.php:24
+msgid "Add New PDF Viewer"
+msgstr ""
+
+#: includes/cpt.php:25
+msgid "Add New"
+msgstr ""
+
+#: includes/cpt.php:26
+msgid "New PDF Viewer"
+msgstr ""
+
+#: includes/cpt.php:27
+msgid "Edit PDF Viewer"
+msgstr ""
+
+#: includes/cpt.php:28
+msgid "Update PDF Viewer"
+msgstr ""
+
+#: includes/cpt.php:29
+#: includes/cpt.php:30
+msgid "View PDF Viewer"
+msgstr ""
+
+#: includes/cpt.php:31
+msgid "Search PDF Viewer"
+msgstr ""
+
+#: includes/cpt.php:32
+msgid "Not found"
+msgstr ""
+
+#: includes/cpt.php:33
+msgid "Not found in Trash"
+msgstr ""
+
+#: includes/cpt.php:34
+msgid "Featured Image"
+msgstr ""
+
+#: includes/cpt.php:35
+msgid "Set featured image"
+msgstr ""
+
+#: includes/cpt.php:36
+msgid "Remove featured image"
+msgstr ""
+
+#: includes/cpt.php:37
+msgid "Use as featured image"
+msgstr ""
+
+#: includes/cpt.php:38
+msgid "Insert into PDF Viewer"
+msgstr ""
+
+#: includes/cpt.php:39
+msgid "Uploaded to this PDF Viewer"
+msgstr ""
+
+#: includes/cpt.php:40
+msgid "PDF Viewers list"
+msgstr ""
+
+#: includes/cpt.php:41
+msgid "PDF Viewers list navigation"
+msgstr ""
+
+#: includes/cpt.php:42
+msgid "Filter PDF Viewers list"
+msgstr ""
+
+#: includes/cpt.php:46
+msgid "PDF Viewer items"
+msgstr ""
+
+#: includes/helper-functions.php:54
+msgid "Please create PDF Viewers using %s (PDF Viewer > Add New) before creating a shortcode."
+msgstr ""
+
+#: includes/pvfw-csf-custom-field.php:17
+msgid "PDF Viewer Settings"
+msgstr ""
+
+#: includes/pvfw-csf-custom-field.php:25
+#: includes/pvfw-csf-custom-field.php:29
+msgid "Basic Settings"
+msgstr ""
+
+#: includes/pvfw-csf-custom-field.php:36
+msgid "Select or Upload a PDF File"
+msgstr ""
+
+#: includes/pvfw-csf-custom-field.php:222
+msgid "Return to Site Link"
+msgstr ""
+
+#: includes/pvfw-csf-custom-field.php:223
+msgid "Enter the url where the Return to site button on bottom right should link to. Keeping blank will use the previous page link."
+msgstr ""
+
+#: includes/pvfw-csf-custom-field.php:246
+#: includes/pvfw-csf-options.php:464
+msgid "Toolbar Elements Visibility"
+msgstr ""
+
+#: includes/pvfw-csf-custom-field.php:380
+#: includes/pvfw-csf-options.php:284
+msgid "Do you want to use a Theme or use custom colors?"
+msgstr ""
+
+#: includes/pvfw-csf-custom-field.php:392
+#: includes/pvfw-csf-options.php:296
+msgid "Select Theme"
+msgstr ""
+
+#: includes/pvfw-csf-custom-field.php:444
+msgid "Error Heading"
+msgstr ""
+
+#: includes/pvfw-csf-custom-field.php:446
+#: web/pdf-viewer-single.php:213
+msgid "SORRY"
+msgstr ""
+
+#: includes/pvfw-csf-custom-field.php:453
+msgid "Error Content"
+msgstr ""
+
+#: includes/pvfw-csf-custom-field.php:455
+#: web/pdf-viewer-single.php:217
+msgid "You do not have permission to view this file, please contact us if you think this was by a mistake."
+msgstr ""
+
+#: includes/pvfw-csf-custom-field.php:462
+msgid "Error Button Text"
+msgstr ""
+
+#: includes/pvfw-csf-custom-field.php:464
+#: web/pdf-viewer-single.php:221
+msgid "Go To Homepage"
+msgstr ""
+
+#: includes/pvfw-csf-custom-field.php:471
+msgid "Error Button URL"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:21
+msgid "Global Settings"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:33
+msgid "Welcome"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:38
+msgid "Welcome to PDF Viewer by ThemeNcode"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:43
+msgid "Thank you for using PDF Viewer by ThemeNcode. On this page we'll give you some quick details you may need."
+msgstr ""
+
+#: includes/pvfw-csf-options.php:48
+msgid "To use full Features and get priority support, Upgrade to the <a href=\"https://codecanyon.net/item/pdf-viewer-for-wordpress/8182815\" target=\"_blank\">premium version.</a>"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:53
+msgid "Premium feature includes: <br><br /><ul><li>All features of Lite version</li><li>Flipbook Mode</li><li><strong>Automatic Display:</strong> Automatically convert all current .pdf links to open or embed with PDF Viewer</li><li>Custom Color Theme Builder</li><li>Disable Right Click on viewer pages</li><li>Disable cmd/ctrl+c,+ s keys on viewer pages to prevent save and copying</li><li>Sync Global Settings, Don't waste your time setting options every time you create a PDF Viewer.</li><li>Google Analytics Support on viewer pages</li><li>Custom JS Support on viewer pages</li><li>Priority Support</li><li>And Many more...</li></ul><br><a class=\"button button-primary\" href=\"https://codecanyon.net/item/pdf-viewer-for-wordpress/8182815\" target=\"_blank\">Get Premium version from codecanyon Now</a>"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:58
+msgid "Getting Started"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:63
+msgid "PDF Viewer for WordPress comes with 2 ways of using it. You can start by creating PDF Viewers using <strong>PDF Viewer > Add New</strong> Menu, then share the link anywhere for users to access. <br><br />The other way is using Automatic Link/Embed option. This setup will Automatically convert all of the .pdf links on your website to open with PDF Viewer for WordPress. Go to <strong>PDF Viewer > Global Settings > Automatic Display</strong> Menu to setup this feature.<br><br />Here are some videos from our documentation that will help you to figure out specific parts more easily."
+msgstr ""
+
+#: includes/pvfw-csf-options.php:73
+msgid "Useful Links"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:93
+msgid "Get Premium"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:97
+msgid "Get PDF Viewer for WordPress Premium"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:102
+msgid "To use full Features and get priority support, Upgrade to the <a href=\"https://codecanyon.net/item/pdf-viewer-for-wordpress/8182815\" target=\"_blank\">premium version.</a> Here are some key features: "
+msgstr ""
+
+#: includes/pvfw-csf-options.php:107
+msgid "<ul><li>All features of Lite version</li><li>Flipbook Mode</li><li><strong>Automatic Display:</strong> Automatically convert all current .pdf links to open or embed with PDF Viewer</li><li>Custom Color Theme Builder</li><li>Disable Right Click on viewer pages</li><li>Disable cmd/ctrl+c,+ s keys on viewer pages to prevent save and copying</li><li>Sync Global Settings, Don't waste your time setting options every time you create a PDF Viewer.</li><li>Google Analytics Support on viewer pages</li><li>Custom JS Support on viewer pages</li><li>Priority Support</li><li>And Many more...</li></ul><br><a class=\"button button-primary\" href=\"https://codecanyon.net/item/pdf-viewer-for-wordpress/8182815\" target=\"_blank\">Get Premium version from codecanyon Now</a>"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:115
+msgid "Automatic Display (Premium)"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:120
+msgid "Automatic Display (Premium Feature)"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:125
+msgid "You can set options here to have all of your current .pdf links to either open or embed with a PDF Viewer."
+msgstr ""
+
+#: includes/pvfw-csf-options.php:131
+msgid "Automatic Display"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:132
+msgid "If you want to convert all current .pdf links to open with PDF Viewer, select any of the options. (Premium Feature)"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:133
+#: includes/pvfw-csf-options.php:162
+#: includes/pvfw-csf-options.php:285
+#: includes/pvfw-csf-options.php:297
+#: includes/pvfw-csf-options.php:328
+#: includes/pvfw-csf-options.php:341
+#: includes/pvfw-csf-options.php:353
+msgid "Select an option"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:135
+msgid "Automatic iFrame/Embed"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:136
+msgid "Automatic Link"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:145
+msgid "All links ending in .pdf will be replaced with Embedded PDF Viewer automatically"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:153
+msgid "All links ending in .pdf will open with PDF Viewer automatically"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:160
+#: includes/pvfw-csf-sc.php:136
+msgid "Link Target"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:161
+#: includes/pvfw-csf-options.php:611
+#: includes/pvfw-csf-options.php:622
+msgid "Premium Feature"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:164
+#: includes/pvfw-csf-sc.php:140
+msgid "Same Tab"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:165
+#: includes/pvfw-csf-sc.php:139
+msgid "New Tab"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:176
+msgid "Automatic iFrame Width"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:187
+msgid "Automatic iFrame Height"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:205
+msgid "General Settings"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:210
+msgid "There are some common settings related to the viewer, set all the options accordingly."
+msgstr ""
+
+#: includes/pvfw-csf-options.php:216
+#: includes/pvfw-csf-options.php:517
+msgid "Logo"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:217
+msgid "Logo that appears on top right corner of viewer page"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:227
+msgid "Favicon"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:228
+msgid "Favicon for viewer pages."
+msgstr ""
+
+#: includes/pvfw-csf-options.php:231
+msgid "Upload Favicon"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:232
+msgid "Remove Favicon"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:238
+msgid "FullScreen Link Text"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:239
+msgid "Only applicable for iframe shortcode, the link that appears just above iframe"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:240
+#: includes/pvfw-new-shortcodes.php:56
+msgid "Fullscreen Mode"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:246
+msgid "Return to Site Link Text"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:247
+msgid "Return to site link that appears on bottom right corner of fullscreen viewer"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:248
+#: web/pdf-viewer-single.php:862
+msgid "Return to Site"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:254
+msgid "Google Analytics ID"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:255
+msgid "Premium Feature. Example: UA-XXXXXXXX-X"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:264
+msgid "iFrame Responsive Fix"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:273
+msgid "Appearance"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:278
+msgid "Customize the look of your PDF Viewer Here"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:287
+msgid "Theme"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:288
+msgid "Custom Color (Premium Feature)"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:299
+msgid "Aqua White"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:300
+msgid "Material Blue"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:301
+msgid "Midnight Calm"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:311
+msgid "Toolbar (Premium)"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:316
+msgid "Toolbar Global Defaults"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:321
+#: includes/pvfw-csf-options.php:469
+msgid "This setting only works on <a href=\"https://codecanyon.net/item/pdf-viewer-for-wordpress/8182815\" target=\"_blank\">Premium version</a> of PDF Viewer for WordPress"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:327
+msgid "Default Scroll"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:330
+msgid "Vertical Scrolling"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:331
+msgid "Horizontal Scrolling"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:332
+msgid "Wrapped Scrolling"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:333
+msgid "Flip (Premium)"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:340
+msgid "Default Spread"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:343
+msgid "No Spreads"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:344
+msgid "Odd Spreads"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:345
+msgid "Even Spreads"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:352
+msgid "Viewer Language"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:475
+msgid "Share"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:482
+msgid "Print"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:489
+msgid "Download"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:496
+msgid "Open"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:503
+msgid "Zoom"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:510
+msgid "Fullscreen"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:524
+msgid "Find"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:531
+msgid "Page Navigation"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:538
+msgid "Current View"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:545
+msgid "Rotate"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:552
+msgid "Handtool"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:559
+msgid "Document Properties"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:566
+msgid "Left Toggle Menu"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:573
+msgid "Right Toggle Menu"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:580
+msgid "Scroll Options"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:587
+msgid "Spread Options"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:594
+msgid "Advanced"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:599
+msgid "Advanced Settings"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:604
+msgid "These settings below only works on <a href=\"https://codecanyon.net/item/pdf-viewer-for-wordpress/8182815\" target=\"_blank\">Premium version</a> of PDF Viewer for WordPress"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:610
+msgid "Context Menu/Right Click on Viewer Pages (Premium Feature)"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:612
+#: includes/pvfw-csf-options.php:623
+msgid "Enabled"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:613
+#: includes/pvfw-csf-options.php:624
+msgid "Disabled"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:621
+msgid "Text Copying (ctrl+c) keyboard shortcut"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:635
+msgid "Custom CSS/JS"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:640
+msgid "Custom CSS and JS"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:645
+msgid "The custom css and javascript code you put below will be executed on viewer pages only."
+msgstr ""
+
+#: includes/pvfw-csf-options.php:651
+msgid "Custom CSS (Only inside Viewer)"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:662
+msgid "Custom JS (Only inside Viewer)"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:663
+msgid "Works on <a href=\"https://codecanyon.net/item/pdf-viewer-for-wordpress/8182815\" target=\"_blank\">Premium version</a> only"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:680
+#: includes/pvfw-csf-options.php:685
+msgid "Addons & Integrations"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:690
+msgid "Here are the available addons and integrations with PDF Viewer for WordPress."
+msgstr ""
+
+#: includes/pvfw-csf-options.php:695
+msgid "Elementor Addon"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:699
+msgid "This addon let's you create PDF Viewer shortcodes using Elementor builder interface"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:704
+msgid "If you're using elementor page builder on your website, you can get this addon to generate PDF Viewer shortcodes using Elementor Page Builder interface.<br><br /> <a class=\"button button-primary\" href=\"https://codecanyon.net/item/elementor-pdf-viewer-for-wordpress-addon/27575246\" target=\"_blank\">Buy/Download Elementor Addon Now</a>"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:710
+msgid "WPBakery Page Builder Addon"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:714
+msgid "This addon let's you create PDF Viewer shortcodes using WPBakery Page builder interface"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:719
+msgid "If you're using WPBakery page builder on your website, you can get this addon to generate PDF Viewer shortcodes using WPBakery Page Builder interface.<br><br /> <a class=\"button button-default\" href=\"https://codecanyon.net/item/visual-composer-page-builder-for-wordpress/242431\" target=\"_blank\">Buy/Download WPBakery Addon Now</a>"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:724
+msgid "Divi Builder Addon"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:728
+msgid "This addon let's you create PDF Viewer shortcodes using Divi builder interface"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:733
+msgid "If you're using Divi Theme or Builder on your website, you can get this addon to generate PDF Viewer shortcodes using Divi Builder interface.<br><br /> <a class=\"button button-default\" href=\"https://themencode.com/divi-pdf-viewer-for-wordpress/\" target=\"_blank\">Buy/Download Divi Addon Now</a>"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:738
+msgid "WP File Access Manager"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:742
+msgid "Allows you to restrict access to specific audience."
+msgstr ""
+
+#: includes/pvfw-csf-options.php:747
+msgid "If you want to restrict access to your media library files by user login/role/woocommerce purchase or paid memberships pro level, this plugin is for you!<br><br /> <a class=\"button button-primary\" href=\"https://codecanyon.net/item/wp-file-access-manager/26430349\" target=\"_blank\">Buy/Download WP File Access Manager</a>"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:754
+msgid "Export/Import"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:759
+msgid "Export/Import Settings"
+msgstr ""
+
+#: includes/pvfw-csf-options.php:763
+msgid "Take backup of all the global settings and import if needed."
+msgstr ""
+
+#: includes/pvfw-csf-sc.php:13
+msgid "Add PDF Viewer"
+msgstr ""
+
+#: includes/pvfw-csf-sc.php:14
+msgid "Select Type"
+msgstr ""
+
+#: includes/pvfw-csf-sc.php:15
+msgid "Insert PDF Viewer"
+msgstr ""
+
+#: includes/pvfw-csf-sc.php:19
+msgid "Use this to Generate PDF Viewer for WordPress Shortcodes"
+msgstr ""
+
+#: includes/pvfw-csf-sc.php:23
+msgid "Use the Add PDF Viewer button above to generate shortcode..."
+msgstr ""
+
+#: includes/pvfw-csf-sc.php:29
+msgid "Embed a PDF Viewer"
+msgstr ""
+
+#: includes/pvfw-csf-sc.php:36
+#: includes/pvfw-csf-sc.php:97
+msgid "Basic Options"
+msgstr ""
+
+#: includes/pvfw-csf-sc.php:47
+msgid "Select Viewer to Embed"
+msgstr ""
+
+#: includes/pvfw-csf-sc.php:48
+#: includes/pvfw-csf-sc.php:109
+msgid "Search using the viewer title"
+msgstr ""
+
+#: includes/pvfw-csf-sc.php:49
+#: includes/pvfw-csf-sc.php:110
+msgid "Select a Viewer"
+msgstr ""
+
+#: includes/pvfw-csf-sc.php:62
+msgid "Width"
+msgstr ""
+
+#: includes/pvfw-csf-sc.php:69
+msgid "Height"
+msgstr ""
+
+#: includes/pvfw-csf-sc.php:76
+msgid "iFrame Title"
+msgstr ""
+
+#: includes/pvfw-csf-sc.php:82
+#: includes/pvfw-csf-sc.php:148
+msgid "Jump to page"
+msgstr ""
+
+#: includes/pvfw-csf-sc.php:90
+msgid "Link to a PDF Viewer"
+msgstr ""
+
+#: includes/pvfw-csf-sc.php:108
+msgid "Select Viewer to Link to"
+msgstr ""
+
+#: includes/pvfw-csf-sc.php:122
+msgid "Link Text"
+msgstr ""
+
+#: includes/pvfw-csf-sc.php:123
+msgid "Open PDF"
+msgstr ""
+
+#: includes/pvfw-csf-sc.php:129
+msgid "Link CSS Class"
+msgstr ""
+
+#: includes/pvfw-csf-sc.php:130
+msgid "pdf-viewer-link-single"
+msgstr ""
+
+#: includes/pvfw-csf-sc.php:137
+msgid "Select Link Target"
+msgstr ""
+
+#: web/pdf-viewer-single.php:812
+msgid "Share this file with friends"
+msgstr ""
+
+#: web/pdf-viewer-single.php:814
+msgid "Your Name"
+msgstr ""
+
+#: web/pdf-viewer-single.php:816
+msgid "Friends Name"
+msgstr ""
+
+#: web/pdf-viewer-single.php:818
+msgid "Your Email Address"
+msgstr ""
+
+#: web/pdf-viewer-single.php:821
+msgid "Friends Email Address"
+msgstr ""
+
+#: web/pdf-viewer-single.php:824
+msgid "Email Subject"
+msgstr ""
+
+#: web/pdf-viewer-single.php:827
+msgid "Message"
+msgstr ""

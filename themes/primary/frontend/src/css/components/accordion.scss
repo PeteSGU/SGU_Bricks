@@ -1,0 +1,351 @@
+/* ==========================================================================
+	Accordion
+============================================================================= */
+
+.accordion {
+	@include margined_xl;
+}
+
+.accordion_inner {
+	position: relative;
+	padding: 20px 0 0;
+
+	@media #{$min_sm} {
+		border: 1px solid $turquoise_dark;
+		border-radius: 5px;
+		padding: 20px 30px;
+	}
+
+	@media #{$min_md} {
+		padding: 30px;
+	}
+
+	@media #{$min_lg} {
+		padding: 40px 50px;
+	}
+
+	@include inside_gutenberg_column {
+		@media #{$min_md} {
+			padding: 20px;
+		}
+	}
+}
+
+.accordion_header {
+	display: inline-block;
+
+	position: absolute;
+	left: 0;
+	top: -18px;
+
+	background: $white;
+
+	@media #{$min_sm} {
+		left: 0;
+
+		margin-left: 20px;
+		padding: 5px 20px;
+	}
+
+	@media #{$min_md} {
+		top: -22px;
+	}
+
+	@media #{$min_lg} {
+		margin-left: 40px;
+	}
+}
+
+.accordion_title {
+	@include h5;
+
+	color: $turquoise_dark;
+	margin: 0;
+}
+
+.accordion_title_label {
+	white-space: nowrap;
+}
+
+.accordion_description {
+	@include body_text;
+
+	p {
+		margin-block: 0;
+	}
+}
+
+.accordion_items {
+}
+
+.accordion_item {
+}
+
+.accordion_item {
+}
+
+.accordion_item_heading {
+	margin-block: 0;
+}
+
+.accordion_item_button {
+	width: 100%;
+
+	color: $blue_navy;
+	text-align: left;
+	transition: color $base_speed;
+
+	@include hover {
+		color: $black;
+	}
+}
+
+.accordion_item_heading_inner {
+	align-items: center;
+	display: grid;
+	gap: 20px;
+	grid-template-columns: max-content 1fr;
+	padding-block: 20px;
+}
+
+.accordion_item_heading_label {
+	align-items: baseline;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0 10px;
+}
+
+.accordion_item_heading_title {
+	@include h4;
+
+	@include inside_gutenberg_column {
+		@media (min-width: 780px) {
+			@include h5;
+		}
+	}
+}
+
+.accordion_item_heading_subtitle {
+	@include body_text;
+}
+
+.accordion_item_heading_icon {
+	position: relative;
+
+	width: 45px;
+
+	aspect-ratio: 1;
+	align-items: center;
+	display: flex;
+	justify-content: center;
+	transition: background-color $base_speed;
+
+	@media print {
+		display: none;
+	}
+
+	&:before,
+	&:after {
+		position: absolute;
+		inset: 50% auto auto 50%;
+
+		width: 30px;
+		height: 4px;
+
+		background-color: $turquoise_dark;
+		content: '';
+		transition: background-color $base_speed, opacity $base_speed, rotate $base_speed,
+			translate $base_speed;
+	}
+
+	&:before {
+		translate: -50% -50%;
+	}
+
+	&:after {
+		rotate: 90deg;
+		translate: -50% -50%;
+
+		.accordion_item.fs-swap-active & {
+			rotate: 0deg;
+		}
+	}
+
+	.accordion_item.fs-swap-active & {
+		&:after,
+		&:before {
+			background: $red_brand;
+		}
+	}
+
+	@include nested_hover($selector: '.accordion_item_button') {
+		&:after,
+		&:before {
+			background: $red_brand;
+		}
+	}
+
+	@include inside_gutenberg_column {
+		@media (min-width: 780px) {
+			width: 30px;
+
+			&:before,
+			&:after {
+				width: 25px;
+				height: 3px;
+			}
+		}
+	}
+}
+
+.accordion_item_content {
+	overflow: hidden;
+
+	@media #{$min_md} {
+		padding-block: 0 25px;
+
+		@include inside_gutenberg_column {
+			padding-block: 0 25px;
+		}
+	}
+
+	@media #{$min_lg} {
+		padding-block: 0 35px;
+	}
+
+	@media #{$min_xl} {
+		padding-block: 0 45px;
+	}
+
+	.accordion_item.fs-swap-enabled & {
+		display: none;
+
+		@media print {
+			display: block;
+		}
+	}
+
+	.accordion_item.fs-swap-active & {
+		display: block;
+	}
+
+	&.has_image {
+		@media #{$min_md} {
+			display: flex;
+
+			flex-direction: row-reverse;
+			gap: 30px;
+
+			.accordion_item.fs-swap-active & {
+				display: flex;
+
+				@include inside_gutenberg_column {
+					display: block;
+				}
+			}
+		}
+
+		@media #{$min_lg} {
+			gap: 50px;
+		}
+	}
+}
+
+.accordion_item_description {
+	position: relative;
+
+	@media #{$min_md} {
+		flex-basis: calc(100% - 330px);
+		opacity: 0;
+		transform: translateY(50px);
+		transition: opacity 0.5s, transform 0.5s;
+
+		.accordion_item_content.active & {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	@media #{$min_lg} {
+		flex-basis: calc(100% - 450px);
+		padding: 25px 0 25px 66px;
+
+		@include inside_gutenberg_column {
+			padding: 20px 0 25px 30px;
+		}
+
+		.accordion_item_content_figure + & {
+			padding: 25px 0 0 66px;
+
+			@include inside_gutenberg_column {
+				padding: 20px 0 10px 30px;
+			}
+		}
+
+		&:after {
+			width: 1px;
+			height: 100%;
+			display: block;
+
+			position: absolute;
+			left: 21px;
+			top: 0;
+
+			background: $red_brand;
+			content: '';
+
+			@include inside_gutenberg_column {
+				left: 4px;
+			}
+		}
+	}
+
+	@media #{$min_xl} {
+		flex-basis: calc(100% - 550px);
+	}
+
+	@media #{$min_xxl} {
+		flex-basis: calc(100% - 630px);
+	}
+
+	p {
+		@media #{$min_md} {
+			margin: 0;
+		}
+	}
+}
+
+.accordion_item_content_figure {
+	@include responsive_image;
+
+	margin-bottom: 25px;
+
+	@media #{$min_md} {
+		flex-basis: 300px;
+		opacity: 0;
+		transform: translateY(50px);
+		transition: opacity 0.5s, transform 0.5s;
+		transition-delay: 0.125s;
+
+		.accordion_item_content.active & {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	@media #{$min_lg} {
+		flex-basis: 400px;
+	}
+
+	@media #{$min_xl} {
+		flex-basis: 500px;
+	}
+
+	@media #{$min_xxl} {
+		flex-basis: 580px;
+	}
+}
+
+.accordion_item_content_image {
+	border-radius: 5px;
+}

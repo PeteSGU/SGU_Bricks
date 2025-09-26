@@ -1,0 +1,142 @@
+{% set id = uniqid('js-testimonials') %}
+{% set group_id = uniqid('testimonials-group') %}
+
+<div class="testimonials">
+	<div class="testimonials_texture"></div>
+	<div class="fs-row">
+		<div class="fs-cell">
+			<div class="testimonials_inner">
+				<div class="testimonials_accordion_wrapper">
+					<div class="testimonials_accordion_header">
+						<h2 class="testimonials_accordion_title">{{ group_title }}</h2>
+						{% if group_description %}
+							<p class="testimonials_accordion_description">{{ group_description }}</p>
+						{% endif %}
+					</div>
+					<div class="testimonials_grid">
+						<div class="testimonials_accordion">
+							<h3 class="testimonials_accordion_label">{{ group_label }}</h3>
+							<div class="testimonials_accordion_group">
+								{% for item in items %}
+									<div class="testimonial testimonial_{{ id }}_{{ loop.index }} js-testimonial">
+										<button class="testimonial_title js-swap" data-swap-target=".testimonial_{{ id }}_{{ loop.index }}" data-swap-options='{"collapse": false}' data-swap-group="{{ group_id }}">{{ item.title }}</button>
+										<div class="testimonials_detail testimonials_detail_{{ id }}_{{ loop.index }}">
+											<div class="testimonials_detail_item_media">
+												<figure class="testimonials_figure">
+													{% include '@partial-image' with {
+														class: 'testimonials_detail_item',
+														alt: '',
+														image: item.image,
+														loading: 'lazy',
+														sources: [
+															img.wide.xlrg,
+															img.wide.lrg,
+															img.wide.med,
+															img.wide.sml,
+															img.wide.xsml,
+															img.wide.xxsml
+														],
+														sizes: [
+															'(min-width: 740px) 50vw',
+															'0'
+														]
+													} %}
+												</figure>
+												{% set video_config = {
+													id: item.video.id,
+													type: item.video.type,
+													title: item.video.title,
+													display: display|default("inline"),
+													autoplay: autoplay|default(false),
+													playerVars: playerVars|default({})
+												} %}
+												{% if item.video.type == "youtube" %}
+													{% set video_url = 'https://www.youtube.com/watch?v=' ~ item.video.id %}
+												{% elseif type == "vimeo" %}
+													{% set video_url = 'https://vimeo.com/' ~ item.video.id %}
+												{% endif %}
+												<div class="lazy_video js-video-lazy-load testimonials_detail_item_video_wrapper" data-video-lazy-load='{{ video_config|json_encode }}'>
+													<a class="js-play-btn js-swap testimonials_detail_item_button" href="{{ video_url }}" aria-label="Play {{ item.video.title }}" data-swap-target=".testimonials_detail_{{ id }}_{{ loop.index }}">
+														<span class="testimonials_detail_item_button_group">
+															<span class="testimonials_detail_item_button_label">{{ item.person_title }}</span>
+															<span class="testimonials_detail_item_button_name">{{ item.name }}</span>
+														</span>
+														<span class="testimonials_detail_item_icon">{{ icon('play') }}</span>
+													</a>
+													<div class="lazy_video_iframe_wrap">
+														<div class="lazy_video_iframe_target js-iframe-target"></div>
+													</div>
+												</div>
+											</div>
+											<div class="testimonials_detail_item_group">
+												<p class="testimonials_detail_item_group_label">{{ item_label }}</p>
+												<p class="testimonials_detail_item_group_quote">{{ item.quote }}</p>
+											</div>
+										</div>
+									</div>
+								{% endfor %}
+							</div>
+						</div>
+						<div class="testimonials_visuals_wrapper">
+							{% for item in items %}
+								<div class="testimonials_visuals_item testimonial_{{ id }}_{{ loop.index }} testimonial_{{ id }}_{{ loop.index }}">
+									<div class="testimonials_visuals_item_media testimonials_media_{{ id }}_{{ loop.index }}">
+										<figure class="testimonials_visuals_item_figure">
+											{% include '@partial-image' with {
+												class: 'testimonials_visuals_item',
+												alt: '',
+												image: item.image,
+												loading: 'lazy',
+												sources: [
+													img.wide.xlrg,
+													img.wide.lrg,
+													img.wide.med,
+													img.wide.sml,
+													img.wide.xsml,
+													img.wide.xxsml
+												],
+												sizes: [
+													'(min-width: 740px) 50vw',
+													'0'
+												]
+											} %}
+										</figure>
+										{% set video_config = {
+											id: item.video.id,
+											type: item.video.type,
+											title: item.video.title,
+											display: display|default("inline"),
+											autoplay: autoplay|default(false),
+											playerVars: playerVars|default({})
+										} %}
+										{% if item.video.type == "youtube" %}
+											{% set video_url = 'https://www.youtube.com/watch?v=' ~ item.video.id %}
+										{% elseif type == "vimeo" %}
+											{% set video_url = 'https://vimeo.com/' ~ item.video.id %}
+										{% endif %}
+										<div class="lazy_video js-video-lazy-load testimonials_visuals_item_video_wrapper" data-video-lazy-load='{{ video_config|json_encode }}'>
+											<a class="js-play-btn js-swap testimonials_visuals_item_button" href="{{ video_url }}" aria-label="Play {{ item.video.title }}" data-swap-target=".testimonials_media_{{ id }}_{{ loop.index }}">
+												<span class="testimonials_visuals_item_button_group">
+													<span class="testimonials_visuals_item_button_label">{{ item.person_title }}</span>
+													<span class="testimonials_visuals_item_button_name">{{ item.name }}</span>
+												</span>
+												<span class="testimonials_visuals_item_icon">{{ icon('play') }}</span>
+											</a>
+											<div class="lazy_video_iframe_wrap">
+												<div class="lazy_video_iframe_target js-iframe-target"></div>
+											</div>
+										</div>
+									</div>
+									<div class="testimonials_visuals_item_group">
+										<p class="testimonials_visuals_item_group_label">{{ item_label }}</p>
+										<p class="testimonials_visuals_item_group_quote">{{ item.quote }}</p>
+									</div>
+								</div>
+							{% endfor %}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

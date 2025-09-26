@@ -1,0 +1,55 @@
+/* ==========================================================================
+	Meta
+============================================================================= */
+
+.meta_info {
+}
+
+.meta_info_title {
+	@include visually_hide;
+}
+
+.meta_info_details {
+	display: grid;
+	gap: 40px;
+
+	@media #{$min_md} {
+		gap: $fs_grid_gap;
+		grid-template-columns: 1fr 1fr;
+	}
+
+	@media #{$min_lg $and_max_xl} {
+		display: flex;
+		gap: 6%;
+	}
+
+	@media #{$min_xl} {
+		gap: 7%;
+		grid-template-columns: 39% 1fr;
+	}
+}
+
+.meta_info_detail {
+}
+
+.meta_info_detail_title {
+	color: $turquoise;
+	font-size: 14px;
+	font-weight: 700;
+	line-height: 1.2;
+	margin-block: 0 16px;
+	text-transform: uppercase;
+}
+
+.meta_info_detail_body {
+	@include body_text;
+}
+
+.meta_info_detail_label {
+	font-weight: 700;
+	margin-block: 0 8px;
+}
+
+.meta_info_detail_info {
+	margin-block: 0;
+}

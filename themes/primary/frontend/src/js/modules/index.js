@@ -1,0 +1,12 @@
+export { default as sampleModule } from '@/modules/sample-module';
+export { default as accordion } from '@/modules/accordion';
+export { default as shareTools } from '@/modules/share-tools';
+export { default as cssCustomProperties } from '@/modules/css-custom-properties';
+export { default as menu } from '@/modules/menu';
+export { default as collapseNav } from '@/modules/nav-collapse';
+export { default as navToggle } from '@/modules/nav-toggle';
+export { default as videoLazyLoad } from '@/modules/video-lazy-load';
+export { default as backgroundVideo } from '@/modules/background-video';
+export { default as videoAppender } from '@/modules/video-appender';
+export { default as alert } from '@/modules/alert';
+export { default as page } from '@/modules/page';

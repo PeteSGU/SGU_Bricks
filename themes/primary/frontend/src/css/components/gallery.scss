@@ -1,0 +1,264 @@
+/* ==========================================================================
+	Gallery
+============================================================================= */
+
+.gallery {
+	background-color: var(--background-color);
+	color: var(--color);
+	display: grid;
+	gap: 30px;
+
+	@media #{$min_md} {
+		gap: 70px;
+	}
+
+	&.theme_light {
+		--background-color: transparent;
+		--color: #{$gray};
+		--title-color: #{$blue_navy};
+		--divider-background-color: #{$turquoise_dark};
+		--link-color: #{$blue_navy};
+		--link-color-hover: #{$black};
+
+		@include margined_xl;
+	}
+
+	&.theme_dark {
+		--background-color: #{$blue_navy};
+		--color: #{$white};
+		--title-color: #{$turquoise};
+		--divider-background-color: #{$turquoise_dark};
+		--link-color: #{$turquoise};
+		--link-color-hover: #{$white};
+
+		@include padded_xl;
+	}
+}
+
+.gallery_header {
+	text-align: center;
+}
+
+.gallery_header_inner {
+}
+
+.gallery_title {
+	@include h2;
+
+	color: var(--title-color);
+	margin-block: 0 10px;
+}
+
+.gallery_description {
+	@include body_text;
+
+	p {
+		margin-block: 0;
+	}
+}
+
+.gallery_body {
+}
+
+.gallery_body_inner {
+}
+
+.gallery_items {
+	display: grid;
+
+	gap: 50px;
+
+	@media #{$min_xl} {
+		gap: 80px;
+	}
+}
+
+.gallery_row {
+	position: relative;
+
+	align-items: center;
+	display: grid;
+	gap: 50px $fs_grid_gap;
+
+	&:nth-child(4n + 1),
+	&:nth-child(4n + 3) {
+		&:before {
+			position: absolute;
+
+			background-repeat: no-repeat;
+			background-size: 100%;
+			content: '';
+			display: block;
+		}
+	}
+
+	&:nth-child(4n + 1) {
+		&:before {
+			width: 523px;
+			height: 571px;
+
+			top: -74px;
+			right: 218px;
+
+			background-image: url('../images/blob_color_noise.png');
+		}
+	}
+
+	&:nth-child(4n + 3) {
+		&:before {
+			width: 523px;
+			height: 571px;
+
+			top: -180px;
+			right: calc(100% - 220px);
+
+			background-image: url('../images/blob_color_noise_alt.png');
+		}
+	}
+
+	&.align_right {
+		&:before {
+			right: auto;
+			left: 218px;
+		}
+	}
+}
+
+.grid_layout_70_30 {
+	@media #{$min_md} {
+		grid-template-columns: 1fr make_column(2);
+	}
+
+	@media #{$min_lg} {
+		grid-template-columns: 1fr make_column(4);
+	}
+}
+
+.grid_layout_30_70 {
+	@media #{$min_md} {
+		grid-template-columns: make_column(2) 1fr;
+	}
+
+	@media #{$min_lg} {
+		grid-template-columns: make_column(4) 1fr;
+	}
+}
+
+.grid_layout_50_50 {
+	@media #{$min_md} {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+.gallery_item {
+	position: relative;
+
+	display: grid;
+	gap: 18px;
+
+	.grid_layout_video & {
+		@media #{$min_md} {
+			align-items: start;
+			display: grid;
+			gap: 4%;
+			grid-template-columns: 1fr 31%;
+		}
+
+		@media #{$min_lg} {
+			gap: 6%;
+			grid-template-columns: 1fr 22%;
+		}
+	}
+
+	.grid_layout_video.align_right & {
+		@media #{$min_md} {
+			grid-template-columns: 31% 1fr;
+		}
+
+		@media #{$min_lg} {
+			grid-template-columns: 22% 1fr;
+		}
+	}
+}
+
+.gallery_item_figure {
+}
+
+.gallery_item_media {
+	position: relative;
+
+	display: block;
+}
+
+.gallery_item_size_wide {
+	aspect-ratio: $wide;
+}
+
+.gallery_item_size_portrait {
+	aspect-ratio: 211 / 254;
+}
+
+.gallery_item_image {
+	width: 100%;
+	height: 100%;
+
+	border-radius: 5px;
+	display: block;
+	object-fit: cover;
+}
+
+.gallery_item_caption {
+	display: grid;
+	gap: 22px;
+
+	@media #{$min_lg} {
+		max-width: 82%;
+	}
+
+	.grid_layout_video & {
+		@media #{$min_lg} {
+			max-width: none;
+
+			padding-top: 30px;
+		}
+
+		@media #{$min_xl} {
+			padding-top: 70px;
+		}
+	}
+
+	.grid_layout_video.align_right & {
+		grid-column-start: 1;
+		grid-row-start: 1;
+	}
+}
+
+.gallery_item_caption_title {
+	@include h5;
+
+	border-bottom: 1px solid var(--divider-background-color);
+	color: var(--title-color);
+	margin-block: 0;
+	padding-bottom: 20px;
+}
+
+.gallery_item_caption_description {
+	@include caption_text;
+
+	margin-block: 0;
+
+	a {
+		@include type_link;
+
+		color: var(--link-color);
+		transition: color $base_speed;
+
+		@include hover {
+			color: var(--link-hover-color);
+		}
+	}
+}
+
+.gallery_item_iframe {
+	@include cover;
+}

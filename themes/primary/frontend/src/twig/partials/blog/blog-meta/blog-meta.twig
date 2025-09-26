@@ -1,0 +1,42 @@
+<div class="blog_meta" id="meta" data-type="blog" data-category="{% for category in item.categories %}{{ category.label }}{% if not loop.last %}, {% endif %}{% endfor %}">
+	<div class="fs-row">
+		<div class="fs-cell">
+			<div class="blog_meta_inner">
+				<div class="blog_meta_body">
+					{% if item.date or item.author or item.duration %}
+						<div class="blog_meta_details">
+							{% if item.date %}
+								<div class="blog_meta_detail blog_meta_date">
+									<span class="blog_meta_detail_hint">Published:&nbsp;</span>
+									<time class="blog_meta_detail_label" datetime="{{ item.date }}">{{ item.date|date('F j, Y') }}</time>
+								</div>
+							{% endif %}
+							{% if item.author %}
+								<div class="blog_meta_detail blog_meta_author">
+									<span class="blog_meta_detail_hint">- by&nbsp;</span>
+									<span class="blog_meta_detail_label">{{ item.author }}</span>
+								</div>
+							{% endif %}
+							{% if item.duration %}
+								<div class="blog_meta_detail blog_meta_duration">
+									<span class="blog_meta_detail_label">{{ item.duration }}</span>
+								</div>
+							{% endif %}
+						</div>
+					{% endif %}
+					{% if item.categories %}
+						<div class="blog_meta_categories_block">
+							<ul class="blog_meta_categories" aria-label="Categories">
+								{% for category in item.categories %}
+									<li class="blog_meta_category">
+										<a class="blog_meta_category_link" href="{{ category.url }}">{{ category.label }}</a>
+									</li>
+								{% endfor %}
+							</ul>
+						</div>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

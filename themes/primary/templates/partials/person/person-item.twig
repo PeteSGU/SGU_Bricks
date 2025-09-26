@@ -1,0 +1,100 @@
+<div class="people_list_item">
+	<div class="people_list_item_header">
+		<div class="people_list_item_info">
+			<h2 class="people_list_item_name">
+				{% if item.link %}
+					<a class="people_list_item_name_link" href="{{ item.link }}">
+						<span class="people_list_item_name_link_label">{{ item.fw_full_name }}</span>
+						<span class="people_list_item_name_link_icon">{{ icon("caret_right") }}</span>
+					</a>
+				{% else %}
+					{{ item.fw_full_name }}
+				{% endif %}
+			</h2>
+			{% if item.fw_position %}
+				<div class="people_list_item_title">{{ item.fw_position }}</div>
+			{% endif %}
+		</div>
+
+		{% if item.image %}
+			<figure class="people_list_item_figure small">
+				{% include "partials/image.twig" with {
+					class: "people_list_item",
+					alt: item.fw_full_name,
+					image: item.image,
+					loading: "lazy",
+					sources: [
+						"square-xxsml",
+						"square-thumb"
+					]
+				} %}
+			</figure>
+		{% endif %}
+	</div>
+	<div class="people_list_item_body">
+		<div class="people_list_item_details">
+			<div class="people_list_item_detail contact">
+				{% if item.phone_number or item.email_address %}
+					<div class="people_list_item_detail_label">Contact</div>
+				{% endif %}
+
+				{% if item.email_address %}
+					<div class="people_list_item_detail_item">
+						<div class="people_list_item_detail_item_header">
+							<div class="people_list_item_detail_icon">{{ icon("mail") }}</div>
+							<div class="people_list_item_detail_hint">Email: </div>
+						</div>
+						<div class="people_list_item_detail_info">
+							<a class="people_list_item_detail_info_link" href="mailto:{{ item.email_address }}">
+								<span class="people_list_item_detail_info_label">{{ item.email_address }}</span>
+							</a>
+						</div>
+					</div>
+				{% endif %}
+				{% if item.phone_number %}
+					<div class="people_list_item_detail_item">
+						<div class="people_list_item_detail_item_header">
+							<div class="people_list_item_detail_icon">{{ icon("phone") }}</div>
+							<div class="people_list_item_detail_hint">Phone: </div>
+						</div>
+						<div class="people_list_item_detail_info">
+							<a class="people_list_item_detail_info_link" href="tel:{{ tel(item.phone_number) }}">
+								<span class="people_list_item_detail_info_label">{{ item.phone_number }}</span>
+							</a>
+						</div>
+					</div>
+				{% endif %}
+			</div>
+
+			{% if item.fw_departments %}
+				<div class="people_list_item_detail department">
+					<div class="people_list_item_detail_label">School & Department</div>
+					{% for department in item.fw_departments %}
+						<div class="people_list_item_detail_item">
+							<div class="people_list_item_detail_info">
+								<a class="people_list_item_detail_info_link" href="{{ department.link }}">
+									<span class="people_list_item_detail_info_label">{{ department.title }}</span>
+								</a>
+							</div>
+						</div>
+					{% endfor %}
+				</div>
+			{% endif %}
+		</div>
+	</div>
+
+	{% if item.image %}
+		<figure class="people_list_item_figure large">
+			{% include "partials/image.twig" with {
+				class: "people_list_item",
+				alt: "",
+				image: item.image,
+				loading: "lazy",
+				sources: [
+					"square-xxsml",
+					"square-thumb"
+				]
+			} %}
+		</figure>
+	{% endif %}
+</div>

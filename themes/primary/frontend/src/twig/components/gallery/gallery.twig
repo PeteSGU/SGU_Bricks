@@ -1,0 +1,169 @@
+{#
+	{% include '@component-gallery' with {
+		title: 'Title',
+		description: 'Description',
+		rows: [
+			{
+				layout: '100',
+				items: [
+					{
+						image: '1',
+						alt: '',
+						video: {
+							type: '',
+							id: '',
+							title: ''
+						},
+						caption: 'caption'
+					}
+				]
+			}
+		]
+	} %}
+#}
+
+<!-- Gallery -->
+<div class="gallery theme_{{ theme }}">
+	{% if title or description %}
+		<div class="gallery_header">
+			<div class="fs-row">
+				<div class="fs-cell fs-lg-8 fs-all-justify-center">
+					<div class="gallery_header_inner">
+						{% if title %}
+							<h2 class="gallery_title">{{ title }}</h2>
+						{% endif %}
+						{% if description %}
+							<div class="gallery_description">
+								<p>{{ description }}</p>
+							</div>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+		</div>
+	{% endif %}
+	<div class="gallery_body">
+		<div class="fs-row">
+			<div class="fs-cell">
+				<div class="gallery_body_inner">
+					<div class="gallery_items">
+						{% for row in rows %}
+							{% if row.layout == 'video' %}
+								<div class="gallery_row grid_layout_video{% for item in row.items %} align_{{ item.direction }}{% endfor %}">
+									{% for item in row.items %}
+										<div class="gallery_item">
+											<figure class="gallery_item_figure">
+												<div class="gallery_item_media gallery_item_size_wide">
+													{% include '@partial-image' with {
+														class: 'gallery_item',
+														alt: '',
+														image: item.image,
+														loading: 'lazy',
+														sources: [
+															img.wide.xlrg,
+															img.wide.lrg,
+															img.wide.med,
+															img.wide.sml,
+															img.wide.xsml,
+															img.wide.xxsml
+														]
+													} %}
+													{% include "@partial-lazy-video" with {
+														class: "gallery",
+														id: item.video.id,
+														type: item.video.type,
+														autoplay: item.video.autoplay|default(false),
+														title: item.video.title,
+														playerVars: {}
+													} %}
+												</div>
+											</figure>
+											{% if item.title or item.description %}
+												<div class="gallery_item_caption">
+													{% if item.title %}
+														<p class="gallery_item_caption_title">{{ item.title }}</p>
+													{% endif %}
+													{% if item.description %}
+														<p class="gallery_item_caption_description">{{ item.description }}</p>
+													{% endif %}
+												</div>
+											{% endif %}
+										</div>
+									{% endfor %}
+								</div>
+							{% else %}
+								<div class="gallery_row grid_layout_{{ row.layout }}">
+									{% for item in row.items %}
+										<div class="gallery_item">
+											<figure class="gallery_item_figure">
+												<div class="gallery_item_media gallery_item_size_{{ item.crop }}">
+													{% if item.crop == "wide" %}
+														{% include '@partial-image' with {
+															class: 'gallery_item',
+															alt: '',
+															image: item.image,
+															loading: 'lazy',
+															sources: [
+																img.wide.xlrg,
+																img.wide.lrg,
+																img.wide.med,
+																img.wide.sml,
+																img.wide.xsml,
+																img.wide.xxsml
+															]
+														} %}
+													{% elseif item.crop == "classic" %}
+														{% include '@partial-image' with {
+															class: 'gallery_item',
+															alt: '',
+															image: item.image,
+															loading: 'lazy',
+															sources: [
+																img.classic.xlrg,
+																img.classic.lrg,
+																img.classic.med,
+																img.classic.sml,
+																img.classic.xsml,
+																img.classic.xxsml
+															]
+														} %}
+													{% elseif item.crop == "portraitFull" %}
+														{% include '@partial-image' with {
+															class: 'gallery_item',
+															alt: '',
+															image: item.image,
+															loading: 'lazy',
+															sources: [
+																img.portraitFull.xlrg,
+																img.portraitFull.lrg,
+																img.portraitFull.med,
+																img.portraitFull.sml,
+																img.portraitFull.xsml,
+																img.portraitFull.xxsml
+															]
+														} %}
+													{% endif %}
+												</div>
+											</figure>
+											{% if item.title or item.description %}
+												<div class="gallery_item_caption">
+													{% if item.title %}
+														<p class="gallery_item_caption_title">{{ item.title }}</p>
+													{% endif %}
+													{% if item.description %}
+														<p class="gallery_item_caption_description">{{ item.description }}</p>
+													{% endif %}
+												</div>
+											{% endif %}
+										</div>
+									{% endfor %}
+								</div>
+							{% endif %}
+						{% endfor %}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- END: Gallery -->

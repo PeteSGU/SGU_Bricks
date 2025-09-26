@@ -1,0 +1,34 @@
+<div class="page_content" id="page_content" tabindex="-1" aria-labelledby="page_title">
+	<div class="fs-row">
+		<div class="fs-cell">
+			<!-- WYSIWYG -->
+			<div class="typography">
+				<h2>True Blue Campus</h2>
+				<p>Students begin their <a href='#'>academic studies</a> at the stunning True Blue campus, which rises atop a peninsula in the southwest corner of Grenada and beautifully combines Georgian architecture with vivid Caribbean colors. Over 65 buildings spread across the vibrant seaside location. The campus is always expanding to keep up with the latest technologies and to provide students with the best learning environment.</p>
+			</div>
+			<!-- END: WYSIWYG -->
+		</div>
+	</div>
+</div>
+
+<div class="full_width_callouts">
+	{% include '@component-wysiwyg' with {
+		content: '
+			<h2>Daily Life</h2>
+			<h3>Groceries</h3>
+			<p>Although hours vary, most supermarkets open at or before 8:00 am and close as late as 9 pm, Monday through Saturday, with reduced operating hours on Sundays. Real Value Supermarket, located in the Grand Anse Spiceland Mall, has a good selection of foreign products as well as a deli and is open until 10:00 pm Friday and Saturday and 7:00 pm on Sunday. In the market square in St. George’s you will find primarily fresh fruits, vegetables and spices. The best selection is found early Friday and Saturday mornings. There is also an open-air seafood market in St. George’s which is open Monday through Saturday.</p>
+			<h3>Electricity</h3>
+			<p>The electrical supply on the island is of the type used in England, namely 220 volt, 50 Hertz. As most appliances sold in the United States are manufactured for operation on standard US current, 110 volt, 60 Hertz. On the True Blue Campus, all buildings have outlets providing for 110 and 220 usage.</p>
+			<h3>Water</h3>
+			<p>The National Water and Sewerage Authority (NAWASA) provides the island with clean, safe pipe borne water from a series of catchments, river and deep wells. Bottled water is also readily available.</p>
+			<h3>Telecommunications</h3>
+			<p>Grenada boasts of a modern-state-of-the-art telecommunication sector with FLOW providing cable and telecommunication services, LIME controlling the fixed-line telecom market and the mobile telecom market being serviced by both LIME and Digicel.</p>
+			<h3>Security</h3>
+			<p>Grenada enjoys one of the lowest crime rates in the western hemisphere. The Royal Grenada Police Force is responsible for civilian protection and defense. Grenada is also a member of the Regional Security System of the Eastern Caribbean.</p>
+		'
+	} %}
+
+	{% render '@component-topic-row' %}
+
+	{% render '@component-call-to-action' %}
+</div>

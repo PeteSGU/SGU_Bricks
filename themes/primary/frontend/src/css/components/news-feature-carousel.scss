@@ -1,0 +1,155 @@
+/* ==========================================================================
+	News Feature Carousel
+============================================================================= */
+
+.news_feature_carousel {
+	margin-block: 20px 0;
+
+	@media #{$min_md} {
+		margin-block: 50px 0;
+	}
+
+	@media #{$min_lg} {
+		position: relative;
+
+		margin-block: 50px 0;
+		z-index: 1;
+	}
+}
+
+.news_feature_carousel_list {
+
+	@media #{$min_lg} {
+		margin-bottom: -250px;
+	}
+}
+
+.news_feature_carousel_item {
+	width: 290px;
+
+	position: relative;
+
+	margin-right: 20px;
+
+	@include hover {
+
+		.news_feature_carousel_item_image {
+			transform: scale(1.05);
+		}
+	}
+
+	@media #{$min_sm} {
+		width: 380px;
+
+		margin-right: 30px;
+	}
+
+	@media #{$min_md} {
+		width: 500px;
+
+		margin-right: 40px;
+	}
+
+	@media #{$min_lg} {
+		width: 650px;
+	}
+
+	@media #{$min_xl} {
+		width: 750px;
+
+		margin-right: 55px;
+	}
+}
+
+.news_feature_carousel_item_figure {
+	@include responsive_image;
+
+	position: relative;
+
+	border-radius: 10px;
+	overflow: hidden;
+}
+
+.news_feature_carousel_item_image {
+	border-radius: 10px;
+	transition: transform 1s;
+}
+
+.news_feature_carousel_item_icon {
+	width: 50px;
+	height: 50px;
+	display: flex;
+
+	position: absolute;
+	left: 8px;
+	bottom: 8px;
+
+	align-items: center;
+	background: $orange;
+	border-radius: 5px;
+	color: $white;
+	justify-content: center;
+
+	.icon {
+		fill: currentColor;
+	}
+}
+
+.news_feature_carousel_item_wrapper {
+	display: flex;
+
+	align-items: flex-start;
+	color: $white;
+	flex-direction: column;
+	margin-top: 15px;
+	text-align: left;
+
+	@media #{$min_md} {
+		margin-top: 25px;
+	}
+
+	@media #{$min_lg} {
+		color: $black;
+	}
+}
+
+.news_feature_carousel_item_title {
+	@include h4;
+
+	color: currentColor;
+	margin: 0;
+	order: 1;
+}
+
+.news_feature_carousel_item_title_link {
+	color: currentColor;
+
+	@include hover {
+		text-decoration: underline;
+	}
+
+	&:before {
+		width: 100%;
+		height: 100%;
+		display: block;
+
+		position: absolute;
+		left: 0;
+		top: 0;
+
+		content: '';
+	}
+}
+
+.news_feature_carousel_item_school {
+	@include h6;
+	display: block;
+
+	color: currentColor;
+	margin-bottom: 8px;
+	order: 0;
+
+	@media #{$min_lg} {
+		color: $blue_navy;
+	}
+}

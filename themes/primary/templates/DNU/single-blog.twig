@@ -1,0 +1,26 @@
+{% extends "_base.twig" %}
+
+{% block content %}
+	<article class="news_entry">
+		<script type="application/ld+json">
+			{{ post.fw_ld_json }}
+		</script>
+	</article>
+
+	<div class="page_content" id="page_content" tabindex="-1" aria-labelledby="page_title">
+		<div class="fs-row fs-lg-reverse fs-lg-justify-end">
+			<div class="fs-cell fs-lg-10 fs-xl-8">
+				<div class="wp-site-blocks">
+					{{ post.content }}
+				</div>
+			</div>
+
+			<div class="fs-cell fs-lg-2">
+				{% include "partials/share--detail.twig" with {
+					title: 'Share This',
+					items: ['Twitter', 'Facebook']
+				} %}
+			</div>
+		</div>
+	</div>
+{% endblock %}

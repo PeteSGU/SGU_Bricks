@@ -1,0 +1,35 @@
+{% extends '_base.twig' %}
+
+{% set logo = 'logo_medicine' %}
+
+{% block content %}
+	<!-- Page Wrapper -->
+	<div class="page_wrapper{% if page.image or page.video %} has_page_media{% endif %}">
+		{% render '@layout-header-school' with {
+			page: page,
+			_env: _env,
+			logo: logo
+		} %}
+
+		<!-- Page -->
+		<main class="page">
+			<!-- Google Tag Manager (noscript) -->
+			<noscript><iframe src='https://www.googletagmanager.com/ns.html?id=GTM-5FWHMLH' height='0' width='0' style='display:none;visibility:hidden'></iframe></noscript>
+			<!-- End Google Tag Manager (noscript) -->
+			{{ yield }}
+		</main>
+		<!-- END: Page -->
+		{% render '@layout-footer' with {
+			page: page,
+			_env: _env,
+			logo: logo
+		} %}
+	</div>
+	<!-- END: Page Wrapper -->
+
+	{% render '@layout-menu-school' with {
+		page: page,
+		_env: _env,
+		title: 'School of Medicine'
+	} %}
+{% endblock %}

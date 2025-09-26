@@ -1,0 +1,59 @@
+/* ==========================================================================
+	Sub Navigation Flat
+============================================================================= */
+
+.sub_flat_nav {
+}
+
+.sub_flat_nav_header {
+	@include visually_hide;
+}
+
+.sub_flat_nav_title {
+}
+
+.sub_flat_nav_list {
+	display: flex;
+	font-size: 14px;
+	font-weight: 700;
+	gap: 24px;
+	justify-content: center;
+	line-height: 1.2;
+
+	.header.has_cta & {
+		justify-content: flex-start;
+	}
+}
+
+.sub_flat_nav_item {
+}
+
+.sub_flat_nav_link {
+	color: $blue_navy;
+	transition: color $base_speed;
+
+	&.active {
+		color: $gray;
+	}
+
+	@include hover {
+		color: $gray;
+	}
+}
+
+.sub_flat_nav_link_inner {
+}
+
+.sub_flat_nav_link_label {
+	box-shadow: inset 0 -1px $turquoise;
+	padding-bottom: 4px;
+	transition: box-shadow $base_speed;
+
+	.sub_flat_nav_link.active & {
+		box-shadow: inset 0 -2px $turquoise_dark;
+	}
+
+	@include nested_hover($selector: '.sub_flat_nav_link') {
+		box-shadow: inset 0 -1px $turquoise_dark;
+	}
+}

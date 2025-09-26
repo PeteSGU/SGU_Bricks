@@ -1,0 +1,143 @@
+/* ==========================================================================
+	Footer
+============================================================================= */
+
+.footer {
+	background-color: $blue_navy;
+	color: $white;
+}
+
+.footer_primary {
+	background-color: rgba($black, 0.2);
+	padding-block: 40px;
+
+	@media #{$min_lg} {
+		padding-block: 65px 160px;
+	}
+}
+
+.footer_primary_inner {
+	@media #{$min_lg} {
+		display: grid;
+		gap: 12px;
+	}
+}
+
+.footer_primary_group {
+	@media #{$min_lg} {
+		display: flex;
+		flex-direction: row-reverse;
+		justify-content: flex-end;
+	}
+}
+
+.footer_primary_row {
+	@media #{$min_lg} {
+		align-items: center;
+		display: flex;
+		flex-direction: row-reverse;
+		gap: 30px;
+		justify-content: flex-end;
+	}
+}
+
+.footer_logo {
+}
+
+.footer_meta {
+	@media #{$max_lg} {
+		margin-bottom: 20px;
+	}
+
+	@media #{$min_lg} {
+		flex: 0 0 65.5%;
+	}
+
+	@media #{$min_xl} {
+		flex-basis: make_column(7);
+	}
+}
+
+.footer_footer_nav {
+	@media #{$max_lg} {
+		margin-bottom: 45px;
+	}
+
+	@media #{$min_lg} {
+		margin-top: -16px;
+		margin-left: auto;
+	}
+
+	@media #{$min_xl} {
+		flex: 0 0 make_column(3);
+	}
+}
+
+.footer_social_nav {
+	@media #{$min_lg} {
+		margin-left: auto;
+	}
+}
+
+.footer_ribbon {
+	padding-block: 35px;
+
+	@media #{$min_lg} {
+		padding-bottom: 40px;
+	}
+}
+
+.footer_ribbon_inner {
+	@media #{$min_lg} {
+		align-items: center;
+		display: flex;
+		gap: 20px;
+	}
+}
+
+.footer_logo {
+	@media #{$max_lg} {
+		border-bottom: 1px solid rgba($turquoise, 0.2);
+		margin-bottom: 20px;
+		padding-bottom: 28px;
+	}
+
+	.icon_logo {
+		width: min(100%, 340px);
+
+		@media #{$min_lg} {
+			width: 358px;
+		}
+	}
+}
+
+.footer_utility_nav {
+	@media #{$max_lg} {
+		margin-bottom: 120px;
+	}
+}
+
+.footer_copyright {
+}
+
+/* Copyright
+============================================================================= */
+
+.copyright {
+	font-size: 14px;
+	line-height: 1.2;
+	margin-block: 0;
+}
+
+.copyright_icon {
+	font-weight: bold;
+}
+
+.copyright_holder {
+}
+
+.copyright_holder_name {
+}
+
+.copyright_year {
+}

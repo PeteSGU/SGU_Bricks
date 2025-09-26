@@ -1,0 +1,90 @@
+{% set id = uniqid('js-experiences') %}
+{% set group_id = uniqid('experiences-group') %}
+
+<div class="experiences">
+	<div class="experiences_texture"></div>
+	<div class="experiences_wrapper">
+		<div class="fs-row">
+			<div class="fs-cell">
+				<div class="experiences_inner">
+					<div class="experiences_accordion_wrapper">
+						<div class="experiences_accordion_header">
+							<h2 class="experiences_accordion_title">{{ group_title }}</h2>
+						</div>
+						<div class="experiences_accordion">
+							{% for item in items %}
+								<div class="experience experience_{{ id }}_{{ loop.index }} js-experience">
+									<figure class="experience_figure">
+										{% include '@partial-image' with {
+											class: 'experience',
+											alt: '',
+											image: item.image,
+											loading: 'lazy',
+											sources: [
+												img.classic.lrg,
+												img.classic.med,
+												img.classic.sml,
+												img.classic.xsml,
+												img.classic.xxsml
+											],
+											sizes: [
+												'(min-width: 740px) 0',
+												'90vw'
+											]
+										} %}
+									</figure>
+									<button class="experience_title js-swap" data-swap-target=".experience_{{ id }}_{{ loop.index }}" data-swap-options='{"collapse":false}' data-swap-group="{{ group_id }}">
+										{% include '@partial-image' with {
+											class: 'experience_title',
+											alt: '',
+											image: item.icon,
+											loading: 'lazy',
+											sources: [
+												img.square.xxsml,
+												img.square.thumb
+											],
+											sizes: [
+												'44px'
+											]
+										} %}
+										<span class="experience_title_label">{{ item.title }}</span>
+									</button>
+									{% if item.description %}
+										<span class="experience_description">{{ item.description }}</span>
+									{% endif %}
+									{% if item.link %}
+										<a href="{{ item.link.url }}" class="experience_link">{{ item.link.label }}</a>
+									{% endif %}
+								</div>
+							{% endfor %}
+						</div>
+					</div>
+					<div class="experiences_visuals_wrapper">
+						{% for item in items %}
+							<figure class="experiences_figure experience_{{ id }}_{{ loop.index }}">
+								{% include '@partial-image' with {
+									class: 'experiences',
+									alt: '',
+									image: item.image,
+									loading: 'lazy',
+									sources: [
+										img.portraitFull.xlrg,
+										img.portraitFull.lrg,
+										img.portraitFull.med,
+										img.portraitFull.sml,
+										img.portraitFull.xsml,
+										img.portraitFull.xxsml
+									],
+									sizes: [
+										'(min-width: 740px) 50vw',
+										'0'
+									]
+								} %}
+							</figure>
+						{% endfor %}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

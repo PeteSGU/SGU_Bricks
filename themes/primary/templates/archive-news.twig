@@ -1,0 +1,15 @@
+{% extends "_base.twig" %}
+
+{% block content %}
+	<div class="full_width_callouts" id="page_content" tabindex="-1" aria-labelledby="page_title">
+		{% include "partials/news/news-list.twig" with {
+			items: posts,
+			page_link:  page_link,
+			pagination: posts.pagination,
+		} %}
+
+		{% if not posts|length %}
+			{% include "partials/no-results-message.twig" %}
+		{% endif %}
+	</div>
+{% endblock %}

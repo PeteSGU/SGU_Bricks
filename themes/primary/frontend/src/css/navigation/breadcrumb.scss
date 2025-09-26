@@ -1,0 +1,132 @@
+/* ==========================================================================
+	Breadcrumb Navigation
+============================================================================= */
+
+.breadcrumb {
+}
+
+.breadcrumb_inner {
+}
+
+.breadcrumb_nav {
+	@media print {
+		display: none !important;
+	}
+}
+
+.breadcrumb_nav_header {
+	@include visually_hide;
+}
+
+.breadcrumb_nav_title {
+}
+
+/* Breadcrumb Links
+============================================================================= */
+
+.breadcrumb_list {
+	@include h6;
+
+	align-items: center;
+	display: flex;
+	overflow-x: auto;
+	overflow-y: hidden;
+	padding: 0;
+	text-transform: none;
+	white-space: nowrap;
+
+	@media #{$min_lg} {
+		justify-content: center;
+	}
+
+	.header.has_cta & {
+		@media #{$min_lg} {
+			justify-content: flex-start;
+		}
+	}
+}
+
+.breadcrumb_item {
+	align-items: center;
+	display: flex;
+
+	&:not(:nth-last-of-type(-n + 2)) {
+		@media #{$max_lg} {
+			display: none;
+		}
+	}
+}
+
+.breadcrumb_item_home {
+}
+
+.breadcrumb_pill {
+}
+
+.breadcrumb_pill_link {
+	color: var(--navigation-color);
+	transition: color $base_speed;
+
+	@include hover {
+		color: var(--navigation-hover-color);
+	}
+
+	.breadcrumb_item_home & {
+		color: $orange;
+
+		@include hover {
+			color: var(--navigation-hover-color);
+		}
+	}
+}
+
+.breadcrumb_pill_inner {
+	align-items: center;
+	display: flex;
+}
+
+.breadcrumb_pill_icon {
+	position: relative;
+	top: -2px;
+
+	.icon_home {
+		width: 16px;
+	}
+}
+
+.breadcrumb_pill_label {
+	.breadcrumb_item:last-child & {
+		@include visually_hide;
+	}
+
+	.breadcrumb_item:first-child & {
+		@include visually_hide;
+	}
+}
+
+.breadcrumb_divider {
+	margin-inline: 10px;
+
+	.breadcrumb_item:nth-last-child(2) & {
+		display: none;
+	}
+
+	&::before {
+		width: 10px;
+		height: 1px;
+
+		background-color: var(--breadcrumb-accent-color);
+		content: '';
+		display: block;
+		margin-bottom: 2px;
+	}
+
+	.icon {
+		display: none;
+	}
+}
+
+.breadcrumb_end {
+	color: var(--breadcrumb-accent-color);
+	margin-left: 10px;
+}

@@ -1,0 +1,29 @@
+{#
+	{% include "partials/share.twig" with {
+		title: "Share This",
+		icon: ""
+	} %}
+#}
+<div class="js-share-tools share_tools">
+	<div class="share_tools_header">
+		<h2 class="share_tools_title">Share Options</h2>
+		<button class="js-share-tools-toggle share_tools_toggle" data-swap-target=".js-share-tools">
+			<span class="share_tools_toggle_inner">
+				{% if icon %}
+					<span class="share_tools_toggle_icon">{{ icon(icon) }}</span>
+				{% endif %}
+				<span class="share_tools_toggle_label">{{ title }}</span>
+			</span>
+		</button>
+	</div>
+	<ul class="js-share-tools-list share_tools_list" aria-label="Share Options">
+		{% for item in items %}
+		<li class="js-share-tool-item share_tool_item">
+			<a class="js-share-tool js-share-{{ item|lower }} share_tool" href="#" target="_blank" rel="noopener">
+				<span class="share_tool_icon">{{ icon(item|lower) }}</span>
+				<span class="share_tool_label">Share to {{ item }}</span>
+			</a>
+		</li>
+		{% endfor %}
+	</ul>
+</div>

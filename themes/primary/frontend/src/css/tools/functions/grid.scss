@@ -1,0 +1,17 @@
+/* ==========================================================================
+	Grid
+============================================================================= */
+
+@function make_column($count) {
+	$gaps: $fs_grid_gap * ($count - 1);
+	$result: calc((((100% - ($fs_grid_gap * (var(--fs-column-count) - 1))) / var(--fs-column-count)) * $count) + $gaps);
+
+	@return $result;
+}
+
+@function column_offset($count) {
+	$gaps: $fs_grid_gap * ($count - 1);
+	$result: calc(make_column($count) + $fs_grid_gap);
+
+	@return $result;
+}

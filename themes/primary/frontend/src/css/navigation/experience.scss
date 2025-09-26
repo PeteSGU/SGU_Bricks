@@ -1,0 +1,62 @@
+/* ==========================================================================
+	Experience
+============================================================================= */
+
+.experience_nav {
+}
+
+.experience_nav_header {
+}
+
+.experience_nav_title {
+	@include h5;
+
+	margin-block: 0;
+
+	@media #{$max_lg} {
+		font-size: 24px;
+	}
+
+	@media #{$min_lg} {
+		color: $black;
+		margin-bottom: 6px;
+	}
+}
+
+.experience_nav_list {
+	font-size: 16px;
+	font-weight: 700;
+	line-height: 1.2;
+}
+
+.experience_nav_item {
+}
+
+.experience_nav_link {
+	color: $blue_navy;
+	display: block;
+	padding-block: 20px;
+	transition: color $base_speed;
+
+	@include hover {
+		color: $red_brand;
+	}
+}
+
+.experience_nav_link_inner {
+	align-items: center;
+	display: flex;
+	gap: 22px;
+}
+
+.experience_nav_link_icon {
+	color: $turquoise_dark;
+	transition: color $base_speed;
+
+	@include nested_hover($selector: '.experience_nav_link') {
+		color: $red_brand;
+	}
+}
+
+.experience_nav_link_label {
+}

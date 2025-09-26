@@ -1,0 +1,13 @@
+cache/
+custom/environment.php
+.DS_store
+node_cache/
+node_modules/
+pnpm-debug.log
+site/files/
+.idea/
+
+# compiled files
+/dist/css/
+/dist/js/
+/dist/images/

@@ -1,0 +1,135 @@
+/* ==========================================================================
+	Contact Cards
+============================================================================= */
+
+.contact_cards {
+	@include margined_xl;
+
+	color: $gray;
+}
+
+.contact_cards_header {
+}
+
+.contact_cards_header_inner {
+	display: grid;
+	gap: 20px;
+	text-align: center;
+	margin-bottom: 40px;
+
+	@media #{$min_md} {
+		margin-bottom: 70px;
+	}
+}
+
+.contact_cards_title {
+	@include h2;
+
+	color: $black;
+	margin-block: 0;
+}
+
+.contact_cards_description {
+	@include intro_text;
+
+	margin-block: 0;
+}
+
+.contact_cards_body {
+}
+
+.contact_cards_body_inner {
+}
+
+.contact_cards_list {
+	display: grid;
+	gap: 30px 20px;
+
+	@media #{$min_sm} {
+		--columns: 2;
+
+		grid-template-columns: repeat(var(--columns), 1fr);
+	}
+
+	@media #{$min_md} {
+		--columns: 3;
+
+		gap: 30px $fs_grid_gap;
+	}
+
+	@media #{$min_lg} {
+		row-gap: 50px;
+	}
+
+	@media #{$min_xl} {
+		--columns: 4;
+
+		row-gap: 80px;
+	}
+
+	@media #{$min_xxl} {
+		row-gap: 100px;
+	}
+}
+
+.contact_cards_list_item {
+}
+
+.contact_card {
+	display: flex;
+	flex-direction: column-reverse;
+	gap: 20px;
+}
+
+.contact_card_header {
+}
+
+.contact_card_header_group {
+	display: flex;
+	flex-direction: column-reverse;
+}
+
+.contact_card_title {
+	font-size: 18px;
+	font-weight: 700;
+	line-height: 1.2;
+	margin-block: 0;
+
+	@media #{$min_md} {
+		font-size: 21px;
+	}
+}
+
+.contact_card_title_link {
+	color: $turquoise_dark;
+	transition: color $base_speed;
+
+	@include hover {
+		color: $black;
+	}
+}
+
+.contact_card_department {
+	@include caption_text;
+
+	color: $blue_navy;
+	margin-block: 0 4px;
+}
+
+.contact_card_job {
+	@include body_text;
+
+	margin-block: 0;
+}
+
+.contact_card_media {
+}
+
+.contact_card_figure {
+	@include responsive_image;
+}
+
+.contact_card_image {
+	border: 1px solid $gray_light;
+	border-radius: 5px;
+}

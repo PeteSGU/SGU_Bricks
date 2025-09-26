@@ -1,0 +1,26 @@
+{
+    "key": "ui_options_page_65400d18323ee",
+    "title": "FS - Events Listing",
+    "active": false,
+    "menu_order": 0,
+    "page_title": "FS - Events Listing",
+    "menu_slug": "events-listing",
+    "parent_slug": "none",
+    "advanced_configuration": 0,
+    "icon_url": "",
+    "menu_title": "",
+    "position": "",
+    "redirect": 0,
+    "description": "",
+    "menu_icon": {
+        "type": "dashicons",
+        "value": "dashicons-admin-generic"
+    },
+    "update_button": "Update",
+    "updated_message": "Options Updated",
+    "capability": "edit_posts",
+    "data_storage": "options",
+    "post_id": "",
+    "autoload": 0,
+    "modified": 1725470413
+}

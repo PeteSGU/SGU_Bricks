@@ -1,0 +1,19 @@
+{#
+	{% include '@partial-picture' with {
+		class: 'media',
+		image: item.image,
+		alt: '',
+		loading: 'lazy',
+		default: img.square.xsml,
+		sources: {
+			'1200px': img.wide.med,
+			'500px': img.wide.sml
+		}
+	} %}
+#}
+<picture class="{{ class }}_picture">
+	{% for key, source in sources %}
+	<source media="(min-width: {{ key }})" srcset="https://images.fastspot.com/{{ config.images }}/{{ source.width }}x{{ source.height }}/{{ image }}" width="{{ source.width }}" height="{{ source.height }}">
+	{% endfor %}
+	<img class="{{ class }}_image" src="//images.fastspot.com/{{ config.images }}/{{ default.width }}x{{ default.height }}/{{ image }}" alt="{{ alt }}" loading="{{ loading ?: 'lazy' }}" width="{{ default.width }}" height="{{ default.height }}">
+</picture>

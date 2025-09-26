@@ -1,0 +1,58 @@
+/* ==========================================================================
+	Button Toggle
+============================================================================= */
+
+.button_toggle {
+	display: none;
+
+	&.fs-swap-enabled {
+		position: relative;
+
+		display: block;
+	}
+}
+
+.button_toggle_inner {
+	transition: opacity $base_speed, visibility $base_speed;
+}
+
+.button_toggle_inner_default {
+	opacity: 1;
+	visibility: visible;
+
+	.button_toggle.fs-swap-active & {
+		opacity: 0;
+		visibility: hidden;
+	}
+}
+
+.button_toggle_inner_active {
+	position: absolute;
+	top: 0;
+
+	opacity: 0;
+	visibility: hidden;
+
+	.button_toggle.fs-swap-active & {
+		opacity: 1;
+		visibility: visible;
+	}
+}
+
+.button_toggle_label {
+}
+
+.button_toggle_label_default {
+}
+
+.button_toggle_label_active {
+}
+
+.button_toggle_icon {
+}
+
+.button_toggle_icon_default {
+}
+
+.button_toggle_icon_active {
+}

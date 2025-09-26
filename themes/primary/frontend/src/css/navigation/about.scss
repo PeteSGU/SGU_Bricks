@@ -1,0 +1,66 @@
+/* ==========================================================================
+	About
+============================================================================= */
+
+.about_nav {
+}
+
+.about_nav_header {
+}
+
+.about_nav_title {
+	@include visually_hide;
+}
+
+.about_nav_list {
+	font-size: 14px;
+	font-weight: 700;
+}
+
+.about_nav_item {
+}
+
+.about_nav_link {
+	color: $blue_navy;
+	display: block;
+	padding-block: 15px;
+	transition: color $base_speed;
+
+	@include hover {
+		color: $red_brand;
+	}
+
+	.about_nav_item:first-of-type & {
+		font-size: 24px;
+	}
+}
+
+.about_nav_link_inner {
+	align-items: center;
+	display: flex;
+	gap: 8px;
+	flex-direction: row-reverse;
+	justify-content: flex-end;
+}
+
+.about_nav_link_icon {
+	position: relative;
+
+	aspect-ratio: 1;
+	background-color: rgba($turquoise, 0);
+	border: 1px solid $turquoise_dark;
+	border-radius: 50%;
+	flex: 0 0 24px;
+	transition: background-color $base_speed;
+
+	@include nested_hover($selector: '.about_nav_link') {
+		background-color: rgba($turquoise, 1);
+	}
+
+	.icon {
+		@include center;
+	}
+}
+
+.about_nav_link_label {
+}

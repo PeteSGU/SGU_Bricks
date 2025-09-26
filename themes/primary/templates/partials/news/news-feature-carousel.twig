@@ -1,0 +1,40 @@
+<div class="news_feature_carousel">
+	<div class="fs-row">
+		<div class="fs-cell">
+			<div class="news_feature_carousel_list js-carousel" data-carousel-options='{"controls": false, "pagination": false, "matchWidth": false, "contained": false}'>
+				{% for item in items %}
+					<div class="news_feature_carousel_item">
+						<figure class="news_feature_carousel_item_figure">
+							{% include 'partials/image.twig' with {
+								class: 'news_feature_carousel_item',
+								alt: '',
+								image: item.image,
+								loading: 'lazy',
+								sources: [
+									"wide-sml",
+									"wide-xsml",
+									"wide-xxsml"
+								]
+							} %}
+							{% if item.video %}
+							<span class="news_feature_carousel_item_icon">{{ icon('video') }}</span>
+							{% endif %}
+							{% if item.podcast %}
+							<span class="news_feature_carousel_item_icon">{{ icon('podcast') }}</span>
+							{% endif %}
+						</figure>
+						<div class="news_feature_carousel_item_wrapper">
+							<h2 class="news_feature_carousel_item_title">
+								<a href="{{ item.link }}" class="news_feature_carousel_item_title_link">{{ item.title }}</a>
+							</h2>
+
+							{% if item.fw_schoolPrimary %}
+								<span class="news_feature_carousel_item_school">{{ item.fw_schoolPrimary.name }}</span>
+							{% endif %}
+						</div>
+					</div>
+				{% endfor %}
+			</div>
+		</div>
+	</div>
+</div>

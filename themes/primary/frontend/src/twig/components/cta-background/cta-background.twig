@@ -1,0 +1,79 @@
+<div class="cta_background">
+	<div class="fs-row cta_background_row">
+		<div class="fs-cell cta_background_cell">
+			<div class="cta_background_inner">
+				<div class="cta_background_media">
+					{% if video %}
+						{% set video_options = {
+							display: "background",
+							id: video,
+							type: "vimeo",
+							title: page.title,
+							autoplay: true
+						} %}
+						<div class="js-background-video-wrapper page_header_bg_video" data-background-video='{{ video_options|json_encode }}'>
+							<div class=" page_header_bg_video_iframe_wrap">
+								<div class=" page_header_bg_video_iframe_target js-iframe-target"></div>
+							</div>
+							<div class="cta_background_video_controls">
+								{% render '@partial-button' with {
+									class: 'page_header_bg_video_play',
+									title: 'Play Video',
+									icon: 'play',
+									js: true
+								} %}
+								{% render "@partial-button" with {
+									class: 'page_header_bg_video_pause',
+									title: 'Pause Video',
+									icon: 'pause',
+									js: true
+								} %}
+							</div>
+						</div>
+					{% endif %}
+					<figure class="cta_background_figure">
+						{% if gutenberg_column_count > 1 %}
+							{% include '@partial-picture' with {
+								class: 'cta_background',
+								image: image,
+								alt: '',
+								loading: 'lazy',
+								default: img.portraitClassic.xxsml,
+								sources: {
+									'1220px': img.portraitClassic.xlrg,
+									'980px': img.portraitClassic.lrg,
+									'740px': img.portraitClassic.med,
+									'500px': img.portraitClassic.sml
+								}
+							} %}
+						{% else %}
+							{% include '@partial-picture' with {
+								class: 'cta_background',
+								image: image,
+								alt: '',
+								loading: 'lazy',
+								default: img.portraitClassic.xxsml,
+								sources: {
+									'1220px': img.classic.xlrg,
+									'980px': img.classic.lrg,
+									'740px': img.classic.med,
+									'500px': img.square.sml
+								}
+							} %}
+						{% endif %}
+					</figure>
+				</div>
+				<div class="cta_background_content">
+					<span class="cta_background_icon" aria-hidden="true">{{ icon('360') }}</span>
+					<h2 class="cta_background_title">{{ title }}</h2>
+					{% if description %}
+						<span class="cta_background_description">{{ description }}</span>
+					{% endif %}
+					{% if link %}
+						<a href="{{ link.url }}" class="cta_background_link">{{ link.label }}</a>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

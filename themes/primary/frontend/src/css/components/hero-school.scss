@@ -1,0 +1,359 @@
+/* ==========================================================================
+	Hero School
+============================================================================= */
+
+.hero_school {
+	margin-block: 30px 80px;
+
+	@media #{$min_lg} {
+		margin-top: 35px;
+	}
+}
+
+.hero_school_inner {
+	position: relative;
+	z-index: 1;
+
+	display: grid;
+	gap: 28px;
+
+	@media #{$min_md} {
+		gap: $fs_grid_gap;
+		grid-template-columns: 1fr 1fr;
+	}
+
+	@media #{$min_md $and_max_lg} {
+		align-items: center;
+	}
+
+	@media #{$min_lg} {
+		gap: 4.7%;
+		grid-template-columns: 1fr 34.7%;
+	}
+
+	.size_portrait & {
+		@media #{$min_xl} {
+			gap: 8.6%;
+			grid-template-columns: 1fr 43.4%;
+		}
+	}
+
+	.size_landscape & {
+		@media #{$min_xl} {
+			gap: $fs_grid_gap;
+			grid-template-columns: 1fr 48%;
+		}
+	}
+}
+
+.hero_school_media {
+	position: relative;
+
+	.size_portrait & {
+		@media #{$min_lg} {
+			align-self: center;
+		}
+	}
+
+	.size_landscape & {
+		align-self: start;
+	}
+
+	&::after {
+		height: 100%;
+
+		position: absolute;
+		right: 13px;
+		bottom: 13px;
+		left: 13px;
+
+		border: 1px solid $red;
+		border-radius: 5px;
+		content: '';
+		display: block;
+		opacity: 1;
+		pointer-events: none;
+		transition: opacity $base_speed, visibility $base_speed;
+		visibility: visible;
+
+		.hero_school.fs-swap-active & {
+			opacity: 0;
+			visibility: hidden;
+		}
+	}
+}
+
+.hero_school_figure {
+	@include responsive_image;
+
+	.size_portrait & {
+		position: relative;
+
+		aspect-ratio: 9 / 16;
+	}
+}
+
+.hero_school_figure_image {
+	border-radius: 5px;
+	opacity: 1;
+	transition: opacity $base_speed, visibility $base_speed;
+	visibility: visible;
+
+	.hero_school.fs-swap-active & {
+		opacity: 0;
+		visibility: hidden;
+	}
+
+	.size_portrait & {
+		width: 100%;
+		height: 100%;
+
+		position: absolute;
+
+		object-fit: cover;
+	}
+}
+
+.hero_school_video {
+	@include cover;
+}
+
+.hero_school_media_button {
+	position: absolute;
+	right: 14px;
+	bottom: 14px;
+	left: 14px;
+
+	align-items: center;
+	background-color: $white;
+	border-radius: 0 0 5px 5px;
+	color: $black;
+	display: flex;
+	gap: 20px;
+	padding: 18px 30px;
+	text-align: left;
+	transition: background-color $base_speed, color $base_speed, opacity $base_speed,
+		visibility $base_speed;
+
+	@media #{$min_lg} {
+		z-index: 1;
+
+		border-radius: 5px;
+		box-shadow: 7px 7px 0px rgba($black, 0.15);
+	}
+
+	@media #{$min_xl} {
+		padding-block: 30px;
+	}
+
+	@include hover {
+		background-color: $turquoise_light;
+		// color: $turquoise_dark;
+	}
+
+	.size_portrait & {
+		@media #{$min_lg} {
+			width: 310px;
+
+			right: -16px;
+			bottom: 20%;
+			left: auto;
+		}
+
+		@media #{$min_xl} {
+			width: 380px;
+		}
+	}
+
+	.size_landscape & {
+		@media #{$min_md} {
+			top: calc(100% - 22px);
+			right: -12px;
+			bottom: auto;
+			left: 40px;
+			z-index: 1;
+
+			border-radius: 5px;
+			box-shadow: 7px 7px 0px rgba($black, 0.15);
+		}
+
+		@media #{$min_xl} {
+			width: 380px;
+
+			top: calc(100% - 54px);
+			left: auto;
+		}
+	}
+
+	.hero_school.fs-swap-active & {
+		opacity: 0;
+		pointer-events: none;
+		visibility: hidden;
+	}
+}
+
+.hero_school_media_button_group {
+	display: grid;
+	gap: 4px;
+}
+
+.hero_school_media_button_label {
+	color: $gray;
+	font-size: 13px;
+	font-weight: 400;
+	line-height: 1.2;
+
+	@media #{$min_md} {
+		font-size: 15px;
+	}
+}
+
+.hero_school_media_button_name {
+	@include h5;
+}
+
+.hero_school_media_icon {
+	position: relative;
+
+	aspect-ratio: 1;
+	background-color: $orange;
+	border-radius: 100%;
+	color: $white;
+	flex: 0 0 42px;
+	margin-left: auto;
+	transition: background-color $base_speed;
+
+	.icon {
+		@include center;
+
+		width: 11px;
+
+		margin-left: 2px;
+	}
+
+	@include nested_hover($selector: '.hero_school_media_button') {
+		background-color: $turquoise_dark;
+	}
+}
+
+.hero_school_group {
+	@media #{$min_md} {
+		grid-row: 1;
+	}
+
+	@media #{$min_lg} {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.size_portrait & {
+		@media #{$min_xl} {
+			padding-top: 140px;
+		}
+	}
+
+	.size_landscape & {
+		@media #{$min_xl} {
+			padding-top: 74px;
+		}
+	}
+}
+
+.hero_school_header {
+	display: grid;
+	gap: 10px;
+}
+
+.hero_school_label {
+	font-weight: 700;
+	font-size: 14px;
+	letter-spacing: 0.1em;
+	line-height: 1.5;
+	margin-block: 0;
+	text-transform: uppercase;
+}
+
+.hero_school_title {
+	@include h1_small;
+
+	color: $turquoise;
+	margin-block: 0;
+}
+
+.hero_school_header_decoration {
+	width: 1px;
+	min-height: 130px;
+
+	position: relative;
+	z-index: 10;
+
+	background-color: $turquoise_dark;
+	flex: 1;
+	margin-block: 26px 14px;
+
+	@media #{$min_xl} {
+		min-height: 120px;
+	}
+
+	@media #{$min_xxl} {
+		min-height: 220px;
+	}
+
+	&::before,
+	&::after {
+		width: 5px;
+
+		position: absolute;
+		left: -2px;
+
+		aspect-ratio: 1;
+		background-color: $turquoise_dark;
+		border-radius: 50%;
+		content: '';
+		display: block;
+	}
+
+	&::after {
+		bottom: 0;
+	}
+}
+
+.hero_school_body {
+	display: grid;
+	gap: 20px;
+
+	@media #{$max_md} {
+		background-color: $white;
+		box-shadow: -100px 0 0 $white, 100px 0 0 $white;
+	}
+}
+
+.hero_school_description {
+	@include intro_text;
+
+	color: $gray;
+	margin-block: 0;
+
+	@media #{$min_lg} {
+		width: 82%;
+	}
+}
+
+.hero_school_links {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 15px;
+
+	@media #{$min_lg} {
+		padding-bottom: 28px;
+	}
+}
+
+.hero_school_link_item {
+}
+
+.hero_school_link {
+	@include sgu_button($turquoise_light, $blue_navy);
+
+	display: inline-block;
+}

@@ -1,0 +1,16 @@
+/* ==========================================================================
+	News Entry
+============================================================================= */
+
+.news_entry {
+}
+
+.news_entry_figure {
+	@include responsive_image;
+
+	margin-block: 30px;
+}
+
+.news_entry_image {
+	border-radius: 5px;
+}

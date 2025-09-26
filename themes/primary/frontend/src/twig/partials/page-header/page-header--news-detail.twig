@@ -1,0 +1,47 @@
+<div class="page_news_header page_header_news_detail">
+	<div class="fs-row">
+		<div class="fs-cell">
+			<div class="page_news_header_inner">
+				{% if page.breadcrumbNav != false  %}
+					<div class="page_breadcrumb">
+						{% render '@navigation-breadcrumb' with {
+							page: page,
+							modifier: '',
+							links: page.breadcrumbNav,
+							icon_home: 'home',
+							icon_divider: 'minus',
+							icon_end: 'angle_down'
+						} %}
+					</div>
+				{% endif %}
+				<h1 class="page_title" id="page_title" tabindex="-1">{{ page.title }}</h1>
+				<div class="page_news_intro_wrapper">
+					<div class="page_news_intro_group">
+						{% if page.description %}
+							<p class="page_description">{{ page.description }}</p>
+						{% endif %}
+						{% if page.duration %}
+							<p class="page_duration">{{ page.duration }}</p>
+						{% endif %}
+					</div>
+					<div class="page_news_cta">
+						<figure class="page_news_cta_figure">
+							{% include '@partial-image' with {
+								class: 'page_news_cta',
+								alt: 'page.cta.alt',
+								image: page.cta.image,
+								loading: 'eager',
+								sources: [
+									img.wide.sml,
+									img.wide.xsml,
+									img.wide.xxsml,
+									img.wide.thumb
+								]
+							} %}
+						</figure>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

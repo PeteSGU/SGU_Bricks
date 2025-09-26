@@ -1,0 +1,87 @@
+/* ==========================================================================
+	Icons
+============================================================================= */
+
+.icon {
+	display: block;
+	fill: currentColor;
+	margin: auto;
+	pointer-events: none;
+	stroke: inherit;
+	transition: fill $base_speed, stroke $base_speed;
+
+	$icons: (
+		(360, 43, 29),
+		(angle_down, 5, 4),
+		(angle_right, 7, 7),
+		(arrow_down, 22, 22),
+		(arrow_left, 22, 22),
+		(arrow_right, 22, 22),
+		(arrow_up, 22, 22),
+		(building, 16, 16),
+		(caret_down, 16, 10),
+		(caret_right, 8, 16),
+		(caret_left, 8, 16),
+		(chat, 15, 15),
+		(chevron_down, 16, 10),
+		(chevron_right, 6, 10),
+		(clock, 16, 16),
+		(close, 10, 10),
+		(download, 18, 18),
+		(expand, 9, 18),
+		(external, 18, 18),
+		(facebook, 22, 21),
+		(facebook_alt, 22, 22),
+		(fax, 18, 16),
+		(file, 16, 20),
+		(flickr, 22, 10),
+		(home, 14, 14),
+		(instagram, 22, 22),
+		(label, 14, 14),
+		(linkedin, 22, 22),
+		(logo, 372, 68),
+		(logo_dark, 372, 68),
+		(logo_medicine, 370, 85),
+		(logo_medicine_dark, 370, 85),
+		(mail, 17, 14),
+		(menu, 18, 10),
+		(minus, 14, 2),
+		(newspaper, 40, 35),
+		(pause, 15, 18),
+		(person, 12, 12),
+		(phone, 16, 16),
+		(photos, 44, 39),
+		(pinterest, 17, 22),
+		(place, 12, 16),
+		(play, 20, 20),
+		(plus, 14, 14),
+		(podcast, 13, 19),
+		(reset, 9, 10),
+		(search, 18, 18),
+		(shield, 13, 16),
+		(statistics, 44, 38),
+		(twitter, 22, 18),
+		(quote, 32, 23),
+		(video, 23, 15),
+		(video_pause, 20, 20),
+		(video_play, 20, 20),
+		(vimeo, 18, 18),
+		(youtube, 22, 15)
+	);
+
+	@each $label, $width, $height in $icons {
+		&_#{$label} {
+			width: #{$width}px;
+
+			aspect-ratio: #{$width} / #{$height};
+		}
+	}
+}
+
+.icon_nowrap {
+	white-space: nowrap;
+
+	.icon {
+		display: inline;
+	}
+}

@@ -1,0 +1,48 @@
+{
+    "packages": [
+        {
+            "name": "webdevstudios/edd-sl-plugin-updater",
+            "version": "1.9.1",
+            "version_normalized": "1.9.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/WebDevStudios/EDD_SL_Plugin_Updater.git",
+                "reference": "1b840432ba1645dcaf5ba5c7c4a5ad20536aec32"
+            },
+            "require": {
+                "ext-json": "*",
+                "php": ">=7.4"
+            },
+            "time": "2023-01-11T20:30:10+00:00",
+            "type": "library",
+            "installation-source": "source",
+            "autoload": {
+                "files": [
+                    "EDD_SL_Plugin_Updater.php"
+                ]
+            },
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "EasyDigitalDownloads",
+                    "email": "contact@easydigitaldownloads.com"
+                },
+                {
+                    "name": "Pluginize",
+                    "email": "support@pluginize.com"
+                }
+            ],
+            "description": "EDD Updates Handler for WordPress Plugins",
+            "keywords": [
+                "edd",
+                "updates",
+                "wordpress"
+            ],
+            "install-path": "../webdevstudios/edd-sl-plugin-updater"
+        }
+    ],
+    "dev": false,
+    "dev-package-names": []
+}

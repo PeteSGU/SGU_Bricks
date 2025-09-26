@@ -1,0 +1,141 @@
+/* ==========================================================================
+	Pagination
+============================================================================= */
+
+.pagination {
+	position: relative;
+
+	display: none;
+
+	.js & {
+		display: block;
+
+		@media print {
+			display: none;
+		}
+	}
+}
+
+/* Pagination Nav
+============================================================================= */
+
+.pagination_nav {
+	@include cover;
+
+	align-items: center;
+	display: flex;
+	justify-content: space-between;
+}
+
+.pagination_arrow {
+	width: 46px;
+	height: 46px;
+	display: flex;
+
+	position: relative;
+	z-index: 2;
+
+	align-items: center;
+	border: 1px solid $turquoise_dark;
+	border-radius: 50%;
+	color: $blue_navy;
+	justify-content: center;
+	opacity: 1;
+	transition: background-color $base_speed, color $base_speed, opacity $base_speed,
+		border-color $base_speed;
+	visibility: visible;
+
+	@include hover {
+		background: $turquoise;
+		border-color: $turquoise;
+	}
+}
+
+.pagination_arrow_disabled {
+	border-color: $turquoise;
+	color: $turquoise;
+	pointer-events: none;
+}
+
+.pagination_arrow_left {
+}
+
+.pagination_arrow_right {
+}
+
+.pagination_arrow_label {
+	@include visually_hide;
+}
+
+.pagination_arrow_icon {
+	color: currentColor;
+}
+
+/* Pagination Form
+============================================================================= */
+
+.pagination_form {
+	position: relative;
+
+	text-align: center;
+}
+
+.pagination_form_inner {
+	align-items: center;
+	display: flex;
+	justify-content: center;
+
+	@media #{$max_sm} {
+		transform: scale(0.9);
+	}
+}
+
+.pagination_form_label {
+	display: none;
+	margin-right: 12px;
+
+	@media #{$min_sm} {
+		display: block;
+	}
+}
+
+.pagination_form_select_wrapper {
+	position: relative;
+
+	display: inline-block;
+}
+
+.pagination_form_select {
+	appearance: none;
+	background: $gray_light;
+	border: 1px solid $gray_medium;
+	border-radius: 5px;
+	cursor: pointer;
+	font-weight: 600;
+	line-height: 1;
+	padding: 12px 34px 12px 14px;
+
+	-webkit-appearance: none;
+
+	@media #{$min_md} {
+		font-size: 14px;
+	}
+}
+
+.pagination_form_select_icon {
+	position: absolute;
+	top: 50%;
+	right: 12px;
+
+	color: $turquoise_dark;
+	pointer-events: none;
+	translate: 0 -50%;
+}
+
+.pagination_form_suffix {
+	margin-inline: 12px;
+}
+
+.pagination_form_button {
+	@include sgu_button($turquoise, $blue_navy);
+}

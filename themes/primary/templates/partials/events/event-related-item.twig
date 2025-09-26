@@ -1,0 +1,58 @@
+<div class="event_related_item_item">
+	{% if item.image %}
+		<figure class="event_related_item_figure">
+			{% if item.link %}
+				<a class="event_related_item_figure_link" href="{{ item.link }}" aria-label="Read more about {{ item.title }}" tabindex="-1">
+			{% endif %}
+			{% include 'partials/image.twig' with {
+				class: 'event_related_item',
+				alt: '',
+				image: item.image,
+				loading: 'lazy',
+				sources: [
+					'classic-med',
+					'classic-sml',
+					'classic-xsml',
+					'classic-xxsml'
+				]
+			} %}
+			{% if item.link %}
+				</a>
+			{% endif %}
+		</figure>
+	{% endif %}
+	<div class="event_related_item_wrapper">
+		<div class="event_related_item_header">
+			<h2 class="event_related_item_title">
+				{% if item.link %}
+					{% include 'partials/link.twig' with {
+						class: 'event_title',
+						title: item.title,
+						url: item.link
+					} %}
+				{% else %}
+					{{ item.title }}
+				{% endif %}
+			</h2>
+			<div class="event_related_item_time_wrapper">
+				<time class="event_related_item_time" datetime="{{ item.fw_start }}">
+					<span class="event_related_item_time_start">{{ item.fw_start|date('M d') }}</span>
+					{% if not item.fw_all_day and not item.fw_same_day and item.fw_end %}
+						<span class="event_related_item_time_end"> - {{ item.fw_end|date('M d') }}</span>
+					{% endif %}
+				</time>
+			</div>
+		</div>
+		<div class="event_related_item_body">
+			{% if item.blurb %}
+				<div class="event_related_item_description">
+					<p>{{ item.blurb }}</p>
+				</div>
+			{% endif %}
+			{% include 'partials/event/event-details.twig' with {
+				class_name: "event_related_item",
+				item: item
+			} %}
+		</div>
+	</div>
+</div>

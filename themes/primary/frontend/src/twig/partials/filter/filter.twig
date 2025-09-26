@@ -1,0 +1,76 @@
+{#
+	{% include '@partial-filter' with {
+		label: 'Directory',
+		active: 'search',
+		action_category: '#',
+		action_search: '#',
+		tools: [
+			{
+				label: 'Category',
+				options: [
+					{
+						label: 'All Categories',
+						label: true
+					}
+				]
+			}
+		],
+		search_placeholder: 'Placeholder',
+		results: '',
+		category: ''
+	} %}
+#}
+<!-- Filter -->
+<div class="filter">
+	<div class="fs-row">
+		<div class="fs-cell">
+			<div class="filter_inner">
+				<div class="filter_panels">
+					<div class="filter_tabpanel filter_tabpanel_search" role="tabpanel">
+						<form class="filter_form" action="{{ action_submit }}" method="get">
+							<div class="filter_search_wrapper">
+								<label class="filter_label" for="filter_search_input">Search</label>
+								<div class="filter_search_form">
+									<input class="filter_search_input" id="filter_search_input" type="search" placeholder="{{ search_placeholder }}">
+								</div>
+							</div>
+							{% for tool in tools %}
+								<div class="filter_tool">
+									<label class="filter_label" for="filter_tool_label_{{ loop.index }}">{{ tool.label }}</label>
+									<div class="filter_tool_select_wrapper">
+										<select class="filter_tool_select" id="filter_tool_label_{{ loop.index }}">
+											{% for option in tool.options %}
+												<option value="{{ option.label }}" {% if option.selected == true %} selected {% endif %}>{{ option.label }}</option>
+											{% endfor %}
+										</select>
+										<span class="filter_tool_select_icon">{{ icon('chevron_down') }}</span>
+									</div>
+								</div>
+							{% endfor %}
+							<div class="filter_tool">
+								<button class="filter_tools_submit" type="submit">Submit</button>
+							</div>
+						</form>
+					</div>
+				</div>
+				{% if results != '' %}
+					<div class="filter_results">
+						<p class="filter_results_description">
+							<span class="filter_results_label">{{ results }} Results found for:</span>
+							<span class="filter_results_category">{{ category }}</span>
+						</p>
+						<div class="filter_results_action">
+							{% include '@partial-link' with {
+								class: 'filter_results_reset',
+								title: 'Reset',
+								url: 'page-news-listing.html',
+								icon: 'reset'
+							} %}
+						</div>
+					</div>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+</div>
+<!-- END: Filter -->

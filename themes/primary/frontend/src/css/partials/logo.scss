@@ -1,0 +1,47 @@
+/* ==========================================================================
+	Logo
+============================================================================= */
+
+.logo {
+}
+
+.logo_header {
+}
+
+.logo_footer {
+}
+
+.logo_link {
+	position: relative;
+
+	color: inherit;
+	display: block;
+
+	&:after {
+		@media print {
+			content: normal;
+			display: none;
+		}
+	}
+
+	@include hover {
+		color: $turquoise;
+	}
+}
+
+.logo_link_label {
+	@include visually_hide;
+}
+
+.logo_link_icon {
+	.icon_logo {
+	}
+}
+
+.logo_print {
+	display: none;
+
+	@media print {
+		display: block;
+	}
+}
