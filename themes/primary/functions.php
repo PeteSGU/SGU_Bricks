@@ -169,10 +169,8 @@ add_filter('language_attributes', function ($output, $doctype) {
         //check for 404
         if( is_404()){
             global $wp_query;
-            //check that wp has figured out post_type from the request
-            //and it's the type you're looking for
+            //check that wp has determined post type is an event
             if( isset($wp_query->query['post_type']) && $wp_query->query['post_type'] == 'recruitment-event' ){
-            
             wp_redirect( home_url( '/information-sessions/' ) );
             exit();
         }
