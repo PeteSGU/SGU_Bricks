@@ -33,10 +33,10 @@ define('PARENT_ROOT_STATIC', PARENT_ROOT . STATIC_DIRNAME);
 define('PARENT_ROOT_URI_STATIC', PARENT_ROOT_URI . STATIC_DIRNAME);
 
 define('CURRENT_SITE', get_current_blog_id());
-// define(
-	// 'ICONS_MODIFIED_TIME',
-	// filemtime(PARENT_ROOT_STATIC . 'images/icons.svg') ?: '1.0.0'
-// );
+define(
+	'ICONS_MODIFIED_TIME',
+	filemtime(PARENT_ROOT_STATIC . 'images/icons.svg') ?: '1.0.0'
+);
 
 define('FW_IMAGE_SIZES', include_once 'inc/image-sizes.php' ?: []);
 define('FW_CONFIG', include_once 'inc/config.php' ?: []);
@@ -112,9 +112,7 @@ add_filter('language_attributes', function ($output, $doctype) {
  	body.login div#login h1 a {
      background-image: url(/wp-content/uploads/sgu-school-crest.png);
  	margin-top: 100px; 
- }   
- 
-
+ } 
  </style>
   <?php } add_action( 'login_enqueue_scripts', 'swap_login_logo' );
 
@@ -134,47 +132,49 @@ add_filter('language_attributes', function ($output, $doctype) {
  return implode(' ', array_slice($words, 0, $limit));
   
  }
-
  
-
-
 /**
-  * Fixes canonical URL for custom paginated archives using a '_page' query parameter.
+  * Fixes canonical URL for custom paginated archives for Rank Math SEO.
   * This ensures that pages like /?_page=2 have a self-referencing canonical URL.
-  * Includes high priority and debugging output for administrators.
   */
- function custom_fix_pagination_canonical_url( $canonical_url, $post ) {
+ function sgu_fix_rank_math_pagination_canonical( $canonical_url ) {
  
-     // --- Start Debugging Output (only visible to admins in page source) ---
-     if ( current_user_can('manage_options') ) {
-         echo "\n";
-         echo "\n";
-     }
-     // --- End Debugging Output ---
- 
-     // Check if we are on the correct post type archive.
-     // Replace 'faculty' with your actual custom post type slug if different.
+     // Check if we are on the 'faculty' post type archive and the '_page' parameter exists.
      if ( is_post_type_archive('faculty') && isset( $_GET['_page'] ) ) {
          
          // Sanitize the page number to ensure it's a positive integer.
          $page_number = absint( $_GET['_page'] );
          
-         // Only modify the canonical if we are on a paginated page (page 2 or higher).
+         // Only modify the canonical if we are on page 2 or higher.
          if ( $page_number > 1 ) {
-             // Add the '_page' query parameter and its value to the base canonical URL.
-             $canonical_url = add_query_arg( '_page', $page_number, $canonical_url );
+             
+             // Rebuild the canonical URL with the correct page number.
+             // First, get the URL without any existing query parameters from a previous filter.
+             $base_canonical_url = strtok( $canonical_url, '?' );
+ 
+             // Add our '_page' query parameter and its value.
+             $canonical_url = add_query_arg( '_page', $page_number, $base_canonical_url );
          }
      }
- 
-     // --- Start Debugging Output (only visible to admins in page source) ---
-     if ( current_user_can('manage_options') ) {
-         echo "\n";
-     }
-     // --- End Debugging Output ---
      
      return $canonical_url;
  }
- add_filter( 'get_canonical_url', 'custom_fix_pagination_canonical_url', 99, 2 );
+ // FOR RANK MATH: Use Rank Math's specific filter with high priority.
+ add_filter( 'rank_math/frontend/canonical', 'sgu_fix_rank_math_pagination_canonical', 99 );
  
-
-
+ 
+ //Redirect users to the info sessions page if their 404 URL contains the phrase /sgu-event/
+ add_action( 'template_redirect', 'event404_redirect' );
+   function event404_redirect(){
+       //check for 404
+       if( is_404()){
+           global $wp_query;
+           //check that wp has figured out post_type from the request
+           //and it's the type you're looking for
+           if( isset($wp_query->query['post_type']) && $wp_query->query['post_type'] == 'recruitment-event' ){
+           
+           wp_redirect( home_url( '/information-sessions/' ) );
+           exit();
+       }
+   }
+ }

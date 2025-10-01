@@ -850,12 +850,36 @@
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
-                "width": "28",
+                "width": "14",
                 "class": "",
                 "id": ""
             },
+            "admin_column_enabled": 0,
             "default_value": "",
             "maxlength": "",
+            "allow_in_bindings": 1,
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_686d18c79ba4a",
+            "label": "Stat NDR11 Alt",
+            "name": "stat_ndr11_alt",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "14",
+                "class": "",
+                "id": ""
+            },
+            "admin_column_enabled": 0,
+            "default_value": "",
+            "maxlength": "",
+            "allow_in_bindings": 1,
             "placeholder": "",
             "prepend": "",
             "append": ""
@@ -3830,12 +3854,36 @@
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
-                "width": "23",
+                "width": "10",
                 "class": "",
                 "id": ""
             },
+            "admin_column_enabled": 0,
             "default_value": "",
             "maxlength": "",
+            "allow_in_bindings": 1,
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_68486727bf47c",
+            "label": "Stat GT1 Alt",
+            "name": "stat_gt1_alt",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "13",
+                "class": "",
+                "id": ""
+            },
+            "admin_column_enabled": 0,
+            "default_value": "",
+            "maxlength": "",
+            "allow_in_bindings": 1,
             "placeholder": "",
             "prepend": "",
             "append": ""
@@ -3910,12 +3958,36 @@
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
-                "width": "23",
+                "width": "10",
                 "class": "",
                 "id": ""
             },
+            "admin_column_enabled": 0,
             "default_value": "",
             "maxlength": "",
+            "allow_in_bindings": 1,
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_684863f06cd20",
+            "label": "Stat GT2 Alt",
+            "name": "stat_gt2_alt",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "13",
+                "class": "",
+                "id": ""
+            },
+            "admin_column_enabled": 0,
+            "default_value": "",
+            "maxlength": "",
+            "allow_in_bindings": 1,
             "placeholder": "",
             "prepend": "",
             "append": ""
@@ -3990,12 +4062,36 @@
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
-                "width": "23",
+                "width": "10",
                 "class": "",
                 "id": ""
             },
+            "admin_column_enabled": 0,
             "default_value": "",
             "maxlength": "",
+            "allow_in_bindings": 1,
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_6848691abf47d",
+            "label": "Stat GT3 Alt",
+            "name": "stat_gt3_alt",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "13",
+                "class": "",
+                "id": ""
+            },
+            "admin_column_enabled": 0,
+            "default_value": "",
+            "maxlength": "",
+            "allow_in_bindings": 1,
             "placeholder": "",
             "prepend": "",
             "append": ""
@@ -4070,12 +4166,36 @@
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
-                "width": "23",
+                "width": "10",
                 "class": "",
                 "id": ""
             },
+            "admin_column_enabled": 0,
             "default_value": "",
             "maxlength": "",
+            "allow_in_bindings": 1,
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_68486972ee861",
+            "label": "Stat GT4 Alt",
+            "name": "stat_gt4_alt",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "13",
+                "class": "",
+                "id": ""
+            },
+            "admin_column_enabled": 0,
+            "default_value": "",
+            "maxlength": "",
+            "allow_in_bindings": 1,
             "placeholder": "",
             "prepend": "",
             "append": ""
@@ -4150,12 +4270,36 @@
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
-                "width": "23",
+                "width": "10",
                 "class": "",
                 "id": ""
             },
+            "admin_column_enabled": 0,
             "default_value": "",
             "maxlength": "",
+            "allow_in_bindings": 1,
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_68486977ee862",
+            "label": "Stat GT5 Alt",
+            "name": "stat_gt5_alt",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "13",
+                "class": "",
+                "id": ""
+            },
+            "admin_column_enabled": 0,
+            "default_value": "",
+            "maxlength": "",
+            "allow_in_bindings": 1,
             "placeholder": "",
             "prepend": "",
             "append": ""
@@ -4230,12 +4374,36 @@
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
-                "width": "23",
+                "width": "10",
                 "class": "",
                 "id": ""
             },
+            "admin_column_enabled": 0,
             "default_value": "",
             "maxlength": "",
+            "allow_in_bindings": 1,
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_6848697eee863",
+            "label": "Stat GT6 Alt",
+            "name": "stat_gt6_alt",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "13",
+                "class": "",
+                "id": ""
+            },
+            "admin_column_enabled": 0,
+            "default_value": "",
+            "maxlength": "",
+            "allow_in_bindings": 1,
             "placeholder": "",
             "prepend": "",
             "append": ""
@@ -4310,12 +4478,36 @@
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
-                "width": "23",
+                "width": "10",
                 "class": "",
                 "id": ""
             },
+            "admin_column_enabled": 0,
             "default_value": "",
             "maxlength": "",
+            "allow_in_bindings": 1,
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_68486a1168e09",
+            "label": "Stat GT7 Alt",
+            "name": "stat_gt7_alt",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "13",
+                "class": "",
+                "id": ""
+            },
+            "admin_column_enabled": 0,
+            "default_value": "",
+            "maxlength": "",
+            "allow_in_bindings": 1,
             "placeholder": "",
             "prepend": "",
             "append": ""
@@ -4390,12 +4582,36 @@
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
-                "width": "23",
+                "width": "10",
                 "class": "",
                 "id": ""
             },
+            "admin_column_enabled": 0,
             "default_value": "",
             "maxlength": "",
+            "allow_in_bindings": 1,
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_68486a5568e0b",
+            "label": "Stat GT8 Alt",
+            "name": "stat_gt8_alt",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "13",
+                "class": "",
+                "id": ""
+            },
+            "admin_column_enabled": 0,
+            "default_value": "",
+            "maxlength": "",
+            "allow_in_bindings": 1,
             "placeholder": "",
             "prepend": "",
             "append": ""
@@ -4470,12 +4686,36 @@
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
-                "width": "23",
+                "width": "10",
                 "class": "",
                 "id": ""
             },
+            "admin_column_enabled": 0,
             "default_value": "",
             "maxlength": "",
+            "allow_in_bindings": 1,
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_68486a3368e0a",
+            "label": "Stat GT9 Alt",
+            "name": "stat_gt9_alt",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "13",
+                "class": "",
+                "id": ""
+            },
+            "admin_column_enabled": 0,
+            "default_value": "",
+            "maxlength": "",
+            "allow_in_bindings": 1,
             "placeholder": "",
             "prepend": "",
             "append": ""
@@ -8160,6 +8400,7 @@
                 "class": "",
                 "id": ""
             },
+            "admin_column_enabled": 0,
             "default_value": "",
             "maxlength": "",
             "allow_in_bindings": 1,
@@ -8209,6 +8450,174 @@
             "rows": "",
             "placeholder": "",
             "new_lines": ""
+        },
+        {
+            "key": "field_68b1df4cd2807",
+            "label": "ID",
+            "name": "",
+            "aria-label": "",
+            "type": "message",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "10",
+                "class": "",
+                "id": ""
+            },
+            "message": "MISC14",
+            "new_lines": "wpautop",
+            "esc_html": 0
+        },
+        {
+            "key": "field_68a77b72c8dd9",
+            "label": "Stat MISC14",
+            "name": "stat_misc14",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "23",
+                "class": "",
+                "id": ""
+            },
+            "admin_column_enabled": 0,
+            "default_value": "",
+            "maxlength": "",
+            "allow_in_bindings": 1,
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_68a77b6ac8dd8",
+            "label": "Statement MISC14",
+            "name": "statement_misc14",
+            "aria-label": "",
+            "type": "textarea",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "28",
+                "class": "",
+                "id": ""
+            },
+            "admin_column_enabled": 0,
+            "default_value": "",
+            "maxlength": "",
+            "allow_in_bindings": 1,
+            "rows": "",
+            "placeholder": "",
+            "new_lines": ""
+        },
+        {
+            "key": "field_68a77b64c8dd7",
+            "label": "Qualifier MISC14",
+            "name": "qualifier_misc14",
+            "aria-label": "",
+            "type": "textarea",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "38",
+                "class": "",
+                "id": ""
+            },
+            "admin_column_enabled": 0,
+            "default_value": "",
+            "maxlength": "",
+            "allow_in_bindings": 1,
+            "rows": "",
+            "placeholder": "",
+            "new_lines": ""
+        },
+        {
+            "key": "field_68b1e2dc9c9d2",
+            "label": "ID",
+            "name": "",
+            "aria-label": "",
+            "type": "message",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "10",
+                "class": "",
+                "id": ""
+            },
+            "message": "MISC15",
+            "new_lines": "wpautop",
+            "esc_html": 0
+        },
+        {
+            "key": "field_68b1dc408c8ac",
+            "label": "Stat MISC15",
+            "name": "stat_misc15",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "23",
+                "class": "",
+                "id": ""
+            },
+            "admin_column_enabled": 0,
+            "default_value": "",
+            "maxlength": "",
+            "allow_in_bindings": 0,
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_68b1dc8f8c8ae",
+            "label": "Statement MISC15",
+            "name": "statement_misc15",
+            "aria-label": "",
+            "type": "textarea",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "28",
+                "class": "",
+                "id": ""
+            },
+            "admin_column_enabled": 0,
+            "default_value": "",
+            "maxlength": "",
+            "allow_in_bindings": 0,
+            "rows": "",
+            "placeholder": "",
+            "new_lines": ""
+        },
+        {
+            "key": "field_68b1dd718c8af",
+            "label": "Qualifier MISC15",
+            "name": "qualifier_misc15",
+            "aria-label": "",
+            "type": "textarea",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "38",
+                "class": "",
+                "id": ""
+            },
+            "admin_column_enabled": 0,
+            "default_value": "",
+            "maxlength": "",
+            "allow_in_bindings": 0,
+            "rows": "",
+            "placeholder": "",
+            "new_lines": ""
         }
     ],
     "location": [
@@ -8229,5 +8638,5 @@
     "active": true,
     "description": "",
     "show_in_rest": 0,
-    "modified": 1745243835
+    "modified": 1756488468
 }

@@ -400,7 +400,7 @@
             "label": "Info Session Registration Link SOM",
             "name": "info_session_registration_link_som",
             "aria-label": "",
-            "type": "url",
+            "type": "text",
             "instructions": "",
             "required": 0,
             "conditional_logic": 0,
@@ -409,15 +409,20 @@
                 "class": "",
                 "id": ""
             },
+            "admin_column_enabled": 0,
             "default_value": "",
-            "placeholder": ""
+            "maxlength": "",
+            "allow_in_bindings": 0,
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
         },
         {
             "key": "field_668c336d0b407",
             "label": "Info Session Registration Link SVM",
             "name": "info_session_registration_link_svm",
             "aria-label": "",
-            "type": "url",
+            "type": "text",
             "instructions": "",
             "required": 0,
             "conditional_logic": 0,
@@ -426,8 +431,13 @@
                 "class": "",
                 "id": ""
             },
+            "admin_column_enabled": 0,
             "default_value": "",
-            "placeholder": ""
+            "maxlength": "",
+            "allow_in_bindings": 0,
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
         }
     ],
     "location": [
@@ -441,6 +451,11 @@
                 "param": "post_taxonomy",
                 "operator": "==",
                 "value": "event-type:info-session"
+            },
+            {
+                "param": "post_taxonomy",
+                "operator": "!=",
+                "value": "event-type:virtual-info-session"
             }
         ]
     ],
@@ -464,5 +479,5 @@
     "active": true,
     "description": "",
     "show_in_rest": 0,
-    "modified": 1748438705
+    "modified": 1755785940
 }

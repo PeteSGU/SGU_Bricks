@@ -23,6 +23,28 @@
             "append": ""
         },
         {
+            "key": "field_68486ba3e6696",
+            "label": "Stat Total Alt",
+            "name": "stat_total_alt",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "70",
+                "class": "",
+                "id": ""
+            },
+            "admin_column_enabled": 0,
+            "default_value": "",
+            "maxlength": "",
+            "allow_in_bindings": 1,
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
+        },
+        {
             "key": "field_66db0a0e994a4",
             "label": "Headline Size",
             "name": "stat_headline_size",
@@ -141,5 +163,5 @@
     "active": true,
     "description": "",
     "show_in_rest": 0,
-    "modified": 1741278286
+    "modified": 1749576784
 }

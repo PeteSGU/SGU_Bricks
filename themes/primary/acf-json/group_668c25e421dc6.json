@@ -21,6 +21,28 @@
             "esc_html": 0
         },
         {
+            "key": "field_689d34ff6df4d",
+            "label": "SGULive Title",
+            "name": "sgulive_title",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "admin_column_enabled": 0,
+            "default_value": "",
+            "maxlength": "",
+            "allow_in_bindings": 0,
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
+        },
+        {
             "key": "field_668c25e42c2f9",
             "label": "SGULive Event Start Time",
             "name": "sgulive_event_start_time",
@@ -73,6 +95,25 @@
             "placeholder": "",
             "prepend": "",
             "append": ""
+        },
+        {
+            "key": "field_68b0979ab0f93",
+            "label": "SGULive Arrival\/Registration Time",
+            "name": "sgulive_arrival_time",
+            "aria-label": "",
+            "type": "time_picker",
+            "instructions": "",
+            "required": 1,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "100",
+                "class": "",
+                "id": ""
+            },
+            "admin_column_enabled": 0,
+            "display_format": "g:i a",
+            "return_format": "g:i a",
+            "allow_in_bindings": 1
         },
         {
             "key": "field_66b952e1a65d6",
@@ -179,17 +220,22 @@
             "label": "SGULive Event Registration Link",
             "name": "sgulive_event_registration_link",
             "aria-label": "",
-            "type": "url",
+            "type": "text",
             "instructions": "",
-            "required": 1,
+            "required": 0,
             "conditional_logic": 0,
             "wrapper": {
                 "width": "",
                 "class": "",
                 "id": ""
             },
+            "admin_column_enabled": 0,
             "default_value": "",
-            "placeholder": ""
+            "maxlength": "",
+            "allow_in_bindings": 0,
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
         },
         {
             "key": "field_668c25e42c41e",
@@ -227,6 +273,170 @@
             "rows": "",
             "placeholder": "",
             "new_lines": ""
+        },
+        {
+            "key": "field_68b09a99ebf97",
+            "label": "SGULive Schedule Visibility",
+            "name": "sgulive_schedule_of_events_toggle",
+            "aria-label": "",
+            "type": "true_false",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "admin_column_enabled": 0,
+            "message": "Hide Schedule",
+            "default_value": 0,
+            "allow_in_bindings": 0,
+            "ui": 0,
+            "ui_on_text": "",
+            "ui_off_text": ""
+        },
+        {
+            "key": "field_688a1caa47056",
+            "label": "Schedule of Events",
+            "name": "sgulive_schedule",
+            "aria-label": "",
+            "type": "repeater",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "layout": "table",
+            "pagination": 0,
+            "min": 0,
+            "max": 0,
+            "collapsed": "",
+            "button_label": "Add Row",
+            "rows_per_page": 20,
+            "sub_fields": [
+                {
+                    "key": "field_688a1ccb47057",
+                    "label": "Title",
+                    "name": "schedule_title",
+                    "aria-label": "",
+                    "type": "text",
+                    "instructions": "",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "33",
+                        "class": "",
+                        "id": ""
+                    },
+                    "admin_column_enabled": 0,
+                    "default_value": "",
+                    "maxlength": "",
+                    "allow_in_bindings": 0,
+                    "placeholder": "",
+                    "prepend": "",
+                    "append": "",
+                    "parent_repeater": "field_688a1caa47056"
+                },
+                {
+                    "key": "field_688a1cfa47058",
+                    "label": "Start Time",
+                    "name": "schedule_start_time",
+                    "aria-label": "",
+                    "type": "time_picker",
+                    "instructions": "",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "10",
+                        "class": "",
+                        "id": ""
+                    },
+                    "admin_column_enabled": 0,
+                    "display_format": "g:i a",
+                    "return_format": "g:ia",
+                    "allow_in_bindings": 0,
+                    "parent_repeater": "field_688a1caa47056"
+                },
+                {
+                    "key": "field_688a22307a874",
+                    "label": "Connector",
+                    "name": "schedule_connector",
+                    "aria-label": "",
+                    "type": "select",
+                    "instructions": "",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "10",
+                        "class": "",
+                        "id": ""
+                    },
+                    "admin_column_enabled": 0,
+                    "choices": {
+                        "-": "-",
+                        "&": "&",
+                        "None": "&nbsp;"
+                    },
+                    "default_value": "-",
+                    "return_format": "label",
+                    "multiple": 0,
+                    "allow_null": 0,
+                    "allow_in_bindings": 0,
+                    "ui": 0,
+                    "ajax": 0,
+                    "placeholder": "",
+                    "create_options": 0,
+                    "save_options": 0,
+                    "parent_repeater": "field_688a1caa47056"
+                },
+                {
+                    "key": "field_688a1d3747059",
+                    "label": "End Time",
+                    "name": "schedule_end_time",
+                    "aria-label": "",
+                    "type": "time_picker",
+                    "instructions": "",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "10",
+                        "class": "",
+                        "id": ""
+                    },
+                    "admin_column_enabled": 0,
+                    "display_format": "g:i a",
+                    "return_format": "g:ia",
+                    "allow_in_bindings": 0,
+                    "parent_repeater": "field_688a1caa47056"
+                },
+                {
+                    "key": "field_688a1d4a4705a",
+                    "label": "Details",
+                    "name": "schedule_details",
+                    "aria-label": "",
+                    "type": "textarea",
+                    "instructions": "",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "admin_column_enabled": 0,
+                    "default_value": "",
+                    "maxlength": "",
+                    "allow_in_bindings": 0,
+                    "rows": "",
+                    "placeholder": "",
+                    "new_lines": "",
+                    "parent_repeater": "field_688a1caa47056"
+                }
+            ]
         }
     ],
     "location": [
@@ -265,5 +475,5 @@
     "active": true,
     "description": "",
     "show_in_rest": 0,
-    "modified": 1724965492
+    "modified": 1756409786
 }

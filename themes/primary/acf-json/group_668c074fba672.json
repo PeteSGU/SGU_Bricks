@@ -105,6 +105,11 @@
                 "param": "post_taxonomy",
                 "operator": "==",
                 "value": "event-type:virtual-info-session"
+            },
+            {
+                "param": "post_taxonomy",
+                "operator": "!=",
+                "value": "event-type:info-session"
             }
         ]
     ],
@@ -130,5 +135,5 @@
     "active": true,
     "description": "",
     "show_in_rest": 0,
-    "modified": 1724965519
+    "modified": 1751384027
 }

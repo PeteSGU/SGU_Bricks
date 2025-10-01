@@ -4,7 +4,7 @@
     "fields": [
         {
             "key": "field_66d88e450ae3e",
-            "label": "Start Month",
+            "label": "SOM Start Months",
             "name": "",
             "aria-label": "",
             "type": "tab",
@@ -62,9 +62,8 @@
             },
             "admin_column_enabled": 0,
             "choices": {
-                "January, August, or September": "January, August, or September",
-                "September, January, or August": "September, January, or August",
-                "August, September, or January": "August, September, or January"
+                "January or August": "January or August",
+                "August or January": "August or January"
             },
             "default_value": "",
             "return_format": "value",
@@ -73,6 +72,313 @@
             "allow_in_bindings": 1,
             "layout": "horizontal",
             "save_other_choice": 0
+        },
+        {
+            "key": "field_66d8812c6db87",
+            "label": "Start Month - School of Medicine",
+            "name": "start_month_som",
+            "aria-label": "",
+            "type": "radio",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "50",
+                "class": "",
+                "id": ""
+            },
+            "admin_column_enabled": 0,
+            "choices": {
+                "January 2026": "January 2026",
+                "April 2026": "April 2026",
+                "August 2025": "August 2025"
+            },
+            "default_value": "",
+            "return_format": "value",
+            "allow_null": 0,
+            "other_choice": 0,
+            "allow_in_bindings": 1,
+            "layout": "vertical",
+            "save_other_choice": 0
+        },
+        {
+            "key": "field_67b5ef0c84aa0",
+            "label": "Start Month - School of Medicine - UK",
+            "name": "start_month_som_uk",
+            "aria-label": "",
+            "type": "radio",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "50",
+                "class": "",
+                "id": ""
+            },
+            "admin_column_enabled": 0,
+            "choices": {
+                "January 2026": "January 2026",
+                "August 2025": "August 2025"
+            },
+            "default_value": "",
+            "return_format": "value",
+            "allow_null": 0,
+            "other_choice": 0,
+            "allow_in_bindings": 1,
+            "layout": "vertical",
+            "save_other_choice": 0
+        },
+        {
+            "key": "field_6862b19e65809",
+            "label": "Start Order - School of Medicine 5 Year",
+            "name": "start_order_som_5",
+            "aria-label": "",
+            "type": "radio",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "33",
+                "class": "",
+                "id": ""
+            },
+            "admin_column_enabled": 0,
+            "choices": {
+                "January, August, or September (UK)": "January, August, or September (UK)",
+                "August, September (UK), or January": "August, September (UK), or January",
+                "September (UK), January, or August": "September (UK), January, or August"
+            },
+            "default_value": "",
+            "return_format": "value",
+            "allow_null": 0,
+            "other_choice": 0,
+            "allow_in_bindings": 1,
+            "layout": "horizontal",
+            "save_other_choice": 0
+        },
+        {
+            "key": "field_6862a5e24f020",
+            "label": "Start Month - School of Medicine 5 Year",
+            "name": "start_month_som_5",
+            "aria-label": "",
+            "type": "radio",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "33",
+                "class": "",
+                "id": ""
+            },
+            "admin_column_enabled": 0,
+            "choices": {
+                "January 2026": "January 2026",
+                "August 2025": "August 2025"
+            },
+            "default_value": "",
+            "return_format": "value",
+            "allow_null": 0,
+            "other_choice": 0,
+            "allow_in_bindings": 1,
+            "layout": "vertical",
+            "save_other_choice": 0
+        },
+        {
+            "key": "field_67b5eacb24d49",
+            "label": "Start Month - School of Medicine 5 Year - UK",
+            "name": "start_month_som_uk_5",
+            "aria-label": "",
+            "type": "radio",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "33",
+                "class": "",
+                "id": ""
+            },
+            "admin_column_enabled": 0,
+            "choices": {
+                "September 2025": "September 2025"
+            },
+            "default_value": "",
+            "return_format": "value",
+            "allow_null": 0,
+            "other_choice": 0,
+            "allow_in_bindings": 1,
+            "layout": "vertical",
+            "save_other_choice": 0
+        },
+        {
+            "key": "field_6862b23d311eb",
+            "label": "Start Order - School of Medicine 6 Year",
+            "name": "start_order_som_6",
+            "aria-label": "",
+            "type": "radio",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "33",
+                "class": "",
+                "id": ""
+            },
+            "admin_column_enabled": 0,
+            "choices": {
+                "January, August, or September (UK)": "January, August, or September (UK)",
+                "August, September (UK), or January": "August, September (UK), or January",
+                "September (UK), January, or August": "September (UK), January, or August"
+            },
+            "default_value": "",
+            "return_format": "value",
+            "allow_null": 0,
+            "other_choice": 0,
+            "allow_in_bindings": 1,
+            "layout": "horizontal",
+            "save_other_choice": 0
+        },
+        {
+            "key": "field_6862a35b0d7a5",
+            "label": "Start Month - School of Medicine 6 Year",
+            "name": "start_month_som_6",
+            "aria-label": "",
+            "type": "radio",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "33",
+                "class": "",
+                "id": ""
+            },
+            "admin_column_enabled": 0,
+            "choices": {
+                "January 2026": "January 2026",
+                "August 2025": "August 2025"
+            },
+            "default_value": "",
+            "return_format": "value",
+            "allow_null": 0,
+            "other_choice": 0,
+            "allow_in_bindings": 1,
+            "layout": "vertical",
+            "save_other_choice": 0
+        },
+        {
+            "key": "field_67b5eeecd2eb8",
+            "label": "Start Month - School of Medicine 6 Year - UK",
+            "name": "start_month_som_uk_6",
+            "aria-label": "",
+            "type": "radio",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "33",
+                "class": "",
+                "id": ""
+            },
+            "admin_column_enabled": 0,
+            "choices": {
+                "September 2025": "September 2025"
+            },
+            "default_value": "",
+            "return_format": "value",
+            "allow_null": 0,
+            "other_choice": 0,
+            "allow_in_bindings": 1,
+            "layout": "vertical",
+            "save_other_choice": 0
+        },
+        {
+            "key": "field_6862b257311ec",
+            "label": "Start Order - School of Medicine 7 Year",
+            "name": "start_order_som_7",
+            "aria-label": "",
+            "type": "radio",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "33",
+                "class": "",
+                "id": ""
+            },
+            "admin_column_enabled": 0,
+            "choices": {
+                "January or August": "January or August",
+                "August or January": "August or January"
+            },
+            "default_value": "",
+            "return_format": "value",
+            "allow_null": 0,
+            "other_choice": 0,
+            "allow_in_bindings": 1,
+            "layout": "horizontal",
+            "save_other_choice": 0
+        },
+        {
+            "key": "field_6862a6444f021",
+            "label": "Start Month - School of Medicine 7 Year",
+            "name": "start_month_som_7",
+            "aria-label": "",
+            "type": "radio",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "33",
+                "class": "",
+                "id": ""
+            },
+            "admin_column_enabled": 0,
+            "choices": {
+                "January 2026": "January 2026",
+                "August 2025": "August 2025"
+            },
+            "default_value": "",
+            "return_format": "value",
+            "allow_null": 0,
+            "other_choice": 0,
+            "allow_in_bindings": 1,
+            "layout": "vertical",
+            "save_other_choice": 0
+        },
+        {
+            "key": "field_6862b17b65808",
+            "label": "Start Month - School of Medicine 7 Year - UK",
+            "name": "",
+            "aria-label": "",
+            "type": "message",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "33",
+                "class": "",
+                "id": ""
+            },
+            "message": "NA",
+            "new_lines": "wpautop",
+            "esc_html": 0
+        },
+        {
+            "key": "field_6862a6c87bf0e",
+            "label": "SVM Start Months",
+            "name": "",
+            "aria-label": "",
+            "type": "tab",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "placement": "left",
+            "endpoint": 0,
+            "selected": 0
         },
         {
             "key": "field_66d9cdf5c528c",
@@ -97,140 +403,6 @@
             "allow_null": 0,
             "other_choice": 0,
             "layout": "horizontal",
-            "save_other_choice": 0
-        },
-        {
-            "key": "field_66d8812c6db87",
-            "label": "Start Month - School of Medicine",
-            "name": "start_month_som",
-            "aria-label": "",
-            "type": "radio",
-            "instructions": "",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "50",
-                "class": "",
-                "id": ""
-            },
-            "choices": {
-                "January 2025": "January 2025",
-                "April 2025": "April 2025",
-                "August 2025": "August 2025"
-            },
-            "default_value": "",
-            "return_format": "value",
-            "allow_null": 0,
-            "other_choice": 0,
-            "layout": "vertical",
-            "save_other_choice": 0
-        },
-        {
-            "key": "field_67b5ef0c84aa0",
-            "label": "Start Month - School of Medicine UK",
-            "name": "start_month_som_uk",
-            "aria-label": "",
-            "type": "radio",
-            "instructions": "",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "50",
-                "class": "",
-                "id": ""
-            },
-            "choices": {
-                "January 2025": "January 2025",
-                "April 2025": "April 2025",
-                "September 2025": "September 2025"
-            },
-            "default_value": "",
-            "return_format": "value",
-            "allow_null": 0,
-            "other_choice": 0,
-            "allow_in_bindings": 1,
-            "layout": "vertical",
-            "save_other_choice": 0
-        },
-        {
-            "key": "field_67b5eacb24d49",
-            "label": "Start Month - School of Medicine UK 5 Year",
-            "name": "start_month_som_uk_5",
-            "aria-label": "",
-            "type": "radio",
-            "instructions": "",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "50",
-                "class": "",
-                "id": ""
-            },
-            "choices": {
-                "January 2025": "January 2025",
-                "April 2025": "April 2025",
-                "September 2025": "September 2025"
-            },
-            "default_value": "",
-            "return_format": "value",
-            "allow_null": 0,
-            "other_choice": 0,
-            "allow_in_bindings": 1,
-            "layout": "vertical",
-            "save_other_choice": 0
-        },
-        {
-            "key": "field_67b5eeecd2eb8",
-            "label": "Start Month - School of Medicine UK 6 Year",
-            "name": "start_month_som_uk_6",
-            "aria-label": "",
-            "type": "radio",
-            "instructions": "",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "50",
-                "class": "",
-                "id": ""
-            },
-            "choices": {
-                "January 2025": "January 2025",
-                "April 2025": "April 2025",
-                "September 2025": "September 2025"
-            },
-            "default_value": "",
-            "return_format": "value",
-            "allow_null": 0,
-            "other_choice": 0,
-            "allow_in_bindings": 1,
-            "layout": "vertical",
-            "save_other_choice": 0
-        },
-        {
-            "key": "field_67b5eefdd2eb9",
-            "label": "Start Month - School of Medicine UK 7 Year",
-            "name": "start_month_som_uk_7",
-            "aria-label": "",
-            "type": "radio",
-            "instructions": "",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "50",
-                "class": "",
-                "id": ""
-            },
-            "choices": {
-                "January 2025": "January 2025",
-                "April 2025": "April 2025",
-                "September 2025": "September 2025"
-            },
-            "default_value": "",
-            "return_format": "value",
-            "allow_null": 0,
-            "other_choice": 0,
-            "allow_in_bindings": 1,
-            "layout": "vertical",
             "save_other_choice": 0
         },
         {
@@ -261,6 +433,24 @@
             "save_other_choice": 0
         },
         {
+            "key": "field_6862a7077bf10",
+            "label": "SAS Start Months",
+            "name": "",
+            "aria-label": "",
+            "type": "tab",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "placement": "left",
+            "endpoint": 0,
+            "selected": 0
+        },
+        {
             "key": "field_66d882046db89",
             "label": "Start Month - School of Arts & Sciences",
             "name": "start_month_sas",
@@ -287,6 +477,24 @@
             "save_other_choice": 0
         },
         {
+            "key": "field_6862a7067bf0f",
+            "label": "SGS Start Months",
+            "name": "",
+            "aria-label": "",
+            "type": "tab",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "placement": "left",
+            "endpoint": 0,
+            "selected": 0
+        },
+        {
             "key": "field_66d8820e6db8a",
             "label": "Start Month - School of Graduate Studies",
             "name": "start_month_sgs",
@@ -311,23 +519,6 @@
             "other_choice": 0,
             "layout": "vertical",
             "save_other_choice": 0
-        },
-        {
-            "key": "field_67b5ee5b18646",
-            "label": "5-Year MD Track",
-            "name": "5-year_md_track",
-            "aria-label": "",
-            "type": "group",
-            "instructions": "",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "layout": "block",
-            "sub_fields": []
         }
     ],
     "location": [
@@ -348,5 +539,5 @@
     "active": true,
     "description": "",
     "show_in_rest": 0,
-    "modified": 1745332990
+    "modified": 1751299139
 }

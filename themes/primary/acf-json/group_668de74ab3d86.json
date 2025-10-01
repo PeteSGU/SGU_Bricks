@@ -107,7 +107,7 @@
             "label": "Email",
             "name": "faculty_staff_email",
             "aria-label": "",
-            "type": "email",
+            "type": "text",
             "instructions": "",
             "required": 0,
             "conditional_logic": 0,
@@ -116,7 +116,10 @@
                 "class": "",
                 "id": ""
             },
+            "admin_column_enabled": 0,
             "default_value": "",
+            "maxlength": "",
+            "allow_in_bindings": 0,
             "placeholder": "",
             "prepend": "",
             "append": ""
@@ -233,6 +236,6 @@
     ],
     "active": true,
     "description": "",
-    "show_in_rest": 0,
-    "modified": 1722473927
+    "show_in_rest": 1,
+    "modified": 1758736822
 }

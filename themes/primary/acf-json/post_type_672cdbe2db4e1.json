@@ -46,7 +46,7 @@
     "public": true,
     "hierarchical": false,
     "exclude_from_search": true,
-    "publicly_queryable": true,
+    "publicly_queryable": false,
     "show_ui": true,
     "show_in_menu": true,
     "admin_menu_parent": "",
@@ -74,9 +74,9 @@
     "has_archive_slug": "",
     "rewrite": {
         "permalink_rewrite": "post_type_key",
-        "with_front": "1",
+        "with_front": "0",
         "feeds": "0",
-        "pages": "1"
+        "pages": "0"
     },
     "query_var": "post_type_key",
     "query_var_name": "",
@@ -84,5 +84,5 @@
     "delete_with_user": false,
     "register_meta_box_cb": "",
     "enter_title_here": "",
-    "modified": 1732120881
+    "modified": 1748696355
 }

@@ -5,14 +5,13 @@
  * @author  WebDevStudios <contact@webdevstudios.com>
  * @since   1.0.0
  *
- * @version 2.9.0
+ * @version 2.10.2
  * @package WebDevStudios\WPSWA
  */
 
 get_header();
 
 ?>
-
 <style>
 	body { background: #eff9fe; background-size: cover;}	
 	#resultsWrap { width: 94%; max-width: 1366px; margin: 6rem auto 2rem auto; display: grid; grid-gap: 3rem; grid-template-columns: 1fr;}
@@ -44,7 +43,6 @@ get_header();
  
 	}
 </style>
-
 	<div id="ais-wrapper">
 		<main id="ais-main">
 			<div class="algolia-search-box-wrapper">
@@ -82,7 +80,7 @@ get_header();
 			// window.aa('setUserToken', 'some-user-id');
 			if ( document.getElementById("algolia-search-box") ) {
 				if ( algolia.indices.searchable_posts === undefined && document.getElementsByClassName("admin-bar").length > 0 ) {
-					alert('<?php esc_html_e( "It looks like you have not indexed the searchable posts index. Please head to the Indexing page of the Algolia Search plugin and index it.", 'wp-search-with-algolia' ); ?>');
+					alert('<?php esc_html_e( 'It looks like you have not indexed the searchable posts index. Please head to the Indexing page of the Algolia Search plugin and index it.', 'wp-search-with-algolia' ); ?>');
 				}
 
 				/* Instantiate instantsearch.js */
@@ -107,9 +105,9 @@ get_header();
 								return indexUiState;
 							}
 						}
-					}
+					},
 					// https://www.algolia.com/doc/guides/building-search-ui/events/js/
-					//insights: true,
+					//insights: algolia.insights_enabled,
 					/*
 					insights: {
 						insightsInitParams: {
@@ -148,44 +146,28 @@ get_header();
 					instantsearch.widgets.hits({
 						container: '#algolia-hits',
 						templates: {
-							empty(results, {html}) {
-								return html`No results were found for "<strong>${results.query}</strong>".`;
+							empty(results, {html} ) {
+								return html `No results were found for "<strong>${results.query}</strong>".`;
 							},
 							item(hit, { html, components }) {
 								// Debug: Log the hit object to inspect available attributes
 								console.log('Hit object:', hit);
 					
 								let thumbnail = '';
-								if (hit.images.thumbnail) {
+								if ( hit.images.thumbnail ) {
 									thumbnail = html`
 									<div class="ais-hits--thumbnail">
-										<a href="${hit.permalink}" title="${hit.post_title}" class="ais-hits--thumbnail-link">
-											<img src="${hit.images.thumbnail.url}" alt="${hit.post_title}" title="${hit.post_title}" itemprop="image" />
+										<a href="${hit.permalink}" title="${hit.post_title }" class="ais-hits--thumbnail-link">
+											<img src="${hit.images.thumbnail.url }" alt="${hit.post_title }" title="${hit.post_title }" itemprop="image" />
 										</a>
 									</div>`;
 								}
-					
-								// Helper function to strip HTML tags
-								function stripHtmlTags(str) {
-									if (!str) return '';
-									return str.replace(/<[^>]+>/g, '');
-								}
-					
+
 								let content_snippet = '';
-								// Try snippet first (preferred for highlighting)
 								if (hit._snippetResult && hit._snippetResult['post_excerpt'] && hit._snippetResult['post_excerpt'].value) {
-									const snippetValue = components.Snippet({ hit, attribute: 'post_excerpt' });
-									content_snippet = html`<span class="suggestion-post-content ais-hits--content-snippet">${stripHtmlTags(snippetValue)}</span>`;
+									content_snippet = html`<span class="suggestion-post-content ais-hits--content-snippet">${components.Snippet({hit, attribute: 'content'})}</span>`;
 								}
-								// Fallback to raw post_excerpt if snippet is unavailable
-								else if (hit.post_excerpt) {
-									content_snippet = html`<span class="suggestion-post-content ais-hits--content-snippet">${stripHtmlTags(hit.post_excerpt)}</span>`;
-								}
-								// Optional: Fallback message if no excerpt is available
-								else {
-									content_snippet = html`<span class="suggestion-post-content ais-hits--content-snippet"></span>`;
-								}
-					
+
 								return html`
 									<article itemtype="https://schema.org/Article">
 										${thumbnail}
@@ -201,7 +183,8 @@ get_header();
 						},
 						transformData: {
 							item: function (hit) {
-								function replace_highlights_recursive(item) {
+
+								function replace_highlights_recursive (item) {
 									if (item instanceof Object && item.hasOwnProperty('value')) {
 										item.value = _.escape(item.value);
 										item.value = item.value.replace(/__ais-highlight__/g, '<em>').replace(/__\/ais-highlight__/g, '</em>');
@@ -212,10 +195,10 @@ get_header();
 									}
 									return item;
 								}
-					
+
 								hit._highlightResult = replace_highlights_recursive(hit._highlightResult);
 								hit._snippetResult = replace_highlights_recursive(hit._snippetResult);
-					
+
 								return hit;
 							}
 						}
@@ -268,12 +251,12 @@ get_header();
 				if ( algolia.powered_by_enabled ) {
 					// Search powered-by widget
 					// https://www.algolia.com/doc/api-reference/widgets/powered-by/js/
-					search.addWidget(
+					search.addWidgets([
 						/* Search powered-by widget */
 						instantsearch.widgets.poweredBy({
 							container: '#algolia-powered-by'
 						}),
-					)
+					])
 				}
 
 				/* Start */
