@@ -163,18 +163,18 @@ add_filter('language_attributes', function ($output, $doctype) {
  add_filter( 'rank_math/frontend/canonical', 'sgu_fix_rank_math_pagination_canonical', 99 );
  
  
- //Redirect users to the info sessions page if their 404 URL contains the phrase /sgu-event/
- add_action( 'template_redirect', 'event404_redirect' );
-   function event404_redirect(){
-       //check for 404
-       if( is_404()){
-           global $wp_query;
-           //check that wp has figured out post_type from the request
-           //and it's the type you're looking for
-           if( isset($wp_query->query['post_type']) && $wp_query->query['post_type'] == 'recruitment-event' ){
-           
-           wp_redirect( home_url( '/information-sessions/' ) );
-           exit();
-       }
-   }
- }
+ //Redirect users to the info sessions page if the 404 is an event CPT 
+  add_action( 'template_redirect', 'event404_redirect' );
+    function event404_redirect(){
+        //check for 404
+        if( is_404()){
+            global $wp_query;
+            //check that wp has figured out post_type from the request
+            //and it's the type you're looking for
+            if( isset($wp_query->query['post_type']) && $wp_query->query['post_type'] == 'recruitment-event' ){
+            
+            wp_redirect( home_url( '/information-sessions/' ) );
+            exit();
+        }
+     }
+  }
