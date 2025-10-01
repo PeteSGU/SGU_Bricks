@@ -14,13 +14,11 @@ class Woocommerce_Theme_Styles {
 	 */
 	public function set_groups( $control_groups ) {
 		$control_groups['woocommerce-button'] = [
-			'title'  => 'WooCommerce - ' . esc_html__( 'Button', 'bricks' ),
-			'parent' => 'elements', // @since 2.0
+			'title' => 'WooCommerce - ' . esc_html__( 'Button', 'bricks' ),
 		];
 
 		$control_groups['woocommerce-notice'] = [
-			'title'  => 'WooCommerce - ' . esc_html__( 'Notice', 'bricks' ),
-			'parent' => 'elements', // @since 2.0
+			'title' => 'WooCommerce - ' . esc_html__( 'Notice', 'bricks' ),
 		];
 
 		return $control_groups;
@@ -39,8 +37,6 @@ class Woocommerce_Theme_Styles {
 			'body:not(.woocommerce) .product_type_simple',
 			// For woo quick view popup, in builder (@since 1.11.1.1)
 			'body:not(.woocommerce) .brx-popup-content:not(.woocommerce) form.cart .single_add_to_cart_button',
-			// WooCommerce mini cart buttons (outside of Woo pages) (@since 2.0.2)
-			'body:not(.woocommerce) .brxe-woocommerce-mini-cart .woocommerce-mini-cart__buttons .button',
 		];
 
 		$button_selectors = implode( ', ', $button_selectors );

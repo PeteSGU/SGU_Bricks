@@ -22,6 +22,8 @@ class Element_Icon_Box extends Element {
 			'title' => esc_html__( 'Content', 'bricks' ),
 			'tab'   => 'content',
 		];
+
+		unset( $this->control_groups['_typography'] );
 	}
 
 	public function set_controls() {
@@ -260,6 +262,8 @@ class Element_Icon_Box extends Element {
 			// 'toolbar' => true, // NOTE: Not in use
 			'default' => '<h4>Icon box heading</h4><p>.. followed by some bogus content. Aenean commodo ligula egget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.</p>',
 		];
+
+		unset( $this->controls['_typography'] );
 
 		$this->controls['contentMargin'] = [
 			'tab'   => 'style',

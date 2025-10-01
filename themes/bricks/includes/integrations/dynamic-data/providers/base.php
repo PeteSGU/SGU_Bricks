@@ -104,8 +104,16 @@ abstract class Base implements Provider_Interface {
 		}
 
 		foreach ( $args as $key => $arg ) {
-			// Handle fallback (@since 2.0)
-			if ( in_array( $key, \Bricks\Integrations\Dynamic_Data\Dynamic_Data_Parser::get_allowed_keys(), true ) ) {
+			/**
+			 * Handle fallback
+			 *
+			 * TEXT: @fallback:'Just some text'
+			 * IMAGE: @fallback-image:123 (Image ID or URL)
+			 * SANITIZE: @sanitize:false (@since 1.11.1)
+			 *
+			 * @since 1.10
+			 */
+			if ( in_array( $key, [ 'fallback', 'fallback-image', 'sanitize' ], true ) ) {
 				$filters[ $key ] = $arg;
 				continue;
 			}
@@ -598,11 +606,8 @@ abstract class Base implements Provider_Interface {
 			return $control_options;
 		}
 
-		$show_object_type = \Bricks\Database::get_setting( 'builderQueryObjectType', false ); // @since 2.0
-
 		foreach ( $this->loop_tags as $name => $tag ) {
-			$label                                  = $show_object_type ? $tag['label'] . ' (' . $name . ')' : $tag['label'];
-			$control_options['queryTypes'][ $name ] = $label;
+			$control_options['queryTypes'][ $name ] = $tag['label'];
 		}
 
 		return $control_options;

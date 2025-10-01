@@ -17,8 +17,7 @@ class Field_Acf {
 
 		self::$is_active = true;
 		// After provider tags are registered, before query-filters set active_filters_query_vars (query-filters.php)
-		// Use bricks/dynamic_data/tags_registered hook (#86c3xg01h; @since 2.0)
-		add_action( 'bricks/dynamic_data/tags_registered', [ $this, 'init' ] );
+		add_action( 'init', [ $this, 'init' ], 10002 );
 
 		add_action( 'bricks/query_filters/index_post/before', [ $this, 'maybe_register_dd_provider' ], 10 );
 		add_action( 'bricks/query_filters/index_user/before', [ $this, 'maybe_register_dd_provider' ], 10 );
@@ -173,12 +172,6 @@ class Field_Acf {
 				}
 
 				$acf_value = $value;
-				break;
-
-			case 'true_false':
-				// ACF true/false field returns 1 or 0 (@since 2.0)
-				$acf_value                            = $acf_value ? 1 : 0;
-				$acf_field['brx_label'][ $acf_value ] = $acf_value ? esc_html__( 'True', 'bricks' ) : esc_html__( 'False', 'bricks' );
 				break;
 
 			case 'relationship':

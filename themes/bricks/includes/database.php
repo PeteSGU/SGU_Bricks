@@ -5,7 +5,6 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 class Database {
 	public static $posts_per_page         = 0;
-	public static $all_templates          = []; // @since 2.0
 	public static $active_templates       = [];
 	public static $default_template_types = [
 		'header',
@@ -201,13 +200,6 @@ class Database {
 			// Start to scan through if any query element is set, main objective is get the query settings for the main archive query
 			if ( is_array( $bricks_data ) ) {
 				/**
-				 * STEP: Get component data
-				 *
-				 * @since 2.0
-				 */
-				$bricks_data = self::get_component_data( $bricks_data );
-
-				/**
 				 * STEP: Get nested template data
 				 *
 				 * Now $bricks_data contains all the data from the main template and all nested templates.
@@ -279,8 +271,7 @@ class Database {
 						self::$main_query_id = $element_id;
 
 						// Use the prepared query vars instead of raw element settings (@since 1.8)
-						// Skip merge main query 4th parameter (true) (#86c42z22c; #86c3zyd4z; @since 2.0)
-						$query_vars = Query::prepare_query_vars_from_settings( $element['settings'], $element_id, $element['name'], true );
+						$query_vars = Query::prepare_query_vars_from_settings( $element['settings'], $element_id, $element['name'] );
 
 						// Check if user set offset (@since 1.10.2)
 						$has_offset = isset( $query_vars['offset'] ) && $query_vars['offset'] > 0;
@@ -691,14 +682,7 @@ class Database {
 	}
 
 	/**
-	 * Get all templates by type
-	 * - If Object Cache is enabled, it will return the cached templates
-	 * - If Object Cache is not enabled, it will query the database for all templates
-	 * - The templates are saved in static variable self::$all_templates so subsequent calls will return the cached templates
-	 *
-	 * @return array
-	 * - Array of template IDs organized by type (header, footer, content, archive)
-	 * @since 2.0
+	 * Undocumented function
 	 */
 	public static function get_all_templates_by_type() {
 		// Last changed timestamp is set on Templates::flush_templates_cache()
@@ -708,15 +692,15 @@ class Database {
 		$output    = wp_cache_get( $cache_key, 'bricks' );
 
 		if ( $output === false ) {
-			// Maybe template_ids are already set in self::$all_templates (Non object cache)
-			if ( isset( self::$all_templates ) && is_array( self::$all_templates ) && ! empty( self::$all_templates ) ) {
-				return self::$all_templates;
-			}
-
-			// If not, get all templates from the database
 			$args = [
 				'post_type'      => BRICKS_DB_TEMPLATE_SLUG,
 				'posts_per_page' => -1,
+				'meta_query'     => [
+					[
+						'key'     => BRICKS_DB_TEMPLATE_TYPE,
+						'compare' => 'EXISTS',
+					],
+				],
 				'post_status'    => 'publish',
 				'fields'         => 'ids',
 			];
@@ -736,13 +720,7 @@ class Database {
 
 			// Organize templates by type
 			foreach ( $template_ids as $t_id ) {
-				$type = get_post_meta( $t_id, BRICKS_DB_TEMPLATE_TYPE, true );
-
-				// Skip templates without type
-				if ( ! $type ) {
-					continue;
-				}
-
+				$type              = get_post_meta( $t_id, BRICKS_DB_TEMPLATE_TYPE, true );
 				$output[ $type ][] = $t_id;
 
 				if ( ! in_array( $type, [ 'header', 'footer', 'section', 'popup' ] ) ) {
@@ -750,10 +728,6 @@ class Database {
 				}
 			}
 
-			// PHP Cache: For single request
-			self::$all_templates = $output;
-
-			// Object Cache: Set the templates cache for 1 day
 			wp_cache_set( $cache_key, $output, 'bricks', DAY_IN_SECONDS );
 		}
 
@@ -848,15 +822,6 @@ class Database {
 			if ( ! empty( $post_id ) ) {
 				// 1. Check if template was set for a specific post ID or children
 				if ( $condition['main'] === 'ids' && isset( $condition['ids'] ) ) {
-					// WPML: Translate condition IDs to current language (@since 2.0)
-					if ( \Bricks\Integrations\Wpml\Wpml::$is_active && has_filter( 'wpml_object_id' ) ) {
-						foreach ( $condition['ids'] as &$condition_post_id ) {
-							$condition_post_type = get_post_type( $condition_post_id );
-							if ( $condition_post_type ) {
-								$condition_post_id = apply_filters( 'wpml_object_id', $condition_post_id, $condition_post_type, true );
-							}
-						}
-					}
 
 					// Specific post ID
 					if ( in_array( $post_id, $condition['ids'] ) ) {
@@ -885,16 +850,11 @@ class Database {
 					foreach ( $terms as $term ) {
 						$tax_term = explode( '::', $term );
 						$taxonomy = $tax_term[0];
-						$term_id  = $tax_term[1];
-
-						// WPML: Translate term ID to current language (@since 2.0)
-						if ( \Bricks\Integrations\Wpml\Wpml::$is_active && has_filter( 'wpml_object_id' ) && is_numeric( $term_id ) ) {
-							$term_id = apply_filters( 'wpml_object_id', $term_id, $taxonomy, true );
-						}
+						$term     = $tax_term[1];
 
 						$post_terms = wp_get_post_terms( $post_id, $taxonomy, [ 'fields' => 'ids' ] );
 
-						if ( is_array( $post_terms ) && in_array( $term_id, $post_terms ) ) {
+						if ( is_array( $post_terms ) && in_array( $term, $post_terms ) ) {
 							$is_valid = ! $exclude;
 							$scores[] = 8;
 						}
@@ -960,11 +920,6 @@ class Database {
 								$preview_term     = explode( '::', $preview_term );
 								$queried_taxonomy = isset( $preview_term[0] ) ? $preview_term[0] : '';
 								$queried_term_id  = isset( $preview_term[1] ) ? intval( $preview_term[1] ) : '';
-
-								// WPML: Translate term ID to current language (@since 2.0)
-								if ( \Bricks\Integrations\Wpml\Wpml::$is_active && has_filter( 'wpml_object_id' ) && $queried_term_id ) {
-									$queried_term_id = apply_filters( 'wpml_object_id', $queried_term_id, $queried_taxonomy, true );
-								}
 							}
 						}
 
@@ -975,11 +930,6 @@ class Database {
 							if ( is_object( $queried_object ) ) {
 								$queried_term_id  = intval( $queried_object->term_id );
 								$queried_taxonomy = $queried_object->taxonomy;
-
-								// WPML: Translate term ID to current language (@since 2.0)
-								if ( \Bricks\Integrations\Wpml\Wpml::$is_active && has_filter( 'wpml_object_id' ) && $queried_term_id ) {
-									$queried_term_id = apply_filters( 'wpml_object_id', $queried_term_id, $queried_taxonomy, true );
-								}
 							}
 						}
 
@@ -989,11 +939,6 @@ class Database {
 								$term_parts = explode( '::', $archive_term );
 								$taxonomy   = $term_parts[0];
 								$term_id    = $term_parts[1];
-
-								// WPML: Translate condition term ID to current language (@since 2.0)
-								if ( \Bricks\Integrations\Wpml\Wpml::$is_active && has_filter( 'wpml_object_id' ) && is_numeric( $term_id ) && $term_id !== 'all' ) {
-									$term_id = apply_filters( 'wpml_object_id', $term_id, $taxonomy, true );
-								}
 
 								if ( $queried_taxonomy === $taxonomy ) {
 									if ( $queried_term_id === intval( $term_id ) ) {
@@ -1048,12 +993,6 @@ class Database {
 				if ( bricks_is_ajax_call() || bricks_is_rest_call() ) {
 					// Use 'page_on_front' option as is_front_page() is not reliable in AJAX calls
 					$front_page_id = get_option( 'page_on_front' );
-
-					// WPML: Translate front page ID to current language (@since 2.0)
-					if ( \Bricks\Integrations\Wpml\Wpml::$is_active && has_filter( 'wpml_object_id' ) && $front_page_id ) {
-						$front_page_id = apply_filters( 'wpml_object_id', $front_page_id, 'page', true );
-					}
-
 					$is_front_page = absint( $post_id ) == absint( $front_page_id );
 				} else {
 					$is_front_page = is_front_page();
@@ -1093,10 +1032,7 @@ class Database {
 		}
 
 		if ( $is_valid ) {
-			// Only remove duplicates if the theme styles loading method is set to the default, which is most-specific (@since 2.0)
-			if ( ! self::get_setting( 'themeStylesLoadingMethod' ) ) {
-				$scores = array_unique( $scores );
-			}
+			$scores = array_unique( $scores );
 
 			foreach ( $scores as $score ) {
 				$found[ $score ] = $object_id;
@@ -1265,34 +1201,6 @@ class Database {
 			self::$global_data['colorPalette'] = get_blog_option( get_main_site_id(), BRICKS_DB_COLOR_PALETTE, [] );
 		} else {
 			self::$global_data['colorPalette'] = get_option( BRICKS_DB_COLOR_PALETTE, [] );
-		}
-
-		// Icon sets
-		if ( is_multisite() && BRICKS_MULTISITE_USE_MAIN_SITE_ICON_SETS ) {
-			self::$global_data['iconSets'] = get_blog_option( get_main_site_id(), BRICKS_DB_ICON_SETS, [] );
-		} else {
-			self::$global_data['iconSets'] = get_option( BRICKS_DB_ICON_SETS, [] );
-		}
-
-		// Custom icons
-		if ( is_multisite() && BRICKS_MULTISITE_USE_MAIN_SITE_CUSTOM_ICONS ) {
-			self::$global_data['customIcons'] = get_blog_option( get_main_site_id(), BRICKS_DB_CUSTOM_ICONS, [] );
-		} else {
-			self::$global_data['customIcons'] = get_option( BRICKS_DB_CUSTOM_ICONS, [] );
-		}
-
-		// Disabled icon sets
-		if ( is_multisite() && BRICKS_MULTISITE_USE_MAIN_SITE_DISABLED_ICON_SETS ) {
-			self::$global_data['disabledIconSets'] = get_blog_option( get_main_site_id(), BRICKS_DB_DISABLED_ICON_SETS, [] );
-		} else {
-			self::$global_data['disabledIconSets'] = get_option( BRICKS_DB_DISABLED_ICON_SETS, [] );
-		}
-
-		// Font favorites (@since 2.0)
-		if ( is_multisite() && BRICKS_MULTISITE_USE_MAIN_SITE_FONT_FAVORITES ) {
-			self::$global_data['fontFavorites'] = get_blog_option( get_main_site_id(), BRICKS_DB_FONT_FAVORITES, [] );
-		} else {
-			self::$global_data['fontFavorites'] = get_option( BRICKS_DB_FONT_FAVORITES, [] );
 		}
 
 		// Global classes
@@ -1592,125 +1500,6 @@ class Database {
 	}
 
 	/**
-	 * Get Components data with improved performance and nested component support
-	 * Currently set to a maximum depth of 10 to prevent infinite recursion
-	 * - If the main query set inside 10 nested components then this logic will not work, practically impossible right?
-	 *
-	 * @since 2.0
-	 * @param array $bricks_data The elements data array
-	 * @return array The modified elements data with components settings and nested components included
-	 */
-	public static function get_component_data( $bricks_data = [], $max_depth = 10 ) {
-		// Early return if not an array
-		if ( ! is_array( $bricks_data ) || empty( $bricks_data ) ) {
-			return $bricks_data;
-		}
-
-		// Process all components recursively with depth tracking
-		return self::process_components_recursive( $bricks_data, [], $max_depth );
-	}
-
-	/**
-	 * Process components recursively with depth tracking
-	 *
-	 * @since 2.0
-	 * @param array  $elements Elements to process
-	 * @param array  $processed_ids IDs of already processed components to prevent circular references
-	 * @param int    $depth_remaining Remaining recursion depth
-	 * @param string $parent_component_id Parent component ID (for nested components)
-	 * @param string $parent_instance_id Parent instance ID (for nested components)
-	 * @return array Processed elements with all nested components
-	 */
-	private static function process_components_recursive( $elements, $processed_ids = [], $depth_remaining = 10, $parent_component_id = '', $parent_instance_id = '' ) {
-		// Prevent infinite recursion
-		if ( $depth_remaining <= 0 ) {
-			return $elements;
-		}
-
-		$result          = [];
-		$elements_to_add = [];
-
-		// First pass: Process all elements and identify components
-		foreach ( $elements as $element ) {
-			$component_id = $element['cid'] ?? false;
-
-			// Not a component - add to result unchanged
-			if ( ! $component_id ) {
-				$result[] = $element;
-				continue;
-			}
-
-			// Prevent circular references
-			$instance_key = $component_id . '_' . ( $element['id'] ?? '' );
-			if ( in_array( $instance_key, $processed_ids, true ) ) {
-				$result[] = $element;
-				continue;
-			}
-
-			// Mark this component as processed
-			$processed_ids[] = $instance_key;
-
-			// Get component instance
-			$component_instance = Helpers::get_component_instance( $element );
-
-			if ( ! $component_instance || empty( $component_instance['elements'] ) ) {
-				$result[] = $element;
-				continue;
-			}
-
-			$component_elements = $component_instance['elements'];
-
-			// Update the component element with settings from component instance
-			foreach ( $component_elements as $component_element ) {
-				// Set hierarchy tracking data
-				$component_element['parentComponent'] = $component_id;
-				$component_element['instanceId']      = $element['id'];
-
-				// Track root component for deeper nesting (optional)
-				if ( $parent_component_id ) {
-					$component_element['rootComponent']  = $parent_component_id;
-					$component_element['rootInstanceId'] = $parent_instance_id;
-				}
-
-				// If this is the main component element, update the original element
-				if ( $component_element['id'] === $component_id ) {
-					if ( ! empty( $component_element['settings'] ) ) {
-						$element['settings'] = $component_element['settings'];
-					}
-
-					if ( ! empty( $component_element['children'] ) ) {
-						$element['children'] = $component_element['children'];
-					}
-				}
-				// Otherwise, collect for adding later
-				else {
-					$elements_to_add[] = $component_element;
-				}
-			}
-
-			// Add the updated element to results
-			$result[] = $element;
-		}
-
-		// Second pass: Process all collected nested elements (if any)
-		if ( ! empty( $elements_to_add ) ) {
-			// Process nested components recursively with reduced depth
-			$processed_nested_elements = self::process_components_recursive(
-				$elements_to_add,
-				$processed_ids,
-				$depth_remaining - 1,
-				$parent_component_id ?: $component_id,
-				$parent_instance_id ?: ( $element['id'] ?? '' )
-			);
-
-			// Merge processed nested elements into result
-			$result = array_merge( $result, $processed_nested_elements );
-		}
-
-		return $result;
-	}
-
-	/**
 	 * Recursively retrieve nested template data
 	 *
 	 * @return array
@@ -1767,6 +1556,43 @@ class Database {
 		}
 
 		return $bricks_data;
+	}
+
+	/**
+	 * Retrieve template data from template elements
+	 *
+	 * @since 1.9.1
+	 */
+	public static function get_template_elements_data( $elements = [] ) {
+		// If no elements provided, return an empty array
+		if ( empty( $elements ) ) {
+			return [];
+		}
+
+		// Initialize the array to store nested template data
+		$nested_template_data = [];
+
+		// Process each element to retrieve nested templates
+		foreach ( $elements as $element ) {
+			$template_id = isset( $element['settings']['template'] ) ? $element['settings']['template'] : false;
+
+			// If no template ID found, skip to the next element
+			if ( ! $template_id ) {
+				continue;
+			}
+
+			// Retrieve the template data using the template ID
+			$template_data = self::get_data( $template_id );
+
+			// If template data found, merge it into the $nested_template_data
+			if ( ! empty( $template_data ) && is_array( $template_data ) ) {
+				$nested_template_data = array_replace_recursive( $nested_template_data, $template_data );
+				// Store the template data in the page data
+				self::$page_data['template_data'][ $template_id ] = $template_data;
+			}
+		}
+
+		return $nested_template_data;
 	}
 
 	/**

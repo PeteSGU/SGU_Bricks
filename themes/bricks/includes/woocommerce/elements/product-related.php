@@ -198,8 +198,8 @@ class Product_Related extends Element {
 		}
 
 		$args = [
-			'posts_per_page' => ! empty( $settings['count'] ) ? intval( $settings['count'] ) : 4,
-			'columns'        => ! empty( $settings['columns'] ) ? intval( $settings['columns'] ) : 4,
+			'posts_per_page' => ! empty( $settings['count'] ) ? $settings['count'] : 4,
+			'columns'        => ! empty( $settings['columns'] ) ? $settings['columns'] : 4,
 			'orderby'        => ! empty( $settings['orderby'] ) ? $settings['orderby'] : 'rand',
 			'order'          => ! empty( $settings['order'] ) ? $settings['order'] : 'DESC',
 		];

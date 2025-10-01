@@ -103,6 +103,16 @@ class Element_Nav_Nested extends Element {
 				'space',
 			],
 			'inline'      => true,
+			// 'css'         => [
+			// [
+			// 'property' => 'justify-content',
+			// 'selector' => '&.brx-open .brx-nav-nested-items > *',
+			// ],
+			// [
+			// 'property' => 'justify-content',
+			// 'selector' => '&.brx-open .brx-submenu-toggle',
+			// ],
+			// ],
 		];
 
 		$this->controls['itemPadding'] = [
@@ -113,21 +123,6 @@ class Element_Nav_Nested extends Element {
 				[
 					'property' => 'padding',
 					'selector' => '.brx-nav-nested-items > li > a',
-				],
-				// @since 2.0: Target text link only (without the link)
-				[
-					'property' => 'padding',
-					'selector' => '.brx-nav-nested-items > li > .brxe-text-link:not(a)',
-				],
-				// @since 2.0: Target icon only (without the link wrapper)
-				[
-					'property' => 'padding',
-					'selector' => '.brx-nav-nested-items > li > .brxe-icon',
-				],
-				// @since 2.0: Target svg only (without the link wrapper)
-				[
-					'property' => 'padding',
-					'selector' => '.brx-nav-nested-items > li{pseudo}:has( > .brxe-svg)',
 				],
 				[
 					'property' => 'padding',
@@ -150,21 +145,6 @@ class Element_Nav_Nested extends Element {
 					'property' => 'background-color',
 					'selector' => '.brx-nav-nested-items > li{pseudo} > a',
 				],
-				// @since 2.0: Target text link only (without the link)
-				[
-					'property' => 'background-color',
-					'selector' => '.brx-nav-nested-items > li{pseudo} > .brxe-text-link:not(a)',
-				],
-				// @since 2.0: Target icon only (without the link wrapper)
-				[
-					'property' => 'background-color',
-					'selector' => '.brx-nav-nested-items > li{pseudo} > .brxe-icon',
-				],
-				// @since 2.0: Target svg only (without the link wrapper)
-				[
-					'property' => 'background-color',
-					'selector' => '.brx-nav-nested-items > li{pseudo}:has( > .brxe-svg)',
-				],
 				[
 					'property' => 'background-color',
 					'selector' => '.brx-nav-nested-items > li{pseudo} > .brx-submenu-toggle',
@@ -180,21 +160,6 @@ class Element_Nav_Nested extends Element {
 				[
 					'property' => 'border',
 					'selector' => '.brx-nav-nested-items > li{pseudo} > a',
-				],
-				// @since 2.0: Target text link only (without the link)
-				[
-					'property' => 'border',
-					'selector' => '.brx-nav-nested-items > li{pseudo} > .brxe-text-link:not(a)',
-				],
-				// @since 2.0: Target icon only (without the link wrapper)
-				[
-					'property' => 'border',
-					'selector' => '.brx-nav-nested-items > li{pseudo} > .brxe-icon',
-				],
-				// @since 2.0: Target svg only (without the link wrapper)
-				[
-					'property' => 'border',
-					'selector' => '.brx-nav-nested-items > li{pseudo}:has( > .brxe-svg)',
 				],
 				[
 					'property' => 'border',
@@ -212,21 +177,6 @@ class Element_Nav_Nested extends Element {
 					'property' => 'font',
 					'selector' => '.brx-nav-nested-items > li{pseudo} > a',
 				],
-				// @since 2.0: Target text link only (without the link)
-				[
-					'property' => 'font',
-					'selector' => '.brx-nav-nested-items > li{pseudo} > .brxe-text-link:not(a)',
-				],
-				// @since 2.0: Target icon only (without the link wrapper)
-				[
-					'property' => 'font',
-					'selector' => '.brx-nav-nested-items > li{pseudo} > .brxe-icon',
-				],
-				// @since 2.0: Target svg only (without the link wrapper)
-				[
-					'property' => 'font',
-					'selector' => '.brx-nav-nested-items > li{pseudo}:has( > .brxe-svg)',
-				],
 				[
 					'property' => 'font',
 					'selector' => '.brx-nav-nested-items > li{pseudo} > .brx-submenu-toggle > *',
@@ -242,21 +192,6 @@ class Element_Nav_Nested extends Element {
 				[
 					'property' => 'transform',
 					'selector' => '.brx-nav-nested-items > li{pseudo} > a',
-				],
-				// @since 2.0: Target text link only (without the link)
-				[
-					'property' => 'transform',
-					'selector' => '.brx-nav-nested-items > li{pseudo} > .brxe-text-link:not(a)',
-				],
-				// @since 2.0: Target icon only (without the link wrapper)
-				[
-					'property' => 'transform',
-					'selector' => '.brx-nav-nested-items > li{pseudo} > .brxe-icon',
-				],
-				// @since 2.0: Target svg only (without the link wrapper)
-				[
-					'property' => 'transform',
-					'selector' => '.brx-nav-nested-items > li{pseudo}:has( > .brxe-svg)',
 				],
 				[
 					'property' => 'transform',
@@ -279,21 +214,6 @@ class Element_Nav_Nested extends Element {
 				[
 					'property' => 'transition',
 					'selector' => '.brx-nav-nested-items > li{pseudo} > a',
-				],
-				// @since 2.0: Target text link only (without the link)
-				[
-					'property' => 'transition',
-					'selector' => '.brx-nav-nested-items > li{pseudo} > .brxe-text-link:not(a)',
-				],
-				// @since 2.0: Target icon only (without the link wrapper)
-				[
-					'property' => 'transition',
-					'selector' => '.brx-nav-nested-items > li{pseudo} > .brxe-icon',
-				],
-				// @since 2.0: Target svg only (without the link wrapper)
-				[
-					'property' => 'transition',
-					'selector' => '.brx-nav-nested-items > li{pseudo}:has( > .brxe-svg)',
 				],
 				[
 					'property' => 'transition',
@@ -362,670 +282,582 @@ class Element_Nav_Nested extends Element {
 			],
 		];
 
-		// DROPDOWN - TOP LEVEL (@since 2.0)
-		$this->controls['topItemDropdownSep'] = [
-			'group'       => 'item',
+		// DROPDOWN
+
+		// DROPDOWN - ICON
+
+		$this->controls['iconSep'] = [
+			'group'       => 'dropdown',
 			'type'        => 'separator',
-			'label'       => esc_html__( 'Dropdown', 'bricks' ),
-			'description' => esc_html__( 'Only applies to top level dropdown elements.', 'bricks' ),
-
+			'label'       => esc_html__( 'Icon', 'bricks' ),
+			'description' => esc_html__( 'Edit dropdown to set icon individually.', 'bricks' ),
 		];
 
-		// @since 2.0
-		$this->controls['topLevelDropdownTextPadding'] = [
-			'group' => 'item',
-			'label' => esc_html__( 'Text padding', 'bricks' ),
-			'type'  => 'spacing',
-			'css'   => [
-				[
-					'property' => 'padding',
-					'selector' => '.brx-nav-nested-items > li > .brx-submenu-toggle > span',
-				],
-			],
-		];
-
-		// @since 2.0
-		$this->controls['topLevelDropdownIconPadding'] = [
-			'group' => 'item',
+		$this->controls['iconPadding'] = [
+			'group' => 'dropdown',
 			'label' => esc_html__( 'Icon padding', 'bricks' ),
 			'type'  => 'spacing',
 			'css'   => [
+				// Apply to top level (@since 1.8.4)
 				[
 					'property' => 'padding',
 					'selector' => '.brx-nav-nested-items > li > .brx-submenu-toggle button',
 				],
+				[
+					'property' => 'padding',
+					'selector' => '.brx-submenu-toggle button',
+				],
 			],
 		];
 
-			// @since 2.0
-			$this->controls['topLevelGap'] = [
-				'group' => 'item',
-				'label' => esc_html__( 'Gap', 'bricks' ),
-				'type'  => 'number',
-				'units' => true,
-				'large' => true,
-				'css'   => [
-					[
-						'property' => 'gap',
-						'selector' => '.brx-nav-nested-items > li > .brx-submenu-toggle',
-					],
+		$this->controls['iconGap'] = [
+			'group' => 'dropdown',
+			'label' => esc_html__( 'Gap', 'bricks' ),
+			'type'  => 'number',
+			'units' => true,
+			'css'   => [
+				[
+					'property' => 'gap',
+					'selector' => '.brx-submenu-toggle',
 				],
-			];
+			],
+		];
 
-			// DROPDOWN
-
-			// DROPDOWN - TEXT (@since 2.0)
-			$this->controls['dropdownTextSep'] = [
-				'group'       => 'dropdown',
-				'type'        => 'separator',
-				'label'       => esc_html__( 'Text', 'bricks' ),
-				'description' => esc_html__( 'Control dropdown element text.', 'bricks' ),
-
-			];
-
-			// @since 2.0
-			$this->controls['dropdownTextPadding'] = [
-				'group' => 'dropdown',
-				'label' => esc_html__( 'Text padding', 'bricks' ),
-				'type'  => 'spacing',
-				'css'   => [
-					// Apply to all dropdowns (@since 2.0)
-					[
-						'property' => 'padding',
-						'selector' => '.brx-submenu-toggle span',
-					],
+		$this->controls['iconPosition'] = [
+			'group'       => 'dropdown',
+			'label'       => esc_html__( 'Icon position', 'bricks' ),
+			'type'        => 'select',
+			'options'     => $this->control_options['iconPosition'],
+			'inline'      => true,
+			'placeholder' => esc_html__( 'Right', 'bricks' ),
+			'css'         => [
+				[
+					'selector' => '.brx-submenu-toggle',
+					'property' => 'flex-direction',
+					'value'    => 'row-reverse',
+					'required' => 'left',
 				],
-			];
+			],
+		];
 
-			// DROPDOWN - ICON
-
-			$this->controls['iconSep'] = [
-				'group'       => 'dropdown',
-				'type'        => 'separator',
-				'label'       => esc_html__( 'Icon', 'bricks' ),
-				'description' => esc_html__( 'Edit dropdown to set icon individually.', 'bricks' ),
-			];
-
-			$this->controls['iconPadding'] = [
-				'group' => 'dropdown',
-				'label' => esc_html__( 'Icon padding', 'bricks' ),
-				'type'  => 'spacing',
-				'css'   => [
-					// Apply to top level (@since 1.8.4)
-					// We don't need to explicitly target the top level dropdown icon (we can override it above) (@since 2.0)
-					// [
-					// 'property' => 'padding',
-					// 'selector' => '.brx-nav-nested-items > li > .brx-submenu-toggle button',
-					// ],
-					[
-						'property' => 'padding',
-						'selector' => '.brx-submenu-toggle button',
-					],
+		$this->controls['iconSize'] = [
+			'group' => 'dropdown',
+			'label' => esc_html__( 'Icon size', 'bricks' ),
+			'type'  => 'number',
+			'units' => true,
+			'css'   => [
+				[
+					'property' => 'font-size',
+					'selector' => '.brx-submenu-toggle button',
 				],
-			];
+			],
+		];
 
-			$this->controls['iconGap'] = [
-				'group' => 'dropdown',
-				'label' => esc_html__( 'Gap', 'bricks' ),
-				'type'  => 'number',
-				'units' => true,
-				'css'   => [
-					[
-						'property' => 'gap',
-						'selector' => '.brx-submenu-toggle',
-					],
+		$this->controls['iconColor'] = [
+			'group' => 'dropdown',
+			'label' => esc_html__( 'Icon color', 'bricks' ),
+			'type'  => 'color',
+			'css'   => [
+				[
+					'property' => 'color',
+					'selector' => '.brx-submenu-toggle button',
 				],
-			];
+			],
+		];
 
-			$this->controls['iconPosition'] = [
-				'group'       => 'dropdown',
-				'label'       => esc_html__( 'Icon position', 'bricks' ),
-				'type'        => 'select',
-				'options'     => $this->control_options['iconPosition'],
-				'inline'      => true,
-				'placeholder' => esc_html__( 'Right', 'bricks' ),
-				'css'         => [
-					[
-						'selector' => '.brx-submenu-toggle',
-						'property' => 'flex-direction',
-						'value'    => 'row-reverse',
-						'required' => 'left',
-					],
+		$this->controls['iconTransform'] = [
+			'group'  => 'dropdown',
+			'type'   => 'transform',
+			'label'  => esc_html__( 'Icon transform', 'bricks' ),
+			'inline' => true,
+			'small'  => true,
+			'css'    => [
+				[
+					'property' => 'transform',
+					'selector' => '.brx-submenu-toggle button',
 				],
-			];
+			],
+		];
 
-			$this->controls['iconSize'] = [
-				'group' => 'dropdown',
-				'label' => esc_html__( 'Icon size', 'bricks' ),
-				'type'  => 'number',
-				'units' => true,
-				'css'   => [
-					[
-						'property' => 'font-size',
-						'selector' => '.brx-submenu-toggle button',
-					],
+		$this->controls['iconTransformOpen'] = [
+			'group'  => 'dropdown',
+			'type'   => 'transform',
+			'label'  => esc_html__( 'Icon transform', 'bricks' ) . ' (' . esc_html__( 'Open', 'bricks' ) . ')',
+			'inline' => true,
+			'small'  => true,
+			'css'    => [
+				[
+					'property' => 'transform',
+					'selector' => '.brx-submenu-toggle button[aria-expanded="true"]',
 				],
-			];
+			],
+		];
 
-			$this->controls['iconColor'] = [
-				'group' => 'dropdown',
-				'label' => esc_html__( 'Icon color', 'bricks' ),
-				'type'  => 'color',
-				'css'   => [
-					[
-						'property' => 'color',
-						'selector' => '.brx-submenu-toggle button',
-					],
+		$this->controls['iconTransition'] = [
+			'group'          => 'dropdown',
+			'label'          => esc_html__( 'Icon transition', 'bricks' ),
+			'type'           => 'text',
+			'hasDynamicData' => false,
+			'inline'         => true,
+			'css'            => [
+				[
+					'property'  => 'transition',
+					'selector'  => '.brx-submenu-toggle button[aria-expanded]',
+					'important' => true, // To precede sticker header transition template setting (@since 1.11.1)
 				],
-			];
+			],
+		];
 
-			$this->controls['iconTransform'] = [
-				'group'  => 'dropdown',
-				'type'   => 'transform',
-				'label'  => esc_html__( 'Icon transform', 'bricks' ),
-				'inline' => true,
-				'small'  => true,
-				'css'    => [
-					[
-						'property' => 'transform',
-						'selector' => '.brx-submenu-toggle button > *', // Target icon only (@since 2.0)
-					],
+		// DROPDOWN - CONTENT
+
+		$this->controls['dropdownContentSep'] = [
+			'group'       => 'dropdown',
+			'type'        => 'separator',
+			'label'       => esc_html__( 'Content', 'bricks' ),
+			'description' => esc_html__( 'Sub menu, mega menu, or multilevel area.', 'bricks' ),
+		];
+
+		$this->controls['dropdownContentWidth'] = [
+			'group'    => 'dropdown',
+			'label'    => esc_html__( 'Min. width', 'bricks' ),
+			'type'     => 'number',
+			'units'    => true,
+			'css'      => [
+				[
+					'property' => 'min-width',
+					'selector' => '.brx-dropdown-content',
 				],
-			];
+			],
+			'rerender' => true,
+		];
 
-			$this->controls['iconTransformOpen'] = [
-				'group'  => 'dropdown',
-				'type'   => 'transform',
-				'label'  => esc_html__( 'Icon transform', 'bricks' ) . ' (' . esc_html__( 'Open', 'bricks' ) . ')',
-				'inline' => true,
-				'small'  => true,
-				'css'    => [
-					[
-						'property' => 'transform',
-						'selector' => '.brx-submenu-toggle button[aria-expanded="true"] > *',  // Target icon only (@since 2.0)
-					],
+		$this->controls['dropdownBackgroundColor'] = [
+			'group' => 'dropdown',
+			'label' => esc_html__( 'Background color', 'bricks' ),
+			'type'  => 'color',
+			'css'   => [
+				[
+					'property' => 'background-color',
+					'selector' => '.brx-dropdown-content',
 				],
-			];
+			],
+		];
 
-			$this->controls['iconTransition'] = [
-				'group'          => 'dropdown',
-				'label'          => esc_html__( 'Icon transition', 'bricks' ),
-				'type'           => 'text',
-				'hasDynamicData' => false,
-				'inline'         => true,
-				'css'            => [
-					[
-						'property'  => 'transition',
-						'selector'  => '.brx-submenu-toggle button[aria-expanded] > *',  // Target icon only (@since 2.0)
-						'important' => true, // To precede sticker header transition template setting (@since 1.11.1)
-					],
+		$this->controls['dropdownBorder'] = [
+			'group' => 'dropdown',
+			'label' => esc_html__( 'Border', 'bricks' ),
+			'type'  => 'border',
+			'css'   => [
+				[
+					'property' => 'border',
+					'selector' => '.brx-dropdown-content',
 				],
-			];
+			],
+		];
 
-			// DROPDOWN - CONTENT
-
-			$this->controls['dropdownContentSep'] = [
-				'group'       => 'dropdown',
-				'type'        => 'separator',
-				'label'       => esc_html__( 'Content', 'bricks' ),
-				'description' => esc_html__( 'Sub menu, mega menu, or multilevel area.', 'bricks' ),
-			];
-
-			$this->controls['dropdownContentWidth'] = [
-				'group'    => 'dropdown',
-				'label'    => esc_html__( 'Min. width', 'bricks' ),
-				'type'     => 'number',
-				'units'    => true,
-				'css'      => [
-					[
-						'property' => 'min-width',
-						'selector' => '.brx-dropdown-content',
-					],
+		$this->controls['dropdownBoxShadow'] = [
+			'group' => 'dropdown',
+			'label' => esc_html__( 'Box shadow', 'bricks' ),
+			'type'  => 'box-shadow',
+			'css'   => [
+				[
+					'property' => 'box-shadow',
+					'selector' => '.brx-dropdown-content',
 				],
-				'rerender' => true,
-			];
+			],
+		];
 
-			$this->controls['dropdownBackgroundColor'] = [
-				'group' => 'dropdown',
-				'label' => esc_html__( 'Background color', 'bricks' ),
-				'type'  => 'color',
-				'css'   => [
-					[
-						'property' => 'background-color',
-						'selector' => '.brx-dropdown-content',
-					],
+		$this->controls['dropdownTypography'] = [
+			'group' => 'dropdown',
+			'label' => esc_html__( 'Typography', 'bricks' ),
+			'type'  => 'typography',
+			'css'   => [
+				[
+					'property' => 'font',
+					'selector' => '.brx-dropdown-content',
 				],
-			];
+			],
+		];
 
-			$this->controls['dropdownBorder'] = [
-				'group' => 'dropdown',
-				'label' => esc_html__( 'Border', 'bricks' ),
-				'type'  => 'border',
-				'css'   => [
-					[
-						'property' => 'border',
-						'selector' => '.brx-dropdown-content',
-					],
+		$this->controls['dropdownTransform'] = [
+			'group'  => 'dropdown',
+			'type'   => 'transform',
+			'label'  => esc_html__( 'Transform', 'bricks' ),
+			'inline' => true,
+			'small'  => true,
+			'css'    => [
+				[
+					'property' => 'transform',
+					'selector' => '.brx-nav-nested-items > .brxe-dropdown > .brx-dropdown-content',
 				],
-			];
+			],
+		];
 
-			$this->controls['dropdownBoxShadow'] = [
-				'group' => 'dropdown',
-				'label' => esc_html__( 'Box shadow', 'bricks' ),
-				'type'  => 'box-shadow',
-				'css'   => [
-					[
-						'property' => 'box-shadow',
-						'selector' => '.brx-dropdown-content',
-					],
+		$this->controls['dropdownTransformOpen'] = [
+			'group'  => 'dropdown',
+			'type'   => 'transform',
+			'label'  => esc_html__( 'Transform', 'bricks' ) . ' (' . esc_html__( 'Open', 'bricks' ) . ')',
+			'inline' => true,
+			'small'  => true,
+			'css'    => [
+				[
+					'property' => 'transform',
+					'selector' => '.brx-nav-nested-items > .brxe-dropdown.open > .brx-dropdown-content',
 				],
-			];
+			],
+		];
 
-			$this->controls['dropdownTypography'] = [
-				'group' => 'dropdown',
-				'label' => esc_html__( 'Typography', 'bricks' ),
-				'type'  => 'typography',
-				'css'   => [
-					[
-						'property' => 'font',
-						'selector' => '.brx-dropdown-content',
-					],
+		$this->controls['dropdownTransition'] = [
+			'group'          => 'dropdown',
+			'label'          => esc_html__( 'Transition', 'bricks' ),
+			'type'           => 'text',
+			'hasDynamicData' => false,
+			'inline'         => true,
+			'css'            => [
+				[
+					'property' => 'transition',
+					'selector' => '.brx-dropdown-content',
 				],
-			];
+			],
+		];
 
-			$this->controls['dropdownTransform'] = [
-				'group'  => 'dropdown',
-				'type'   => 'transform',
-				'label'  => esc_html__( 'Transform', 'bricks' ),
-				'inline' => true,
-				'small'  => true,
-				'css'    => [
-					[
-						'property' => 'transform',
-						'selector' => '.brx-nav-nested-items > .brxe-dropdown > .brx-dropdown-content',
-					],
+		$this->controls['dropdownZindex'] = [
+			'group'       => 'dropdown',
+			'label'       => esc_html__( 'Z-index', 'bricks' ),
+			'type'        => 'number',
+			'css'         => [
+				[
+					'property' => 'z-index',
+					'selector' => '.brxe-dropdown',
 				],
-			];
+			],
+			'placeholder' => 1001,
+		];
 
-			$this->controls['dropdownTransformOpen'] = [
-				'group'  => 'dropdown',
-				'type'   => 'transform',
-				'label'  => esc_html__( 'Transform', 'bricks' ) . ' (' . esc_html__( 'Open', 'bricks' ) . ')',
-				'inline' => true,
-				'small'  => true,
-				'css'    => [
-					[
-						'property' => 'transform',
-						'selector' => '.brx-nav-nested-items > .brxe-dropdown.open > .brx-dropdown-content',
-					],
+		// DROPDOWN - ITEM
+
+		$this->controls['dropdownItemSep'] = [
+			'group' => 'dropdown',
+			'label' => esc_html__( 'Item', 'bricks' ),
+			'type'  => 'separator',
+		];
+
+		$this->controls['dropdownPadding'] = [
+			'group' => 'dropdown',
+			'label' => esc_html__( 'Padding', 'bricks' ),
+			'type'  => 'spacing',
+			'css'   => [
+				[
+					'property' => 'padding',
+					'selector' => '.brx-dropdown-content > li > a',
 				],
-			];
-
-			$this->controls['dropdownTransition'] = [
-				'group'          => 'dropdown',
-				'label'          => esc_html__( 'Transition', 'bricks' ),
-				'type'           => 'text',
-				'hasDynamicData' => false,
-				'inline'         => true,
-				'css'            => [
-					[
-						'property' => 'transition',
-						'selector' => '.brx-dropdown-content',
-					],
+				[
+					'property' => 'padding',
+					'selector' => '.brx-dropdown-content .brx-submenu-toggle > *',
 				],
-			];
+			],
+		];
 
-			$this->controls['dropdownZindex'] = [
-				'group'       => 'dropdown',
-				'label'       => esc_html__( 'Z-index', 'bricks' ),
-				'type'        => 'number',
-				'css'         => [
-					[
-						'property' => 'z-index',
-						'selector' => '.brxe-dropdown',
-					],
+		$this->controls['dropdownItemBackground'] = [
+			'group' => 'dropdown',
+			'label' => esc_html__( 'Background', 'bricks' ),
+			'type'  => 'color',
+			'css'   => [
+				[
+					'property' => 'background-color',
+					'selector' => '.brx-dropdown-content > li',
 				],
-				'placeholder' => 1001,
-			];
-
-			// DROPDOWN - ITEM
-
-			$this->controls['dropdownItemSep'] = [
-				'group' => 'dropdown',
-				'label' => esc_html__( 'Item', 'bricks' ),
-				'type'  => 'separator',
-			];
-
-			$this->controls['dropdownPadding'] = [
-				'group' => 'dropdown',
-				'label' => esc_html__( 'Padding', 'bricks' ),
-				'type'  => 'spacing',
-				'css'   => [
-					[
-						'property' => 'padding',
-						'selector' => '.brx-dropdown-content > li > a',
-					],
-					[
-						'property' => 'padding',
-						'selector' => '.brx-dropdown-content :where(.brx-submenu-toggle > *)', // Added :where, so we can override it with selectors above (@since 2.0)
-					],
+				[
+					'property' => 'background-color',
+					'selector' => '.brx-dropdown-content .brx-submenu-toggle',
 				],
-			];
+			],
+		];
 
-			$this->controls['dropdownItemBackground'] = [
-				'group' => 'dropdown',
-				'label' => esc_html__( 'Background', 'bricks' ),
-				'type'  => 'color',
-				'css'   => [
-					[
-						'property' => 'background-color',
-						'selector' => '.brx-dropdown-content > li',
-					],
-					[
-						'property' => 'background-color',
-						'selector' => '.brx-dropdown-content .brx-submenu-toggle',
-					],
+		$this->controls['dropdownItemBorder'] = [
+			'group' => 'dropdown',
+			'label' => esc_html__( 'Border', 'bricks' ),
+			'type'  => 'border',
+			'css'   => [
+				[
+					'property' => 'border',
+					'selector' => '.brx-dropdown-content > li:not(.brxe-dropdown)',
 				],
-			];
-
-			$this->controls['dropdownItemBorder'] = [
-				'group' => 'dropdown',
-				'label' => esc_html__( 'Border', 'bricks' ),
-				'type'  => 'border',
-				'css'   => [
-					[
-						'property' => 'border',
-						'selector' => '.brx-dropdown-content > li:not(.brxe-dropdown)',
-					],
-					[
-						'property' => 'border',
-						'selector' => '.brx-dropdown-content .brx-submenu-toggle',
-					],
+				[
+					'property' => 'border',
+					'selector' => '.brx-dropdown-content .brx-submenu-toggle',
 				],
-			];
+			],
+		];
 
-			$this->controls['dropdownItemTypography'] = [
-				'group' => 'dropdown',
-				'label' => esc_html__( 'Typography', 'bricks' ),
-				'type'  => 'typography',
-				'css'   => [
-					[
-						'property' => 'font',
-						'selector' => '.brx-dropdown-content > li > a',
-					],
-					[
-						'property' => 'font',
-						'selector' => '.brx-dropdown-content .brx-submenu-toggle > *',
-					],
+		$this->controls['dropdownItemTypography'] = [
+			'group' => 'dropdown',
+			'label' => esc_html__( 'Typography', 'bricks' ),
+			'type'  => 'typography',
+			'css'   => [
+				[
+					'property' => 'font',
+					'selector' => '.brx-dropdown-content > li > a',
 				],
-			];
-
-			$this->controls['dropdownItemTransition'] = [
-				'group'          => 'dropdown',
-				'label'          => esc_html__( 'Transition', 'bricks' ),
-				'type'           => 'text',
-				'hasDynamicData' => false,
-				'inline'         => true,
-				'css'            => [
-					[
-						'property' => 'transition',
-						'selector' => '.brx-dropdown-content > li',
-					],
-					[
-						'property' => 'transition',
-						'selector' => '.brx-dropdown-content > li > a',
-					],
-					[
-						'property' => 'transition',
-						'selector' => '.brx-dropdown-content .brx-submenu-toggle',
-					],
-					[
-						'property' => 'transition',
-						'selector' => '&.brx-has-megamenu .brx-dropdown-content > *',
-					],
+				[
+					'property' => 'font',
+					'selector' => '.brx-dropdown-content .brx-submenu-toggle > *',
 				],
-			];
+			],
+		];
 
-			// DROPDOWN: MULTILEVEL
-
-			$this->controls['multiLevelSep'] = [
-				'group'       => 'dropdown',
-				'label'       => esc_html__( 'Multilevel', 'bricks' ),
-				'type'        => 'separator',
-				'description' => esc_html__( 'Show only active dropdown. Toggle on click. Inner dropdowns inherit multilevel.', 'bricks' ),
-			];
-
-			$this->controls['multiLevel'] = [
-				'group' => 'dropdown',
-				'label' => esc_html__( 'Enable', 'bricks' ),
-				'type'  => 'checkbox',
-			];
-
-			$this->controls['multiLevelBackText'] = [
-				'group'    => 'dropdown',
-				'label'    => esc_html__( 'Back', 'bricks' ) . ': ' . esc_html__( 'Text', 'bricks' ),
-				'type'     => 'text',
-				'inline'   => true,
-				'required' => [ 'multiLevel', '=', true ],
-			];
-
-			$this->controls['multiLevelBackTypography'] = [
-				'group'    => 'dropdown',
-				'label'    => esc_html__( 'Back', 'bricks' ) . ': ' . esc_html__( 'Typography', 'bricks' ),
-				'type'     => 'typography',
-				'inline'   => true,
-				'required' => [ 'multiLevel', '=', true ],
-				'css'      => [
-					[
-						'property' => 'font',
-						'selector' => '.brx-multilevel-back',
-					],
+		$this->controls['dropdownItemTransition'] = [
+			'group'          => 'dropdown',
+			'label'          => esc_html__( 'Transition', 'bricks' ),
+			'type'           => 'text',
+			'hasDynamicData' => false,
+			'inline'         => true,
+			'css'            => [
+				[
+					'property' => 'transition',
+					'selector' => '.brx-dropdown-content > li',
 				],
-			];
-
-			$this->controls['multiLevelBackBackground'] = [
-				'group'    => 'dropdown',
-				'label'    => esc_html__( 'Back', 'bricks' ) . ': ' . esc_html__( 'Background', 'bricks' ),
-				'type'     => 'color',
-				'inline'   => true,
-				'required' => [ 'multiLevel', '=', true ],
-				'css'      => [
-					[
-						'property' => 'background-color',
-						'selector' => '.brx-multilevel-back',
-					],
+				[
+					'property' => 'transition',
+					'selector' => '.brx-dropdown-content > li > a',
 				],
-			];
-
-			// MOBILE MENU
-
-			$this->controls['mobileMenuSep'] = [
-				'group'       => 'mobile-menu',
-				'type'        => 'separator',
-				'description' => esc_html__( 'Insert "Toggle" element after "Nav items" to show/hide your mobile menu.', 'bricks' ),
-			];
-
-			/**
-			 * NOTE: Undocumented '_addedClasses' controlKey
-			 *
-			 * Stored in builder state only. Not saved as setting.
-			 *
-			 * Processed in ControlCheckbox.vue to add additional 'class' in builder while editing.
-			 *
-			 * @since 1.8
-			 */
-			$this->controls['_addedClasses'] = [
-				'group' => 'mobile-menu',
-				'label' => esc_html__( 'Keep open while styling', 'bricks' ),
-				'type'  => 'checkbox',
-				'class' => 'brx-open',
-			];
-
-			// Show mobile menu toggle on breakpoint
-			$breakpoints        = Breakpoints::$breakpoints;
-			$breakpoint_options = [];
-
-			foreach ( $breakpoints as $index => $breakpoint ) {
-				$breakpoint_options[ $breakpoint['key'] ] = $breakpoint['label'];
-			}
-
-			$breakpoint_options['always'] = esc_html__( 'Always', 'bricks' );
-			$breakpoint_options['never']  = esc_html__( 'Never', 'bricks' );
-
-			$this->controls['mobileMenu'] = [
-				'group'       => 'mobile-menu',
-				'label'       => Breakpoints::$is_mobile_first ? esc_html__( 'Hide at breakpoint', 'bricks' ) : esc_html__( 'Show at breakpoint', 'bricks' ),
-				'type'        => 'select',
-				'options'     => $breakpoint_options,
-				'rerender'    => true,
-				'placeholder' => esc_html__( 'Mobile landscape', 'bricks' ),
-			];
-
-			$this->controls['mobileMenuWidth'] = [
-				'group' => 'mobile-menu',
-				'label' => esc_html__( 'Width', 'bricks' ),
-				'type'  => 'number',
-				'units' => true,
-				'css'   => [
-					[
-						'property' => 'width',
-						'selector' => '&.brx-open .brx-nav-nested-items',
-					],
+				[
+					'property' => 'transition',
+					'selector' => '.brx-dropdown-content .brx-submenu-toggle',
 				],
-			];
-
-			$this->controls['mobileMenuHeight'] = [
-				'group' => 'mobile-menu',
-				'label' => esc_html__( 'Height', 'bricks' ),
-				'type'  => 'number',
-				'units' => true,
-				'css'   => [
-					[
-						'property' => 'height',
-						'selector' => '&.brx-open .brx-nav-nested-items',
-					],
+				[
+					'property' => 'transition',
+					'selector' => '&.brx-has-megamenu .brx-dropdown-content > *',
 				],
-			];
+			],
+		];
 
-			// @since 2.0: Adds padding control for dropdown content (only for mobile)
-			$this->controls['mobileMenuContentPadding'] = [
-				'group'       => 'mobile-menu',
-				'label'       => esc_html__( 'Padding', 'bricks' ),
-				'type'        => 'spacing',
-				'css'         => [
-					[
-						'property' => 'padding',
-						'selector' => '&.brx-open .brx-dropdown-content > *',
-					],
+		// DROPDOWN: MULTILEVEL
+
+		$this->controls['multiLevelSep'] = [
+			'group'       => 'dropdown',
+			'label'       => esc_html__( 'Multilevel', 'bricks' ),
+			'type'        => 'separator',
+			'description' => esc_html__( 'Show only active dropdown. Toggle on click. Inner dropdowns inherit multilevel.', 'bricks' ),
+		];
+
+		$this->controls['multiLevel'] = [
+			'group' => 'dropdown',
+			'label' => esc_html__( 'Enable', 'bricks' ),
+			'type'  => 'checkbox',
+		];
+
+		$this->controls['multiLevelBackText'] = [
+			'group'    => 'dropdown',
+			'label'    => esc_html__( 'Back', 'bricks' ) . ': ' . esc_html__( 'Text', 'bricks' ),
+			'type'     => 'text',
+			'inline'   => true,
+			'required' => [ 'multiLevel', '=', true ],
+		];
+
+		$this->controls['multiLevelBackTypography'] = [
+			'group'    => 'dropdown',
+			'label'    => esc_html__( 'Back', 'bricks' ) . ': ' . esc_html__( 'Typography', 'bricks' ),
+			'type'     => 'typography',
+			'inline'   => true,
+			'required' => [ 'multiLevel', '=', true ],
+			'css'      => [
+				[
+					'property' => 'font',
+					'selector' => '.brx-multilevel-back',
 				],
-				'description' => esc_html__( 'Used to creat visual hiarchy between nested dropdowns.', 'bricks' ),
-			];
+			],
+		];
 
-			$this->controls['mobileMenuAlignItems'] = [
-				'group' => 'mobile-menu',
-				'label' => esc_html__( 'Align items', 'bricks' ),
-				'type'  => 'align-items',
-				'css'   => [
-					[
-						'property' => 'align-items',
-						'selector' => '&.brx-open .brx-nav-nested-items',
-					],
+		$this->controls['multiLevelBackBackground'] = [
+			'group'    => 'dropdown',
+			'label'    => esc_html__( 'Back', 'bricks' ) . ': ' . esc_html__( 'Background', 'bricks' ),
+			'type'     => 'color',
+			'inline'   => true,
+			'required' => [ 'multiLevel', '=', true ],
+			'css'      => [
+				[
+					'property' => 'background-color',
+					'selector' => '.brx-multilevel-back',
 				],
-			];
+			],
+		];
 
-			$this->controls['mobileMenuJustifyContent'] = [
-				'group' => 'mobile-menu',
-				'label' => esc_html__( 'Justify content', 'bricks' ),
-				'type'  => 'justify-content',
-				'css'   => [
-					[
-						'property' => 'justify-content',
-						'selector' => '&.brx-open .brx-nav-nested-items',
-					],
+		// MOBILE MENU
+
+		$this->controls['mobileMenuSep'] = [
+			'group'       => 'mobile-menu',
+			'type'        => 'separator',
+			'description' => esc_html__( 'Insert "Toggle" element after "Nav items" to show/hide your mobile menu.', 'bricks' ),
+		];
+
+		/**
+		 * NOTE: Undocumented '_addedClasses' controlKey
+		 *
+		 * Stored in builder state only. Not saved as setting.
+		 *
+		 * Processed in ControlCheckbox.vue to add additional 'class' in builder while editing.
+		 *
+		 * @since 1.8
+		 */
+		$this->controls['_addedClasses'] = [
+			'group' => 'mobile-menu',
+			'label' => esc_html__( 'Keep open while styling', 'bricks' ),
+			'type'  => 'checkbox',
+			'class' => 'brx-open',
+		];
+
+		// Show mobile menu toggle on breakpoint
+		$breakpoints        = Breakpoints::$breakpoints;
+		$breakpoint_options = [];
+
+		foreach ( $breakpoints as $index => $breakpoint ) {
+			$breakpoint_options[ $breakpoint['key'] ] = $breakpoint['label'];
+		}
+
+		$breakpoint_options['always'] = esc_html__( 'Always', 'bricks' );
+		$breakpoint_options['never']  = esc_html__( 'Never', 'bricks' );
+
+		$this->controls['mobileMenu'] = [
+			'group'       => 'mobile-menu',
+			'label'       => Breakpoints::$is_mobile_first ? esc_html__( 'Hide at breakpoint', 'bricks' ) : esc_html__( 'Show at breakpoint', 'bricks' ),
+			'type'        => 'select',
+			'options'     => $breakpoint_options,
+			'rerender'    => true,
+			'placeholder' => esc_html__( 'Mobile landscape', 'bricks' ),
+		];
+
+		$this->controls['mobileMenuWidth'] = [
+			'group' => 'mobile-menu',
+			'label' => esc_html__( 'Width', 'bricks' ),
+			'type'  => 'number',
+			'units' => true,
+			'css'   => [
+				[
+					'property' => 'width',
+					'selector' => '&.brx-open .brx-nav-nested-items',
 				],
-			];
+			],
+		];
 
-			$this->controls['mobileMenuPosition'] = [
-				'group' => 'mobile-menu',
-				'label' => esc_html__( 'Position', 'bricks' ),
-				'type'  => 'dimensions',
-				'css'   => [
-					[
-						'selector' => '&.brx-open .brx-nav-nested-items',
-					],
-					[
-						'selector'  => '&.brx-open .brx-nav-nested-items',
-						'property'  => 'width',
-						'value'     => 'auto',
-						'skipIfSet' => 'mobileMenuWidth', // NOTE: Undocumented (@since 1.10)
-					],
+		$this->controls['mobileMenuHeight'] = [
+			'group' => 'mobile-menu',
+			'label' => esc_html__( 'Height', 'bricks' ),
+			'type'  => 'number',
+			'units' => true,
+			'css'   => [
+				[
+					'property' => 'height',
+					'selector' => '&.brx-open .brx-nav-nested-items',
 				],
-			];
+			],
+		];
 
-			$this->controls['mobileMenuBackgroundColor'] = [
-				'group' => 'mobile-menu',
-				'label' => esc_html__( 'Background color', 'bricks' ),
-				'type'  => 'color',
-				'css'   => [
-					[
-						'property' => 'background-color',
-						'selector' => '&.brx-open .brx-nav-nested-items',
-					],
+		$this->controls['mobileMenuAlignItems'] = [
+			'group' => 'mobile-menu',
+			'label' => esc_html__( 'Align items', 'bricks' ),
+			'type'  => 'align-items',
+			'css'   => [
+				[
+					'property' => 'align-items',
+					'selector' => '&.brx-open .brx-nav-nested-items',
 				],
-			];
+			],
+		];
 
-			// MOBILE MENU: ITEM
-
-			$this->controls['mobileMenuItemSep'] = [
-				'group' => 'mobile-menu',
-				'type'  => 'separator',
-				'label' => esc_html__( 'Item', 'bricks' ),
-			];
-
-			$this->controls['mobileMenuItemAlignItems'] = [
-				'group'   => 'mobile-menu',
-				'label'   => esc_html__( 'Align items', 'bricks' ),
-				'type'    => 'align-items',
-				'exclude' => [
-					'stretch',
+		$this->controls['mobileMenuJustifyContent'] = [
+			'group' => 'mobile-menu',
+			'label' => esc_html__( 'Justify content', 'bricks' ),
+			'type'  => 'justify-content',
+			'css'   => [
+				[
+					'property' => 'justify-content',
+					'selector' => '&.brx-open .brx-nav-nested-items',
 				],
-				'inline'  => true,
-				'css'     => [
-					[
-						'property' => 'justify-content',
-						'selector' => '&.brx-open .brx-submenu-toggle',
-					],
-					[
-						'property' => 'justify-content',
-						'selector' => '&.brx-open .brx-nav-nested-items > li',
-					],
+			],
+		];
 
-					[
-						'property' => 'justify-content',
-						'selector' => '&.brx-open .brx-submenu-toggle',
-					],
-					[
-						'property' => 'justify-content',
-						'selector' => '&.brx-open .brx-nav-nested-items > li',
-					],
-
-					[
-						'property' => 'justify-content',
-						'selector' => '&.brx-open .brx-submenu-toggle',
-					],
-					[
-						'property' => 'justify-content',
-						'selector' => '&.brx-open .brx-nav-nested-items > li',
-					],
-
-					// Necessary to apply justify-content (@since 1.10)
-					[
-						'property' => 'display',
-						'selector' => '&.brx-open li.menu-item',
-						'value'    => 'flex',
-					],
+		$this->controls['mobileMenuPosition'] = [
+			'group' => 'mobile-menu',
+			'label' => esc_html__( 'Position', 'bricks' ),
+			'type'  => 'dimensions',
+			'css'   => [
+				[
+					'selector' => '&.brx-open .brx-nav-nested-items',
 				],
-			];
+				[
+					'selector'  => '&.brx-open .brx-nav-nested-items',
+					'property'  => 'width',
+					'value'     => 'auto',
+					'skipIfSet' => 'mobileMenuWidth', // NOTE: Undocumented (@since 1.10)
+				],
+			],
+		];
+
+		$this->controls['mobileMenuBackgroundColor'] = [
+			'group' => 'mobile-menu',
+			'label' => esc_html__( 'Background color', 'bricks' ),
+			'type'  => 'color',
+			'css'   => [
+				[
+					'property' => 'background-color',
+					'selector' => '&.brx-open .brx-nav-nested-items',
+				],
+			],
+		];
+
+		// MOBILE MENU: ITEM
+
+		$this->controls['mobileMenuItemSep'] = [
+			'group' => 'mobile-menu',
+			'type'  => 'separator',
+			'label' => esc_html__( 'Item', 'bricks' ),
+		];
+
+		$this->controls['mobileMenuItemAlignItems'] = [
+			'group'   => 'mobile-menu',
+			'label'   => esc_html__( 'Align items', 'bricks' ),
+			'type'    => 'align-items',
+			'exclude' => [
+				'stretch',
+			],
+			'inline'  => true,
+			'css'     => [
+				[
+					'property' => 'justify-content',
+					'selector' => '&.brx-open .brx-submenu-toggle',
+				],
+				[
+					'property' => 'justify-content',
+					'selector' => '&.brx-open .brx-nav-nested-items > li',
+				],
+
+				[
+					'property' => 'justify-content',
+					'selector' => '&.brx-open .brx-submenu-toggle',
+				],
+				[
+					'property' => 'justify-content',
+					'selector' => '&.brx-open .brx-nav-nested-items > li',
+				],
+
+				[
+					'property' => 'justify-content',
+					'selector' => '&.brx-open .brx-submenu-toggle',
+				],
+				[
+					'property' => 'justify-content',
+					'selector' => '&.brx-open .brx-nav-nested-items > li',
+				],
+
+				// Necessary to apply justify-content (@since 1.10)
+				[
+					'property' => 'display',
+					'selector' => '&.brx-open li.menu-item',
+					'value'    => 'flex',
+				],
+			],
+		];
 	}
 
 	public function get_nestable_children() {
@@ -1129,11 +961,6 @@ class Element_Nav_Nested extends Element {
 		if ( isset( $settings['multiLevel'] ) ) {
 			$this->set_attribute( '_root', 'class', 'multilevel' );
 			$this->set_attribute( '_root', 'data-back-text', ! empty( $settings['multiLevelBackText'] ) ? esc_attr( $settings['multiLevelBackText'] ) : esc_html__( 'Back', 'bricks' ) );
-		}
-
-		// If we have mobile menu set to "justify center", we need to fix the alignment #86c0rw3ex (@since 2.0)
-		if ( isset( $settings['mobileMenuJustifyContent'] ) && $settings['mobileMenuJustifyContent'] === 'center' ) {
-			$this->set_attribute( '_root', 'class', 'brx-mobile-center' );
 		}
 
 		$output = "<{$this->tag} {$this->render_attributes( '_root' )}>";

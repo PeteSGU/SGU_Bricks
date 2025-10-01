@@ -234,12 +234,6 @@ class Provider_Metabox extends Base {
 					$value = isset( $value[0]['ID'] ) ? wp_list_pluck( $value, 'ID' ) : $value;
 					break;
 
-				// @since 2.0
-				case 'icon':
-					$value                    = self::get_icon( $field, $value );
-					$filters['skip_sanitize'] = true;
-					break;
-
 				case 'image':
 				case 'image_advanced':
 				case 'image_upload':
@@ -831,7 +825,6 @@ class Provider_Metabox extends Base {
 			'password'          => [ self::CONTEXT_TEXT ],
 			'range'             => [ self::CONTEXT_TEXT ],
 			'select_advanced'   => [ self::CONTEXT_TEXT ],
-			'icon'              => [ self::CONTEXT_TEXT ],
 			'radio'             => [ self::CONTEXT_TEXT ],
 			'select'            => [ self::CONTEXT_TEXT ],
 			'image_select'      => [ self::CONTEXT_TEXT ], // @since 1.6.2
@@ -951,152 +944,4 @@ class Provider_Metabox extends Base {
 
 		return $supported_tags;
 	}
-
-	/**
-	 * Retrieve icon by value, from icon field type
-	 *
-	 * @since 2.0
-	 */
-	public static function get_icon( $field, $value ) {
-		// Get all available icons
-		$icons = self::get_available_icons( $field, $value );
-
-		// Loop over icon options, and select the one that matches the value
-		foreach ( $icons as $icon ) {
-			if ( $icon['name'] === $value ) {
-
-				// If "icon" field is set, we need to enqueue the icon CSS
-				if ( isset( $icon['icon'] ) ) {
-
-					// If "icon_css" is a string, directly enqueue the CSS file
-					if ( is_string( $field['icon_css'] ) ) {
-						$unique_handle = 'bricks-icon-' . md5( $field['icon_css'] ); // Generate unique handle
-						wp_enqueue_style( $unique_handle, $field['icon_css'], [], BRICKS_VERSION );
-
-						// If "icon_css" is not a string, but a callable, call it
-					} elseif ( is_callable( $field['icon_css'] ) ) {
-						$field['icon_css']();
-					}
-
-					// Return the icon eg. <i class="fa fa-icon-name"></i>
-					return $icon['icon'];
-				}
-
-				// If "svg" field is set, directly return the SVG
-				elseif ( isset( $icon['svg'] ) ) {
-					return $icon['svg'];
-				}
-			}
-		}
-
-		return null;
-	}
-
-	/**
-	 * Retrieve all icons used for icon field type
-	 *
-	 * @return array of icons
-	 *      - Option 1: ['name' => 'icon-name', 'icon' => '<i class="fa fa-icon-name"></i>']
-	 *      - Option 2: ['name' => 'icon-name', 'svg' => '<svg>...</svg>']
-	 *
-	 * @since 2.0
-	 */
-	public static function get_available_icons( $field, $value ) {
-		// We will store a list of icons here
-		$icons = [];
-
-		// STEP: Parse icons from file (SVG)
-		if ( ! empty( $field['icon_dir'] ) ) {
-			$directory = $field['icon_dir'];
-
-			// If directory does not exists, return empty array
-			if ( ! is_dir( $directory ) ) {
-				return [];
-			}
-
-			// Get file where $value is file name (.svg)
-			$file = trailingslashit( $directory ) . $value . '.svg';
-			if ( file_exists( $file ) ) {
-				$icons[] = [
-					'name' => $value,
-					'svg'  => file_get_contents( $file ),
-				];
-			}
-		}
-
-		// STEP: Parse icon as CSS
-		elseif ( ! empty( $field['icon_css'] ) ) {
-
-			// Just directly return the value as icon
-			$icons[] = [
-				'name' => $value,
-				'icon' => sprintf( '<i class="%s"></i>', $value ),
-			];
-		}
-
-		// STEP: Parse icons from file (JSON)
-		elseif ( ! empty( $field['icon_file'] ) ) {
-			$file     = $field['icon_file'];
-			$icon_set = $field['icon_set'];
-
-			// If file does not exists, return empty array
-			if ( ! file_exists( $file ) ) {
-				return [];
-			}
-
-			// Get file content and decode it
-			$data = json_decode( file_get_contents( $file ), true );
-
-			// If json decode failed, return empty array
-			if ( json_last_error() !== JSON_ERROR_NONE ) {
-				return [];
-			}
-
-			// Loop over all parsed icons and add them to the list
-			foreach ( $data as $key => $icon ) {
-
-				// Default: Font Awesome (Free & Pro)
-				if ( $icon_set === 'font-awesome-free' || $icon_set === 'font-awesome-pro' ) {
-
-					// To be compatible with FA Pro, we need to loop over all styles,
-					// because FA Pro can have more styles than FA Free (only one).
-					foreach ( $icon['styles'] as $style ) {
-						$icons[] = [
-							'name' => "fa-{$style} fa-{$key}",
-							'svg'  => $icon['svg'][ $style ]['raw'],
-						];
-					}
-				}
-
-				 // JSON file that contains SVG icons
-				elseif ( is_string( $key ) ) {
-
-					  // If it's array - custom label (icon:svg_json) like (icon:{'svg':'<svg>...</svg>', label:'Custom Label'})
-					if ( is_array( $icon ) ) {
-						$svg = $icon['svg'] ?? null;
-					}
-					  // If it's string - default label (icon:svg)
-					else {
-						$svg = str_contains( $icon, '<svg' ) ? $icon : null;
-					}
-
-					  // Only add icon if it has a SVG
-					if ( isset( $svg ) && ! is_null( $svg ) ) {
-						$icons[] = [
-							'name' => $key,
-							'svg'  => $svg,
-						];
-					}
-				}
-
-					// If nothing is found, return empty array
-				else {
-					return [];
-				}
-			}
-		}
-
-			return $icons;
-	}
-
 }

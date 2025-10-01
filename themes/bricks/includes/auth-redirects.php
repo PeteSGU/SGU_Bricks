@@ -346,10 +346,10 @@ class Auth_Redirects {
 				if ( is_array( $parameters ) ) {
 					// Sanitize all parameters
 					foreach ( $parameters as $key => $value ) {
-						$sanitized_value = Helpers::sanitize_value( $value );
-						// Encode the value to ensure it's URL-safe (@since 1.12.3)
-						$custom_url = add_query_arg( $key, rawurlencode( $sanitized_value ), $custom_url );
+						$parameters[ $key ] = Helpers::sanitize_value( $value );
 					}
+					// Add all sanitized parameters at once
+					$custom_url = add_query_arg( $parameters, $custom_url );
 				}
 			}
 

@@ -17,12 +17,7 @@ class Element_Video extends Element {
 
 	public function enqueue_scripts() {
 		if ( isset( $this->theme_styles['customPlayer'] ) ) {
-			if ( ! Database::get_setting( 'disableBricksCascadeLayer' ) ) { // @since 2.0
-				wp_enqueue_style( 'video-plyr', BRICKS_URL_ASSETS . 'css/libs/plyr-layer.min.css', [], '3.7.8' );
-			} else {
-				wp_enqueue_style( 'video-plyr', BRICKS_URL_ASSETS . 'css/libs/plyr.min.css', [], '3.7.8' );
-			}
-
+			wp_enqueue_style( 'video-plyr', BRICKS_URL_ASSETS . 'css/libs/plyr.min.css', [], '3.7.8' );
 			wp_enqueue_script( 'video-plyr', BRICKS_URL_ASSETS . 'js/libs/plyr.min.js', [ 'bricks-scripts' ], '3.7.8', true );
 		}
 	}
@@ -376,7 +371,7 @@ class Element_Video extends Element {
 		$this->controls['fileControlNoDownload'] = [
 			'tab'      => 'content',
 			'label'    => esc_html__( 'Disable', 'bricks' ) . ': ' . esc_html__( 'Download', 'bricks' ),
-			'info'     => 'Firefox: ' . esc_html__( 'Not supported', 'bricks' ) . ' (controlslist)',
+			'info'     => 'Firefox: ' . esc_html__( 'No supported', 'bricks' ) . ' (controlslist)',
 			'type'     => 'checkbox',
 			'required' => [
 				[ 'videoType', '=', [ 'media', 'file', 'meta' ] ],
@@ -387,7 +382,7 @@ class Element_Video extends Element {
 		$this->controls['fileControlNoFullscreen'] = [
 			'tab'      => 'content',
 			'label'    => esc_html__( 'Disable', 'bricks' ) . ': ' . esc_html__( 'Fullscreen', 'bricks' ),
-			'info'     => 'Firefox: ' . esc_html__( 'Not supported', 'bricks' ) . ' (controlslist)',
+			'info'     => 'Firefox: ' . esc_html__( 'No supported', 'bricks' ) . ' (controlslist)',
 			'type'     => 'checkbox',
 			'required' => [
 				[ 'videoType', '=', [ 'media', 'file', 'meta' ] ],
@@ -398,7 +393,7 @@ class Element_Video extends Element {
 		$this->controls['fileControlNoRemotePlayback'] = [
 			'tab'      => 'content',
 			'label'    => esc_html__( 'Disable', 'bricks' ) . ': ' . esc_html__( 'Remote playback', 'bricks' ),
-			'info'     => 'Firefox: ' . esc_html__( 'Not supported', 'bricks' ) . ' (controlslist)',
+			'info'     => 'Firefox: ' . esc_html__( 'No supported', 'bricks' ) . ' (controlslist)',
 			'type'     => 'checkbox',
 			'required' => [
 				[ 'videoType', '=', [ 'media', 'file', 'meta' ] ],
@@ -1213,38 +1208,7 @@ class Element_Video extends Element {
 			return $settings;
 		}
 
-		$meta_video_url = '';
-
-		// Set context to 'media' (@since 2.0)
-		$meta_media_value = $this->render_dynamic_data_tag( $dynamic_data, 'media' );
-
-		/**
-		 * Ensure we have a non-empty array and the first element is an array
-		 *
-		 * Check includes/integrations/dynamic-data/providers/base.php
-		 *
-		 * @since 2.0
-		 */
-		if ( is_array( $meta_media_value ) && ! empty( $meta_media_value[0] ) && is_array( $meta_media_value[0] ) ) {
-			$url_or_id = $meta_media_value[0]['url'] ?? '';
-
-			if ( ! empty( $url_or_id ) ) {
-				if ( is_numeric( $url_or_id ) ) {
-					// Cast to int safely and get the attachment URL
-					$attachment_url = wp_get_attachment_url( (int) $url_or_id );
-					if ( $attachment_url ) {
-						// Force URL as string as we will be using preg_match, unknown plugin might change the type via wp_get_attachment_url
-						$meta_video_url = (string) $attachment_url;
-					}
-				} else {
-					// Force URL as string as we will be using preg_match
-					$meta_video_url = (string) $url_or_id;
-				}
-			}
-		} elseif ( is_string( $meta_media_value ) && ! empty( $meta_media_value ) ) {
-			// If the value is a string, use it directly (the full URL can be provided via @fallback)
-			$meta_video_url = $meta_media_value;
-		}
+		$meta_video_url = $this->render_dynamic_data_tag( $dynamic_data, 'link' );
 
 		if ( empty( $meta_video_url ) ) {
 			return $settings;
@@ -1451,9 +1415,8 @@ class Element_Video extends Element {
 	 */
 	public function get_youtube_id_from_url( $url = '' ) {
 		// If it's valid URL, extract the video ID
-		if ( filter_var( $url, FILTER_VALIDATE_URL ) && preg_match( '%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|shorts/|live/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $url, $matches ) ) {
+		if ( filter_var( $url, FILTER_VALIDATE_URL ) && preg_match( '%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $url, $matches ) ) {
 			// Regex from @see: https://gist.github.com/ghalusa/6c7f3a00fd2383e5ef33
-			// @since 2.0: Support for YouTube Shorts and Live URLs
 			return $matches[1];
 		}
 

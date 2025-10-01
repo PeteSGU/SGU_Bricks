@@ -14,19 +14,8 @@ class Woocommerce_Cart_Coupon extends Element {
 	}
 
 	public function set_controls() {
-		// General
-		$this->controls['generalSeparator'] = [
-			'type'  => 'separator',
-			'label' => esc_html__( 'General', 'bricks' ),
-		];
-
-		// @since 2.0.2
-		$this->controls['ajaxUpdate'] = [
-			'type'  => 'checkbox',
-			'label' => esc_html__( 'Update cart via AJAX', 'bricks' ),
-		];
-
 		$this->controls['direction'] = [
+			'tab'     => 'content',
 			'label'   => esc_html__( 'Direction', 'bricks' ),
 			'tooltip' => [
 				'content'  => 'flex-direction',
@@ -45,9 +34,11 @@ class Woocommerce_Cart_Coupon extends Element {
 		$this->controls['inputSeperator'] = [
 			'type'  => 'separator',
 			'label' => esc_html__( 'Input', 'bricks' ),
+			'tab'   => 'content',
 		];
 
 		$this->controls['inputPlaceholder'] = [
+			'tab'         => 'content',
 			'label'       => esc_html__( 'Placeholder', 'bricks' ),
 			'type'        => 'text',
 			'placeholder' => esc_html__( 'Coupon code', 'woocommerce' ),
@@ -55,6 +46,7 @@ class Woocommerce_Cart_Coupon extends Element {
 		];
 
 		$this->controls['inputWidth'] = [
+			'tab'   => 'content',
 			'label' => esc_html__( 'Width', 'bricks' ),
 			'type'  => 'number',
 			'units' => true,
@@ -67,6 +59,7 @@ class Woocommerce_Cart_Coupon extends Element {
 		];
 
 		$this->controls['inputBackground'] = [
+			'tab'   => 'content',
 			'label' => esc_html__( 'Background color', 'bricks' ),
 			'type'  => 'color',
 			'css'   => [
@@ -78,6 +71,7 @@ class Woocommerce_Cart_Coupon extends Element {
 		];
 
 		$this->controls['inputBorder'] = [
+			'tab'   => 'content',
 			'type'  => 'border',
 			'label' => esc_html__( 'Border', 'bricks' ),
 			'css'   => [
@@ -89,6 +83,7 @@ class Woocommerce_Cart_Coupon extends Element {
 		];
 
 		$this->controls['inputPlaceholderTypography'] = [
+			'tab'   => 'content',
 			'label' => esc_html__( 'Placeholder typography', 'bricks' ),
 			'type'  => 'typography',
 			'css'   => [
@@ -102,11 +97,13 @@ class Woocommerce_Cart_Coupon extends Element {
 		// Button
 
 		$this->controls['buttonSeperator'] = [
+			'type'  => 'separator',
 			'label' => esc_html__( 'Button', 'bricks' ),
 			'tab'   => 'content',
 		];
 
 		$this->controls['buttonText'] = [
+			'tab'         => 'content',
 			'label'       => esc_html__( 'Text', 'bricks' ),
 			'type'        => 'text',
 			'placeholder' => esc_html__( 'Apply coupon', 'woocommerce' ),
@@ -114,6 +111,7 @@ class Woocommerce_Cart_Coupon extends Element {
 		];
 
 		$this->controls['buttonWidth'] = [
+			'tab'   => 'content',
 			'label' => esc_html__( 'Width', 'bricks' ),
 			'type'  => 'number',
 			'units' => true,
@@ -126,6 +124,7 @@ class Woocommerce_Cart_Coupon extends Element {
 		];
 
 		$this->controls['buttonMargin'] = [
+			'tab'         => 'content',
 			'label'       => esc_html__( 'Margin', 'bricks' ),
 			'type'        => 'spacing',
 			'css'         => [
@@ -143,6 +142,7 @@ class Woocommerce_Cart_Coupon extends Element {
 		];
 
 		$this->controls['buttonBackground'] = [
+			'tab'   => 'content',
 			'label' => esc_html__( 'Background color', 'bricks' ),
 			'type'  => 'color',
 			'css'   => [
@@ -154,6 +154,7 @@ class Woocommerce_Cart_Coupon extends Element {
 		];
 
 		$this->controls['buttonBorder'] = [
+			'tab'   => 'content',
 			'type'  => 'border',
 			'label' => esc_html__( 'Border', 'bricks' ),
 			'css'   => [
@@ -165,6 +166,7 @@ class Woocommerce_Cart_Coupon extends Element {
 		];
 
 		$this->controls['buttonTypography'] = [
+			'tab'   => 'content',
 			'label' => esc_html__( 'Typography', 'bricks' ),
 			'type'  => 'typography',
 			'css'   => [
@@ -181,11 +183,6 @@ class Woocommerce_Cart_Coupon extends Element {
 
 		Woocommerce_Helpers::maybe_init_cart_context();
 
-		// Avoid Fatal error if WC()->cart is not defined (@since 2.0)
-		if ( ! function_exists( 'WC' ) || ! WC()->cart ) {
-			return;
-		}
-
 		if ( ! wc_coupons_enabled() ) {
 			// translators: %1$s: opening a tag, %2$s: closing a tag
 			return $this->render_element_placeholder( [ 'title' => sprintf( esc_html__( 'Coupons are disabled. To enable coupons go to %1$sWooCommerce settings%2$s', 'bricks' ), '<a href="' . admin_url( 'admin.php?page=wc-settings' ) . '">', '</a>' ) ] );
@@ -193,11 +190,6 @@ class Woocommerce_Cart_Coupon extends Element {
 
 		$placeholder  = isset( $settings['inputPlaceholder'] ) ? $settings['inputPlaceholder'] : __( 'Coupon code', 'woocommerce' );
 		$button_label = isset( $settings['buttonText'] ) ? $settings['buttonText'] : __( 'Apply coupon', 'woocommerce' );
-
-		// Set ajax update attribute
-		if ( isset( $settings['ajaxUpdate'] ) && $settings['ajaxUpdate'] ) {
-			$this->set_attribute( '_root', 'data-ajax-update', 'true' );
-		}
 
 		$this->set_attribute( '_root', 'action', esc_url( wc_get_cart_url() ) );
 		$this->set_attribute( '_root', 'method', 'post' );

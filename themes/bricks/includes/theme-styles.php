@@ -4,8 +4,11 @@ namespace Bricks;
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 class Theme_Styles {
-	public static $styles          = [];
-	public static $settings_by_id  = []; // key: Theme style ID, value: Theme style settings array (@since 2.0)
+	public static $styles = [];
+
+	public static $active_id;
+	public static $active_settings = [];
+
 	public static $control_options = [];
 	public static $control_groups  = [];
 	public static $controls        = [];
@@ -52,13 +55,7 @@ class Theme_Styles {
 			'title' => esc_html__( 'Conditions', 'bricks' ),
 		];
 
-		// CODE (@since 2.0)
-		$control_groups['css'] = [
-			'title' => esc_html__( 'Stylesheet', 'bricks' ),
-			'badge' => Helpers::render_badge( '2.0' ),
-		];
-
-		// GROUPS
+		// GENERAL STYLES
 
 		$control_groups['general'] = [
 			'title' => esc_html__( 'General', 'bricks' ),
@@ -68,30 +65,22 @@ class Theme_Styles {
 			'title' => esc_html__( 'Colors', 'bricks' ),
 		];
 
+		$control_groups['content'] = [
+			'title' => esc_html__( 'Content', 'bricks' ),
+		];
+
 		$control_groups['links'] = [
 			'title' => esc_html__( 'Links', 'bricks' ),
-		];
-
-		$control_groups['contextualSpacing'] = [
-			'title' => esc_html__( 'Contextual spacing', 'bricks' ),
-			'badge' => Helpers::render_badge( '2.0' ),
-		];
-
-		$control_groups['content'] = [
-			'title' => esc_html__( 'Content', 'bricks' ) . ' (' . esc_html__( 'Margin', 'bricks' ) . ')',
 		];
 
 		$control_groups['typography'] = [
 			'title' => esc_html__( 'Typography', 'bricks' ),
 		];
 
+		// POPUPS (@since 1.6)
+
 		$control_groups['popup'] = [
 			'title' => esc_html__( 'Popup', 'bricks' ),
-		];
-
-		$control_groups['elements'] = [
-			'title'    => esc_html__( 'Elements', 'bricks' ),
-			'isParent' => true, // @since 2.0
 		];
 
 		// ELEMENT STYLES
@@ -136,15 +125,14 @@ class Theme_Styles {
 		];
 
 		foreach ( $element_control_groups as $element_name ) {
-			$element = Elements::$elements[ $element_name ] ?? false;
+			$element = ! empty( Elements::$elements[ $element_name ] ) ? Elements::$elements[ $element_name ] : false;
 
-			// Element is registered: Load it in theme styles panel
+			// Element is registered: Load it in theme styles panel (@since 1.5.1)
 			if ( $element ) {
 				$element_label = ! empty( $element['label'] ) ? $element['label'] : str_replace( '-', ' ', $element_name );
 
 				$control_groups[ $element_name ] = [
-					'title'  => $element_label,
-					'parent' => 'elements', // @since 2.0
+					'title' => esc_html__( 'Element', 'bricks' ) . " - $element_label",
 				];
 			}
 		}
@@ -234,7 +222,7 @@ class Theme_Styles {
 	public function create_styles() {
 		Ajax::verify_nonce( 'bricks-nonce-builder' );
 
-		if ( ! Builder_Permissions::user_has_permission( 'access_theme_styles' ) ) {
+		if ( ! Capabilities::current_user_has_full_access() ) {
 			wp_send_json_error( 'verify_request: Sorry, you are not allowed to perform this action.' );
 		}
 
@@ -277,7 +265,7 @@ class Theme_Styles {
 	public function delete_style() {
 		Ajax::verify_nonce( 'bricks-nonce-builder' );
 
-		if ( ! Builder_Permissions::user_has_permission( 'access_theme_styles' ) ) {
+		if ( ! Capabilities::current_user_has_full_access() ) {
 			wp_send_json_error( 'verify_request: Sorry, you are not allowed to perform this action.' );
 		}
 
@@ -323,8 +311,8 @@ class Theme_Styles {
 			}
 		}
 
-		// Collect the theme style IDs with score 0.low XX.high [score => style id]
-		$matching_theme_style_ids_by_score = [];
+		// Hold the found styles with score 0.low XX.high [score => style id]
+		$found_styles = [];
 
 		// Check if any style condition is met (if so, return style ID to apply it to post)
 		// 2 - Entire website (condition = any)
@@ -333,84 +321,28 @@ class Theme_Styles {
 		// 9 - Front page
 		// 10 - Specific Post ID (best match)
 		foreach ( $styles as $style_id => $style ) {
-			$conditions = $style['settings']['conditions']['conditions'] ?? false;
+			$conditions = isset( $style['settings']['conditions']['conditions'] ) ? $style['settings']['conditions']['conditions'] : false;
 
 			// Skip styles without conditions
 			if ( ! is_array( $conditions ) ) {
 				continue;
 			}
 
-			$new_matching_theme_style_ids_by_score = Database::screen_conditions( [], $style_id, $conditions, $post_id, $preview_type );
+			$found_styles = Database::screen_conditions( $found_styles, $style_id, $conditions, $post_id, $preview_type );
+		}
 
-			if ( $new_matching_theme_style_ids_by_score ) {
-				foreach ( $new_matching_theme_style_ids_by_score as $score => $matching_style_id ) {
-					if ( empty( $matching_theme_style_ids_by_score[ $score ] ) ) {
-						$matching_theme_style_ids_by_score[ $score ] = [];
-					}
+		if ( ! empty( $found_styles ) ) {
+			ksort( $found_styles, SORT_NUMERIC );
+			self::$active_id = array_pop( $found_styles );
 
-					// Add style ID with score
-					$matching_theme_style_ids_by_score[ $score ][] = $matching_style_id;
-				}
+			if ( $return_id ) {
+				return self::$active_id;
 			}
 		}
 
-		// Sort styles by score (highest first)
-		ksort( $matching_theme_style_ids_by_score, SORT_NUMERIC );
-
-		$matching_theme_style_ids = [];
-
-		// Collect all matching theme styles by score
-		foreach ( $matching_theme_style_ids_by_score as $score => $style_ids ) {
-			$matching_theme_style_ids = array_merge( $matching_theme_style_ids, $style_ids );
-		}
-
-		// If no styles match conditions, return empty array
-		if ( empty( $matching_theme_style_ids ) ) {
-			return;
-		}
-
-		// Default: Get most specific style (highest score)
-		if ( ! Database::get_setting( 'themeStylesLoadingMethod' ) ) {
-			$matching_theme_style_ids = [ end( $matching_theme_style_ids ) ];
-		}
-
-		/**
-		 * Collect all theme styles that match conditions and sort them by score.
-		 *
-		 * Enable via Bricks > Settings > Miscellaneous > Theme styles: Collect all styles that match conditions
-		 *
-		 * @since 2.0
-		 */
-		foreach ( $matching_theme_style_ids as $score => $style_id ) {
-			self::$settings_by_id[ $style_id ] = $styles[ $style_id ]['settings'] ?? [];
-		}
-
-		if ( $return_id ) {
-			return array_keys( self::$settings_by_id );
-		}
-	}
-
-	/**
-	 * Get active theme style settings
-	 *
-	 * Start search from the most specific style (= last) and return the first match.
-	 *
-	 * @param string $group_key Theme style group key.
-	 * @param int    $setting_key Theme style setting key.
-	 * @return mixed|null Returns the value of the setting if found, otherwise null.
-	 * @example Theme_Styles::get_setting_by_key( 'popup', 'popupBreakpointMode' );
-	 *
-	 * @since 2.0
-	 */
-	public static function get_setting_by_key( $group_key = '', $setting_key = '' ) {
-		foreach ( array_reverse( self::$settings_by_id ) as $style_id => $settings ) {
-			if ( $group_key && $setting_key ) {
-				return isset( $settings[ $group_key ][ $setting_key ] ) ? $settings[ $group_key ][ $setting_key ] : null;
-			}
-
-			elseif ( $group_key ) {
-				return isset( $settings[ $group_key ] ) ? $settings[ $group_key ] : null;
-			}
+		// Set active style settings
+		if ( self::$active_id ) {
+			self::$active_settings = isset( self::$styles[ self::$active_id ]['settings'] ) ? self::$styles[ self::$active_id ]['settings'] : [];
 		}
 	}
 }

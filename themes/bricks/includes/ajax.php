@@ -6,8 +6,9 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 class Ajax {
 	public function __construct() {
 		// In builder
-		add_action( 'wp_ajax_bricks_command_palette_get_posts', [ $this, 'command_palette_get_posts' ] );
 		add_action( 'wp_ajax_bricks_generate_code_signature', [ $this, 'generate_code_signature' ] );
+
+		add_action( 'pre_update_option_' . BRICKS_DB_GLOBAL_ELEMENTS, [ $this, 'update_global_elements' ], 10, 3 );
 
 		add_filter( 'sanitize_post_meta_' . BRICKS_DB_PAGE_CONTENT, [ $this, 'sanitize_bricks_postmeta' ], 10, 3 );
 		add_filter( 'sanitize_post_meta_' . BRICKS_DB_PAGE_HEADER, [ $this, 'sanitize_bricks_postmeta' ], 10, 3 );
@@ -34,6 +35,7 @@ class Ajax {
 		add_action( 'wp_ajax_bricks_create_autosave', [ $this, 'create_autosave' ] );
 		add_action( 'wp_ajax_bricks_get_builder_url', [ $this, 'get_builder_url' ] );
 
+		add_action( 'wp_ajax_bricks_save_global_element', [ $this, 'save_global_element' ] );
 		add_action( 'wp_ajax_bricks_save_color_palette', [ $this, 'save_color_palette' ] );
 		add_action( 'wp_ajax_bricks_save_panel_width', [ $this, 'save_panel_width' ] );
 		add_action( 'wp_ajax_bricks_save_builder_scale_off', [ $this, 'save_builder_scale_off' ] );
@@ -75,79 +77,16 @@ class Ajax {
 
 		// Add new action for deleting global classes permanently (@since 1.11)
 		add_action( 'wp_ajax_bricks_delete_global_classes_permanently', [ $this, 'delete_global_classes_permanently' ] );
-
-		// Clean up orphaned elements across site (@since 2.0)
-		add_action( 'wp_ajax_bricks_cleanup_orphaned_elements', [ $this, 'cleanup_orphaned_elements' ] );
-
-		// Scan for orphaned elements across site (@since 2.0)
-		add_action( 'wp_ajax_bricks_scan_orphaned_elements', [ $this, 'scan_orphaned_elements' ] );
-	}
-
-	/**
-	 * Command palette: Get posts for the PopupCommandPalette.vue
-	 *
-	 * @since 2.0
-	 */
-	public function command_palette_get_posts() {
-		self::verify_request( 'bricks-nonce-builder' );
-
-		// Get all posts with direct SQL query
-		global $wpdb;
-
-		// Get selected post type
-		$post_type = ! empty( $_POST['postType'] ) ? sanitize_text_field( $_POST['postType'] ) : 'any';
-
-		// Get all public post types if no post type is selected
-		if ( $post_type === 'any' ) {
-			$post_types = array_keys( get_post_types( [ 'public' => true ] ) );
-			$post_types = array_map( 'sanitize_text_field', $post_types );
-		} else {
-			$post_types = [ $post_type ];
-		}
-
-		$placeholders = implode( ',', array_fill( 0, count( $post_types ), '%s' ) );
-
-		// Get all post IDs in a single query
-		$post_ids = $wpdb->get_col(
-			$wpdb->prepare(
-				"SELECT ID FROM {$wpdb->posts}
-				WHERE post_type IN ($placeholders)
-				AND post_status IN ('publish', 'draft', 'pending', 'private')
-				ORDER BY post_modified DESC",
-				$post_types
-			)
-		);
-
-		// Process all posts
-		$posts          = [];
-		$post_edit_link = admin_url() . 'post.php?post=POST_ID&action=edit';
-
-		foreach ( $post_ids as $post_id ) {
-			$posts[] = [
-				'id'        => $post_id,
-				'title'     => get_the_title( $post_id ),
-				'postType'  => get_post_type( $post_id ),
-				'slug'      => get_post_field( 'post_name', $post_id ),
-				'permalink' => get_permalink( $post_id ),
-				'status'    => get_post_status( $post_id ),
-				'editUrl'   => Helpers::get_builder_edit_link( $post_id ),
-				'editUrlWp' => str_replace( 'POST_ID', $post_id, $post_edit_link ),
-			];
-		}
-
-		wp_send_json_success( $posts );
 	}
 
 	/**
 	 * Check if current endpoint is Bricks AJAX endpoint
 	 *
-	 * @param string $action E.g. 'get_template_elements_by_id' or 'form_submit'.
-	 * @param string $action E.g. 'get_template_elements_by_id' or 'form_submit'.
+	 * @param string $action E.g. 'get_template_elements_by_id' or 'form_submit'
 	 *
 	 * @since 1.11
 	 *
-	 * @return boolean
-	 * @return boolean
+	 * @return bool
 	 */
 	public static function is_current_endpoint( $action ) {
 		if ( ! bricks_is_ajax_call() || ! isset( $_POST['action'] ) ) {
@@ -173,6 +112,7 @@ class Ajax {
 		if (
 			! empty( $_POST['element'] ) &&
 			Helpers::code_execution_enabled() &&
+			Capabilities::current_user_has_full_access() &&
 			Capabilities::current_user_can_execute_code()
 		) {
 			$element  = self::decode( $_POST['element'], false );
@@ -377,7 +317,7 @@ class Ajax {
 		$query_args = [
 			'posts_per_page'   => -1,
 			'post_status'      => 'any',
-			'post_type'        => ! empty( $_POST['postType'] ) ? sanitize_text_field( $_POST['postType'] ) : 'page',
+			'post_type'        => ! empty( $_GET['postType'] ) ? sanitize_text_field( $_GET['postType'] ) : 'page',
 			'fields'           => 'ids',
 			'suppress_filters' => true, // WPML (also prevents any posts_where filters from modifying the query)
 			'lang'             => '', // Polylang
@@ -405,7 +345,7 @@ class Ajax {
 			];
 
 			if ( has_post_thumbnail( $page_id ) ) {
-				$image_size         = ! empty( $_POST['imageSize'] ) ? sanitize_text_field( $_POST['imageSize'] ) : 'large';
+				$image_size         = ! empty( $_GET['imageSize'] ) ? sanitize_text_field( $_GET['imageSize'] ) : 'large';
 				$page_data['image'] = get_the_post_thumbnail_url( $page_id, $image_size );
 			}
 
@@ -419,7 +359,6 @@ class Ajax {
 	 * Create new page
 	 *
 	 * @since 1.0
-	 * @since 2.0: Command palette support
 	 */
 	public function create_new_page() {
 		self::verify_request( 'bricks-nonce-builder' );
@@ -435,28 +374,13 @@ class Ajax {
 			]
 		);
 
-		$new_post       = get_post( $new_page_id );
-		$post_edit_link = admin_url() . 'post.php?post=POST_ID&action=edit';
-
-		$new_post = [
-			'id'        => $new_post->ID,
-			'title'     => wp_kses_post( $new_post->post_title ),
-			'slug'      => $new_post->post_name,
-			'postType'  => $new_post->post_type,
-			'status'    => $new_post->post_status,
-			'editUrl'   => Helpers::get_builder_edit_link( $new_post->ID ),
-			'editUrlWp' => str_replace( 'POST_ID', $new_post->ID, $post_edit_link ),
-			'permalink' => get_permalink( $new_post->ID ),
-		];
-
-		wp_send_json_success( $new_post );
+		wp_send_json_success( $new_page_id );
 	}
 
 	/**
 	 * Duplicate page or post in the builder (Bricks or WordPress)
 	 *
 	 * @since 1.9.8
-	 * @since 2.0: Command palette support
 	 */
 	public function duplicate_content() {
 		self::verify_request( 'bricks-nonce-builder' );
@@ -471,29 +395,16 @@ class Ajax {
 		$new_post_id = Admin::duplicate_content( $post_id );
 
 		if ( ! $new_post_id ) {
-			wp_send_json_error( [ 'message' => esc_html__( 'Post could not be duplicated', 'bricks' ) ] );
+			wp_send_json_error( esc_html__( 'Post could not be duplicated', 'bricks' ) );
 		}
 
-		$new_post       = get_post( $new_post_id );
-		$post_edit_link = admin_url() . 'post.php?post=POST_ID&action=edit';
-
-		$new_post = [
-			'id'        => $new_post->ID,
-			'title'     => wp_kses_post( $new_post->post_title ),
-			'slug'      => $new_post->post_name,
-			'postType'  => $new_post->post_type,
-			'status'    => $new_post->post_status,
-			'editUrl'   => Helpers::get_builder_edit_link( $new_post->ID ),
-			'editUrlWp' => str_replace( 'POST_ID', $new_post->ID, $post_edit_link ),
-			'permalink' => get_permalink( $new_post->ID ),
-		];
-
-		wp_send_json_success( $new_post );
+		wp_send_json_success( $new_post_id );
 	}
 
 	/**
 	 * Render element HTML from settings
 	 *
+	 * builder.php (query_content_type_for_elements_html to generate HTML for builder load)
 	 * AJAX call / REST API call: In-builder (getHTML for PHP-rendered elements)
 	 *
 	 * @since 1.0
@@ -511,13 +422,20 @@ class Ajax {
 		$parent_loops = $data['parentLoops'] ?? [];
 
 		// AJAX call
-		if ( isset( $_POST['element'] ) ) {
+		if ( $is_ajax ) {
+			// Check: Current user can use builder
 			self::verify_request( 'bricks-nonce-builder' );
 
 			$element = stripslashes_deep( $element );
 		}
-		// No additional processing needed for REST API calls or builder.php
-		// REST API permissions are already checked in API->render_element_permissions_check()
+
+		// REST API call (Permissions already checked in the API->render_element_permissions_check())
+		elseif ( bricks_is_rest_call() ) {
+		}
+
+		// builder.php (query_content_type_for_elements_html)
+		else {
+		}
 
 		/**
 		 * Builder: Init Query to get the builder preview for the first loop item (e.g.: "Product Category Image" DD)
@@ -563,16 +481,7 @@ class Ajax {
 		// Element doesn't exist
 		else {
 			// translators: %s: Element name
-			$no_element_text = sprintf( esc_html__( 'Element "%s" doesn\'t exist.', 'bricks' ), $element_name );
-
-			// Check: Element is disabled via element manager (@since 2.0)
-			if ( isset( Elements::$manager[ $element_name ]['status'] ) && Elements::$manager[ $element_name ]['status'] === 'disabled' ) {
-				$no_element_text = esc_html__( 'Element has been disabled globally.', 'bricks' ) . ' (<a href="' . admin_url( 'admin.php?page=bricks-elements' ) . '" target="_blank">Bricks > ' . esc_html__( 'Elements', 'bricks' ) . '</a>)';
-			}
-
-			$no_element_text = "$element_name: $no_element_text";
-
-			$response = '<div class="bricks-element-placeholder no-php-class">' . $no_element_text . '</div>';
+			$response = '<div class="bricks-element-placeholder no-php-class">' . sprintf( esc_html__( 'Element "%s" doesn\'t exist.', 'bricks' ), $element_name ) . '</div>';
 		}
 
 		if ( $is_ajax ) {
@@ -651,16 +560,66 @@ class Ajax {
 	}
 
 	/**
+	 * Add/remove global element
+	 *
+	 * @since 1.0
+	 */
+	public function save_global_element() {
+		self::verify_request( 'bricks-nonce-builder' );
+
+		if ( ! Capabilities::current_user_has_full_access() ) {
+			wp_send_json_error( esc_html__( 'Not allowed', 'bricks' ) );
+		}
+
+		// Get global elements from database
+		$global_elements = Database::$global_data['elements'] ?? [];
+
+		$new_global_element   = isset( $_POST['element'] ) ? stripslashes_deep( $_POST['element'] ) : false;
+		$delete_element_index = isset( $_POST['index'] ) ? $_POST['index'] : false;
+
+		// Save new global element
+		if ( $new_global_element ) {
+			if ( empty( $new_global_element['label'] ) ) {
+				$new_global_element['label'] = ucwords( str_replace( '-', ' ', $new_global_element['name'] ) );
+			}
+
+			array_unshift( $global_elements, $new_global_element );
+		}
+
+		// Delete global element
+		elseif ( is_numeric( $delete_element_index ) ) {
+			array_splice( $global_elements, $delete_element_index, 1 );
+		}
+
+		if ( count( $global_elements ) === 0 ) {
+			delete_option( BRICKS_DB_GLOBAL_ELEMENTS );
+		} else {
+			$global_elements = Helpers::security_check_elements_before_save( $global_elements, null, 'global' );
+			update_option( BRICKS_DB_GLOBAL_ELEMENTS, $global_elements );
+		}
+
+		// Return updated global elements 'settings' array
+		wp_send_json_success( $global_elements );
+	}
+
+	/**
+	 * Update global elements options in database
+	 */
+	public function update_global_elements( $new_value, $old_value, $option ) {
+		if ( $option === BRICKS_DB_GLOBAL_ELEMENTS ) {
+			$new_value = Helpers::security_check_elements_before_save( $new_value, null, 'global' );
+		}
+
+		return $new_value;
+	}
+
+	/**
 	 * Query control: Get posts
 	 *
 	 * @since 1.0
 	 */
 	public function get_posts() {
-		if ( ! check_ajax_referer( 'bricks-nonce-builder', 'nonce', false ) ) {
-			if ( ! check_ajax_referer( 'bricks-nonce-admin', 'nonce', false ) ) {
-				wp_send_json_error( 'Invalid nonce' );
-			}
-		}
+		self::verify_request( 'bricks-nonce-builder' );
 
 		$post_type = 'any';
 
@@ -675,15 +634,6 @@ class Ajax {
 			$post_type = array_keys( $post_type );
 		}
 
-		// Exclude specific post types if requested
-		if ( ! empty( $_GET['excludePostTypes'] ) ) {
-			$exclude_post_types = array_map( 'sanitize_text_field', (array) $_GET['excludePostTypes'] );
-
-			if ( is_array( $post_type ) ) {
-				$post_type = array_diff( $post_type, $exclude_post_types );
-			}
-		}
-
 		// Set query args
 		$query_args = [ 'post_type' => $post_type ];
 
@@ -695,11 +645,6 @@ class Ajax {
 		if ( ! empty( $_GET['search'] ) ) {
 			$query_args['s']       = stripslashes_deep( sanitize_text_field( $_GET['search'] ) );
 			$query_args['orderby'] = 'relevance'; // (#86c0zr03p)
-		}
-
-		// @since 2.0
-		if ( ! empty( $_GET['postStatus'] ) ) {
-			$query_args['post_status'] = sanitize_text_field( $_GET['postStatus'] );
 		}
 
 		$posts = Helpers::get_posts_by_post_id( $query_args );
@@ -855,11 +800,6 @@ class Ajax {
 		$elements = self::decode( $_POST['elements'], false );
 		$elements = array_map( 'Bricks\Helpers::set_is_frontend_to_false', $elements );
 
-		// Use global classes data from builder not from database
-		if ( ! empty( $_POST['globalClasses'] ) ) {
-			Database::$global_data['globalClasses'] = self::decode( $_POST['globalClasses'], false );
-		}
-
 		/**
 		 * Use real-time, possibly unsaved components data from builder to generate in-builder styles correctly
 		 *
@@ -912,32 +852,12 @@ class Ajax {
 			}
 		}
 
-		$filtered_elements = $elements;
-
-		// If post-content with source="bricks" is in elements, remove it
-		if ( ! Helpers::is_bricks_template( $post_id ) ) {
-			$filtered_elements = array_filter(
-				$elements,
-				function( $element ) {
-					return $element['name'] !== 'post-content' || $element['settings']['dataSource'] !== 'bricks';
-				}
-			);
-		}
-
 		// Generate Assets before Frontend render to add 'data-query-loop-index' attribute successfully in builder
-		Assets::generate_css_from_elements( $filtered_elements, $loop_name );
+		Assets::generate_css_from_elements( $elements, $loop_name );
 
 		$inline_css = Assets::$inline_css[ $loop_name ] ?? '';
 
-		// Collect HTML strings for all elements start (@since 2.0)
-		add_filter( 'bricks/frontend/render_element', [ 'Bricks\Builder', 'collect_elements_html' ], 10, 2 );
-		add_filter( 'bricks/frontend/render_loop', [ 'Bricks\Builder', 'collect_looping_html' ], 10, 3 );
-
 		$html = Frontend::render_data( $elements, $area );
-
-		// Collect HTML strings for all elements end (@since 2.0)
-		remove_filter( 'bricks/frontend/render_loop', [ 'Bricks\Builder', 'collect_looping_html' ], 10, 3 );
-		remove_filter( 'bricks/frontend/render_element', [ 'Bricks\Builder', 'collect_elements_html' ], 10, 2 );
 
 		$inline_css .= Assets::$inline_css_dynamic_data;
 
@@ -956,12 +876,6 @@ class Ajax {
 			'html'   => $html,
 			'styles' => isset( $_POST['staticArea'] ) ? $inline_css : $styles, // StaticArea.vue: inline CSS only, otherwise full styles with <style> tag (@since 1.12)
 		];
-
-		// For builder elements to reduce render_elements API calls (@since 2.0)
-		$data['elementsHtml']  = Builder::$elements_html;
-		$data['previewTexts']  = Builder::$preview_texts;
-		$data['loopingHtml']   = Builder::$looping_html;
-		$data['templatesData'] = Builder::$templates_data;
 
 		// Run query to get query results count in builder (@since 1.9.1)
 		$element = ! empty( $_POST['element'] ) ? self::decode( $_POST['element'], false ) : false;
@@ -1042,8 +956,8 @@ class Ajax {
 		 *
 		 * @since 1.9.8
 		 */
-		$notifications       = [];
-		$conflicting_classes = [];
+		$notifications      = [];
+		$conflicing_classes = [];
 
 		/**
 		 * Create revision if data contains 'header', 'footer', or 'content'
@@ -1070,78 +984,22 @@ class Ajax {
 			remove_filter( 'wp_save_post_revision_check_for_changes', [ $this, 'dont_check_for_revision_changes' ] );
 		}
 
+		// Check user capabilities (@since 1.5.4)
+		$has_full_access = Capabilities::current_user_has_full_access();
+		$timezone_offset = get_option( 'gmt_offset' ) * HOUR_IN_SECONDS;
+
 		/**
 		 * Save color palettes
 		 *
 		 * @since 1.4
 		 */
-		if ( isset( $_POST['colorPalette'] ) && Builder_Permissions::user_has_permission( 'edit_color_palettes' ) ) {
+		if ( isset( $_POST['colorPalette'] ) && $has_full_access ) {
 			$color_palette = self::decode( $_POST['colorPalette'], false );
 
 			if ( is_array( $color_palette ) && count( $color_palette ) ) {
 				update_option( BRICKS_DB_COLOR_PALETTE, $color_palette );
 			} else {
 				delete_option( BRICKS_DB_COLOR_PALETTE );
-			}
-		}
-
-		/**
-		 * Save icon sets
-		 *
-		 * @since 2.0
-		 */
-		if ( isset( $_POST['iconSets'] ) ) {
-			$icon_sets = self::decode( $_POST['iconSets'], false );
-
-			if ( is_array( $icon_sets ) && count( $icon_sets ) ) {
-				update_option( BRICKS_DB_ICON_SETS, $icon_sets );
-			} else {
-				delete_option( BRICKS_DB_ICON_SETS );
-			}
-		}
-
-		/**
-		 * Save custom icons
-		 *
-		 * @since 2.0
-		 */
-		if ( isset( $_POST['customIcons'] ) ) {
-			$custom_icons = self::decode( $_POST['customIcons'], false );
-
-			if ( is_array( $custom_icons ) && count( $custom_icons ) ) {
-				update_option( BRICKS_DB_CUSTOM_ICONS, $custom_icons );
-			} else {
-				delete_option( BRICKS_DB_CUSTOM_ICONS );
-			}
-		}
-
-		/**
-		 * Save disabled icon sets
-		 *
-		 * @since 2.0
-		 */
-		if ( isset( $_POST['disabledIconSets'] ) ) {
-			$disabled_icon_sets = self::decode( $_POST['disabledIconSets'], false );
-
-			if ( is_array( $disabled_icon_sets ) && count( $disabled_icon_sets ) ) {
-				update_option( BRICKS_DB_DISABLED_ICON_SETS, $disabled_icon_sets );
-			} else {
-				delete_option( BRICKS_DB_DISABLED_ICON_SETS );
-			}
-		}
-
-		/**
-		 * Save font favorites
-		 *
-		 * @since 2.0
-		 */
-		if ( isset( $_POST['fontFavorites'] ) ) {
-			$font_favorites = self::decode( $_POST['fontFavorites'], false );
-
-			if ( is_array( $font_favorites ) && count( $font_favorites ) ) {
-				update_option( BRICKS_DB_FONT_FAVORITES, $font_favorites );
-			} else {
-				delete_option( BRICKS_DB_FONT_FAVORITES );
 			}
 		}
 
@@ -1157,7 +1015,7 @@ class Ajax {
 		$global_ids_modified = $global_changes['modified'] ?? [];
 		$global_ids_trashed  = $global_changes['trashed'] ?? []; // Track trashed classes (@since 1.11)
 
-		if ( isset( $_POST['globalClasses'] ) && ( Builder_Permissions::user_has_permission( 'edit_global_classes' ) || Builder_Permissions::user_has_permission( 'create_global_classes' ) ) ) {
+		if ( isset( $_POST['globalClasses'] ) && $has_full_access ) {
 			$global_classes = self::decode( $_POST['globalClasses'], false );
 
 			// Remove in savePost if conflict has been discarded
@@ -1238,7 +1096,7 @@ class Ajax {
 
 						// CONFLICT: Class modified in database and builder
 						if ( in_array( $global_class_db['id'], $global_ids_modified ) ) {
-							$conflicting_classes[] = $global_class_db;
+							$conflicing_classes[] = $global_class_db;
 						}
 					}
 				}
@@ -1266,7 +1124,6 @@ class Ajax {
 							'key'    => 'globalClassesTrashed',
 							'action' => 'trashed',
 							'data'   => [ $trashed_class ],
-							// translators: %s: Class name
 							'desc'   => sprintf( esc_html__( 'Class "%s" has been moved to trash but your modifications are kept.', 'bricks' ), $trashed_class['name'] ),
 						];
 					}
@@ -1283,13 +1140,12 @@ class Ajax {
 						);
 
 						if ( ! empty( $conflicting_class ) ) {
-							$conflicting_class     = reset( $conflicting_class );
-							$conflicting_classes[] = $conflicting_class;
-							$notifications[]       = [
+							$conflicting_class    = reset( $conflicting_class );
+							$conflicing_classes[] = $conflicting_class;
+							$notifications[]      = [
 								'key'    => 'globalClassesConflict',
 								'action' => 'conflict',
 								'data'   => [ $conflicting_class ],
-								// translators: %s: Class name
 								'desc'   => sprintf( esc_html__( 'Conflict: Class "%s" has been permanently deleted by another user.', 'bricks' ), $conflicting_class['name'] ),
 							];
 						}
@@ -1309,12 +1165,12 @@ class Ajax {
 					];
 
 					// Add conflict: Classes modified in database and builder
-					if ( count( $conflicting_classes ) ) {
-						$notifications[] = [
-							'conflict' => '<strong>' . esc_html( 'Conflict', 'bricks' ) . '</strong>: ' . esc_html__( 'The following classes have been modified by the user below since your last save. Accept or discard those changes to continue your save.', 'bricks' ),
-							'data'     => $conflicting_classes,
-						];
+					if ( count( $conflicing_classes ) ) {
+						$notification['conflict'] = '<strong>' . esc_html( 'Conflict', 'bricks' ) . '</strong>: ' . esc_html__( 'The following classes have been modified by the user below since your last save. Accept or discard those changes to continue your save.', 'bricks' );
+						$notification['data']     = $conflicing_classes;
 					}
+
+					$notifications[] = $notification;
 				}
 
 				// Add notification: Classes added
@@ -1362,7 +1218,7 @@ class Ajax {
 			}
 
 			// STEP: Return notifications without save if conflicts found
-			if ( count( $notifications ) && count( $conflicting_classes ) || ! empty( $conflicting_trash_classes ) ) {
+			if ( count( $notifications ) && count( $conflicing_classes ) || ! empty( $conflicting_trash_classes ) ) {
 				wp_send_json_error(
 					[
 						'notifications'   => $notifications,
@@ -1507,7 +1363,7 @@ class Ajax {
 		 *
 		 * @since 1.4
 		 */
-		if ( isset( $_POST['globalClassesLocked'] ) && Builder_Permissions::user_has_permission( 'edit_global_classes' ) ) {
+		if ( isset( $_POST['globalClassesLocked'] ) && $has_full_access ) {
 			$global_classes_locked = self::decode( $_POST['globalClassesLocked'], false );
 
 			if ( is_array( $global_classes_locked ) && count( $global_classes_locked ) ) {
@@ -1522,7 +1378,7 @@ class Ajax {
 		 *
 		 * @since 1.9.4
 		 */
-		if ( isset( $_POST['globalClassesCategories'] ) && Builder_Permissions::user_has_permission( 'edit_global_classes' ) ) {
+		if ( isset( $_POST['globalClassesCategories'] ) && $has_full_access ) {
 			$global_classes_categories = self::decode( $_POST['globalClassesCategories'], false );
 
 			if ( is_array( $global_classes_categories ) && count( $global_classes_categories ) ) {
@@ -1537,59 +1393,8 @@ class Ajax {
 		 *
 		 * @since 1.9.8
 		 */
-		if ( isset( $_POST['globalVariables'] ) && Builder_Permissions::user_has_permission( 'access_variable_manager' ) ) {
+		if ( isset( $_POST['globalVariables'] ) && $has_full_access ) {
 			$global_variables = self::decode( $_POST['globalVariables'], false );
-
-			// Process renamed variables if any
-			if ( isset( $_POST['globalVariablesRenamed'] ) && ! empty( $_POST['globalVariablesRenamed'] ) ) {
-				$renamed_variable_ids = self::decode( $_POST['globalVariablesRenamed'], false );
-
-				if ( is_array( $renamed_variable_ids ) && ! empty( $renamed_variable_ids ) ) {
-					// Get existing variables from database to compare
-					$existing_variables = get_option( BRICKS_DB_GLOBAL_VARIABLES, [] );
-
-					// Create lookup arrays for existing and new variables by ID
-					$existing_variables_by_id = [];
-					$new_variables_by_id      = [];
-
-					// Index existing variables by ID
-					if ( is_array( $existing_variables ) ) {
-						foreach ( $existing_variables as $variable ) {
-							if ( isset( $variable['id'] ) ) {
-								$existing_variables_by_id[ $variable['id'] ] = $variable;
-							}
-						}
-					}
-
-					// Index new variables by ID
-					if ( is_array( $global_variables ) ) {
-						foreach ( $global_variables as $variable ) {
-							if ( isset( $variable['id'] ) ) {
-								$new_variables_by_id[ $variable['id'] ] = $variable;
-							}
-						}
-					}
-
-					// Process each renamed variable
-					foreach ( $renamed_variable_ids as $variable_id ) {
-						// Skip if this is a new variable (not in database)
-						if ( ! isset( $existing_variables_by_id[ $variable_id ] ) || ! isset( $new_variables_by_id[ $variable_id ] ) ) {
-							continue;
-						}
-
-						$old_name = $existing_variables_by_id[ $variable_id ]['name'];
-						$new_name = $new_variables_by_id[ $variable_id ]['name'];
-
-						// Skip if name hasn't actually changed
-						if ( $old_name === $new_name ) {
-							continue;
-						}
-
-						// Update all references to this variable
-						Helpers::update_global_variable_references( $old_name, $new_name );
-					}
-				}
-			}
 
 			Helpers::save_global_variables_in_db( $global_variables );
 		}
@@ -1599,7 +1404,7 @@ class Ajax {
 		 *
 		 * @since 1.9.8
 		 */
-		if ( isset( $_POST['globalVariablesCategories'] ) && Builder_Permissions::user_has_permission( 'access_variable_manager' ) ) {
+		if ( isset( $_POST['globalVariablesCategories'] ) && $has_full_access ) {
 			$global_variables_categories = self::decode( $_POST['globalVariablesCategories'], false );
 
 			if ( is_array( $global_variables_categories ) && count( $global_variables_categories ) ) {
@@ -1614,16 +1419,14 @@ class Ajax {
 		 *
 		 * @since 1.4
 		 */
-		if ( isset( $_POST['globalElements'] ) ) {
-			if ( isset( $_POST['globalElements'] ) && Builder_Permissions::user_has_permission( 'manage_global_elements' ) ) {
-				$global_elements = self::decode( $_POST['globalElements'], false );
+		if ( isset( $_POST['globalElements'] ) && $has_full_access ) {
+			$global_elements = self::decode( $_POST['globalElements'], false );
 
-				if ( is_array( $global_elements ) && count( $global_elements ) ) {
-					$global_elements = Helpers::security_check_elements_before_save( $global_elements, null, 'global' );
-					update_option( BRICKS_DB_GLOBAL_ELEMENTS, $global_elements );
-				} else {
-					delete_option( BRICKS_DB_GLOBAL_ELEMENTS );
-				}
+			if ( is_array( $global_elements ) && count( $global_elements ) ) {
+				$global_elements = Helpers::security_check_elements_before_save( $global_elements, null, 'global' );
+				update_option( BRICKS_DB_GLOBAL_ELEMENTS, $global_elements );
+			} else {
+				delete_option( BRICKS_DB_GLOBAL_ELEMENTS );
 			}
 		}
 
@@ -1633,7 +1436,7 @@ class Ajax {
 		 * @since 1.4
 		 */
 
-		if ( isset( $_POST['pinnedElements'] ) && Builder_Permissions::user_has_permission( 'pin_unpin_elements' ) ) {
+		if ( isset( $_POST['pinnedElements'] ) && $has_full_access ) {
 			$pinned_elements = self::decode( $_POST['pinnedElements'], false );
 
 			if ( is_array( $pinned_elements ) && count( $pinned_elements ) ) {
@@ -1648,7 +1451,7 @@ class Ajax {
 		 *
 		 * @since 1.4
 		 */
-		if ( isset( $_POST['pseudoClasses'] ) && Builder_Permissions::user_has_permission( 'access_pseudo_selectors' ) ) {
+		if ( isset( $_POST['pseudoClasses'] ) && $has_full_access ) {
 			$global_pseudo_classes = self::decode( $_POST['pseudoClasses'] );
 
 			if ( is_array( $global_pseudo_classes ) && count( $global_pseudo_classes ) ) {
@@ -1663,7 +1466,7 @@ class Ajax {
 		 *
 		 * @since 1.4
 		 */
-		if ( isset( $_POST['themeStyles'] ) && Builder_Permissions::user_has_permission( 'access_theme_styles' ) ) {
+		if ( isset( $_POST['themeStyles'] ) && $has_full_access ) {
 			$theme_styles = self::decode( $_POST['themeStyles'], false );
 
 			foreach ( $theme_styles as $theme_style_id => $theme_style ) {
@@ -1696,7 +1499,7 @@ class Ajax {
 		 *
 		 * @since 1.4
 		 */
-		if ( isset( $_POST['pageSettings'] ) && Builder_Permissions::user_has_permission( 'access_page_settings' ) ) {
+		if ( isset( $_POST['pageSettings'] ) && $has_full_access ) {
 			$page_settings = self::decode( $_POST['pageSettings'] );
 
 			if ( is_array( $page_settings ) && count( $page_settings ) ) {
@@ -1798,7 +1601,7 @@ class Ajax {
 		 *
 		 * @since 1.4
 		 */
-		if ( isset( $_POST['templateSettings'] ) && Builder_Permissions::user_has_permission( 'access_template_settings' ) ) {
+		if ( isset( $_POST['templateSettings'] ) && $has_full_access ) {
 			$template_settings = self::decode( $_POST['templateSettings'], false );
 
 			if ( is_array( $template_settings ) && count( $template_settings ) ) {
@@ -1849,13 +1652,8 @@ class Ajax {
 			}
 		}
 
-		// Always set editor mode to 'bricks' if the template type is header or footer, or if BRICKS_DB_PAGE_CONTENT is not empty (#86c48ct1y; @since 2.0)
-		$editor_mode = ( in_array( $template_type, [ 'header', 'footer' ], true ) ||
-				get_post_meta( $post_id, BRICKS_DB_PAGE_CONTENT, true ) )
-				? 'bricks'
-				: 'wordpress';
-
-		update_post_meta( $post_id, BRICKS_DB_EDITOR_MODE, $editor_mode );
+		// Set _bricks_editor_mode to 'bricks'
+		update_post_meta( $post_id, BRICKS_DB_EDITOR_MODE, 'bricks' );
 
 		/**
 		 * STEP: Update post to (1) update post date & (2) re-generate CSS file via 'save_post' in files.php
@@ -1866,427 +1664,6 @@ class Ajax {
 		 */
 		if ( $bricks_data_changed ) {
 			$post_id = $the_post ? wp_update_post( $the_post ) : wp_update_post( $post );
-		}
-
-		/**
-		 * Save custom fonts
-		 *
-		 * @since 1.0
-		 */
-		if ( isset( $_POST['fonts'] ) && Builder_Permissions::user_has_permission( 'access_font_manager' ) ) {
-			$custom_fonts = self::decode( $_POST['fonts'], false );
-			$custom_fonts = $custom_fonts['custom'];
-			$font_changes = isset( $_POST['fontChanges'] ) ? self::decode( $_POST['fontChanges'], false ) : [];
-
-			// Get existing custom fonts from database for comparison
-			$existing_custom_fonts = Custom_Fonts::get_custom_fonts();
-
-			// Track actual post IDs for fonts (for variant processing later)
-			$actual_post_ids = [];
-
-			// Helper function to get font extension from URL or type
-			$get_font_extension = function( $font_data ) {
-				// First try to get from type
-				if ( isset( $font_data['type'] ) && $font_data['type'] ) {
-					$type_parts = explode( '/', $font_data['type'] );
-					if ( count( $type_parts ) >= 2 ) {
-						$extension = $type_parts[1];
-						// Normalize common variations
-						if ( $extension === 'truetype' ) {
-							$extension = 'ttf';
-						}
-						return $extension;
-					}
-				}
-
-				// Fallback to getting from URL
-				if ( isset( $font_data['url'] ) && $font_data['url'] ) {
-					$path_info = pathinfo( $font_data['url'] );
-					if ( isset( $path_info['extension'] ) ) {
-						return strtolower( $path_info['extension'] );
-					}
-				}
-
-				// Default fallback
-				return 'woff2';
-			};
-
-			// Process family level changes
-			if ( ! empty( $font_changes['families'] ) ) {
-				// Process deleted fonts - check if any existing fonts are missing from new data
-				if ( $existing_custom_fonts ) {
-					foreach ( $existing_custom_fonts as $font_id => $font_data ) {
-						if ( ! isset( $custom_fonts[ $font_id ] ) || in_array( $font_id, $font_changes['families']['deleted'] ) ) {
-							$post_id = intval( str_replace( 'custom_font_', '', $font_id ) );
-							wp_delete_post( $post_id, true );
-						}
-					}
-				}
-
-				// Process added and modified fonts
-				foreach ( $custom_fonts as $font_id => $font_data ) {
-					$post_id     = intval( str_replace( 'custom_font_', '', $font_id ) );
-					$is_new      = ! isset( $existing_custom_fonts[ $font_id ] );
-					$is_modified = in_array( $font_id, $font_changes['families']['modified'] );
-
-					if ( $is_new || $is_modified ) {
-						// Prepare post data
-						$post_data = [
-							'post_title'  => $font_data['family'],
-							'post_type'   => BRICKS_DB_CUSTOM_FONTS,
-							'post_status' => 'publish',
-						];
-
-						if ( ! $is_new ) {
-							$post_data['ID'] = $post_id;
-							$result          = wp_update_post( $post_data );
-
-							// For existing fonts, post_id stays the same
-							$actual_post_ids[ $font_id ] = $post_id;
-						} else {
-							// Check if this is a draft post that already exists (created by create_draft_font)
-							$existing_post = get_post( $post_id );
-							if ( $existing_post && $existing_post->post_type === BRICKS_DB_CUSTOM_FONTS ) {
-								// Update the existing draft post
-								$post_data['ID']             = $post_id;
-								$result                      = wp_update_post( $post_data );
-								$actual_post_ids[ $font_id ] = $post_id;
-							} else {
-								// Create a completely new post
-								$new_post_id                 = wp_insert_post( $post_data );
-								$actual_post_ids[ $font_id ] = $new_post_id;
-								$post_id                     = $new_post_id;
-							}
-						}
-
-						// Update font faces if they exist
-						if ( isset( $font_data['fontFaces'] ) ) {
-							// Check if fontFaces is an array before updating
-							if ( is_array( $font_data['fontFaces'] ) ) {
-								// Convert frontend format (URL/type) to database format (attachment ID/extension)
-								$converted_font_faces = [];
-								foreach ( $font_data['fontFaces'] as $variant_key => $font_face ) {
-									if ( isset( $font_face['url'] ) && $font_face['url'] ) {
-										$font_extension = $get_font_extension( $font_face );
-										$attachment_id  = attachment_url_to_postid( $font_face['url'] );
-
-										if ( $attachment_id ) {
-											$converted_font_faces[ $variant_key ] = [
-												$font_extension => $attachment_id
-											];
-										}
-									}
-								}
-
-								$meta_result = update_post_meta( $post_id, BRICKS_DB_CUSTOM_FONT_FACES, $converted_font_faces );
-							}
-						}
-					} else {
-						// For unchanged fonts, still track their post_id
-						$actual_post_ids[ $font_id ] = $post_id;
-					}
-				}
-			}
-
-			// Process variant level changes
-			if ( ! empty( $font_changes['variants'] ) ) {
-
-				// Before processing, detect "replace" scenarios where same variant is both deleted and added
-				// and move them to modified instead
-				$deleted_variants = $font_changes['variants']['deleted'] ?? [];
-				$added_variants   = $font_changes['variants']['added'] ?? [];
-
-				foreach ( $deleted_variants as $font_id => $variants ) {
-					if ( isset( $added_variants[ $font_id ] ) ) {
-						// Find variants that are both deleted and added (replacements)
-						$common_variants = array_intersect( $variants, $added_variants[ $font_id ] );
-
-						if ( ! empty( $common_variants ) ) {
-
-							// Move common variants from deleted/added to modified
-							if ( ! isset( $font_changes['variants']['modified'] ) ) {
-								$font_changes['variants']['modified'] = [];
-							}
-							if ( ! isset( $font_changes['variants']['modified'][ $font_id ] ) ) {
-								$font_changes['variants']['modified'][ $font_id ] = [];
-							}
-
-							foreach ( $common_variants as $variant_key ) {
-								// Add to modified
-								if ( ! in_array( $variant_key, $font_changes['variants']['modified'][ $font_id ] ) ) {
-									$font_changes['variants']['modified'][ $font_id ][] = $variant_key;
-								}
-
-								// Remove from deleted
-								$delete_index = array_search( $variant_key, $font_changes['variants']['deleted'][ $font_id ] );
-								if ( $delete_index !== false ) {
-									unset( $font_changes['variants']['deleted'][ $font_id ][ $delete_index ] );
-								}
-
-								// Remove from added
-								$add_index = array_search( $variant_key, $font_changes['variants']['added'][ $font_id ] );
-								if ( $add_index !== false ) {
-									unset( $font_changes['variants']['added'][ $font_id ][ $add_index ] );
-								}
-							}
-
-							// Clean up empty arrays
-							if ( empty( $font_changes['variants']['deleted'][ $font_id ] ) ) {
-								unset( $font_changes['variants']['deleted'][ $font_id ] );
-							}
-							if ( empty( $font_changes['variants']['added'][ $font_id ] ) ) {
-								unset( $font_changes['variants']['added'][ $font_id ] );
-							}
-						}
-					}
-				}
-
-				foreach ( $font_changes['variants'] as $change_type => $fonts ) {
-					if ( empty( $fonts ) ) {
-						continue;
-					}
-
-					foreach ( $fonts as $font_id => $variants ) {
-						if ( empty( $variants ) ) {
-							continue;
-						}
-
-						// Use the actual post_id that was tracked during family processing
-						$post_id = isset( $actual_post_ids[ $font_id ] ) ? $actual_post_ids[ $font_id ] : intval( str_replace( 'custom_font_', '', $font_id ) );
-
-						// Get current font faces
-						$current_font_faces = get_post_meta( $post_id, BRICKS_DB_CUSTOM_FONT_FACES, true );
-
-						// If we have a structured array of font faces
-						if ( is_array( $current_font_faces ) ) {
-							// Process deleted variants
-							if ( $change_type === 'deleted' ) {
-								foreach ( $variants as $variant_key ) {
-									// Extract weight and style from variant key (e.g., "400normal")
-									preg_match( '/(\d+)(.*)/', $variant_key, $matches );
-									if ( count( $matches ) >= 3 ) {
-										$weight = $matches[1];
-										$style  = $matches[2] ? $matches[2] : 'normal';
-
-										// Construct the expected database key format
-										$db_key = $weight;
-										if ( $style !== 'normal' ) {
-											$db_key .= $style;
-										}
-
-										// Unset using the determined database key
-										if ( isset( $current_font_faces[ $db_key ] ) ) {
-											unset( $current_font_faces[ $db_key ] );
-										}
-
-										// Also unset using the client-side key as a fallback for potential inconsistencies
-										if ( $db_key !== $variant_key && isset( $current_font_faces[ $variant_key ] ) ) {
-											unset( $current_font_faces[ $variant_key ] );
-										}
-									}
-								}
-
-								// Update the font faces
-								$meta_result = update_post_meta( $post_id, BRICKS_DB_CUSTOM_FONT_FACES, $current_font_faces );
-							}
-							// Process added variants
-							elseif ( $change_type === 'added' ) {
-								// Get the updated font data from the client
-								if ( isset( $custom_fonts[ $font_id ] ) && isset( $custom_fonts[ $font_id ]['fontFaces'] ) ) {
-									$new_font_faces = $custom_fonts[ $font_id ]['fontFaces'];
-
-									// If fontFaces is a string (CSS), convert it to an array
-									if ( is_string( $new_font_faces ) ) {
-										// Try to parse as JSON first
-										$decoded = json_decode( $new_font_faces, true );
-										if ( $decoded && is_array( $decoded ) ) {
-											$new_font_faces = $decoded;
-										} else {
-											// If not JSON, it might be a CSS string - we'll keep the current structure
-											$new_font_faces = $current_font_faces;
-										}
-									}
-
-									// For each added variant, ensure it exists in the font faces
-									foreach ( $variants as $variant_key ) {
-										// Extract weight and style from variant key (e.g., "400normal")
-										preg_match( '/(\d+)(.*)/', $variant_key, $matches );
-										if ( count( $matches ) >= 3 ) {
-											$weight = $matches[1];
-											$style  = $matches[2] ? $matches[2] : 'normal';
-
-											// Check if this variant exists in the new font faces
-											if ( isset( $new_font_faces[ $variant_key ] ) ) {
-												$font_extension = $get_font_extension( $new_font_faces[ $variant_key ] );
-
-												// Find and remove the old variant with same URL
-												foreach ( $current_font_faces as $old_key => $old_face ) {
-													// Check all possible extensions, not just woff2
-													foreach ( [ 'woff2', 'woff', 'ttf' ] as $ext ) {
-														if ( isset( $old_face[ $ext ] ) ) {
-															$old_url = wp_get_attachment_url( $old_face[ $ext ] );
-															if ( $old_url === $new_font_faces[ $variant_key ]['url'] ) {
-																unset( $current_font_faces[ $old_key ] );
-																break 2; // Break out of both loops
-															}
-														}
-													}
-												}
-
-												// Update this variant in the current font faces with attachment ID
-												$current_font_faces[ $variant_key ] = [
-													$font_extension => attachment_url_to_postid( $new_font_faces[ $variant_key ]['url'] )
-												];
-											}
-										}
-									}
-
-									// Update the font faces
-									$meta_result = update_post_meta( $post_id, BRICKS_DB_CUSTOM_FONT_FACES, $current_font_faces );
-								}
-							}
-							// Process modified variants
-							elseif ( $change_type === 'modified' ) {
-								// Get the updated font data from the client
-								if ( isset( $custom_fonts[ $font_id ] ) && isset( $custom_fonts[ $font_id ]['fontFaces'] ) ) {
-									$new_font_faces = $custom_fonts[ $font_id ]['fontFaces'];
-
-									// If fontFaces is a string (CSS), convert it to an array
-									if ( is_string( $new_font_faces ) ) {
-										// Try to parse as JSON first
-										$decoded = json_decode( $new_font_faces, true );
-										if ( $decoded ) {
-											$new_font_faces = $decoded;
-										}
-									}
-
-									// For each modified variant, update it in the font faces
-									foreach ( $variants as $variant_key ) {
-										// Extract weight and style from variant key (e.g., "400normal")
-										preg_match( '/(\d+)(.*)/', $variant_key, $matches );
-										if ( count( $matches ) >= 3 ) {
-											$weight = $matches[1];
-											$style  = $matches[2] ? $matches[2] : 'normal';
-											// Generate database key format (e.g. '400' for normal, '700italic' for italic)
-											$db_key = $weight;
-											if ( $style !== 'normal' ) {
-												$db_key .= $style;
-											}
-
-											// Check if this variant exists in the new font faces
-											if ( isset( $new_font_faces[ $variant_key ] ) ) {
-												// Find and remove the old variant with same attachment ID
-												if ( isset( $new_font_faces[ $variant_key ]['url'] ) ) {
-													$new_url           = $new_font_faces[ $variant_key ]['url'];
-													$new_attachment_id = attachment_url_to_postid( $new_url );
-
-													// Check if DB format key exists in current font faces
-													if ( isset( $current_font_faces[ $db_key ] ) ) {
-
-														// Get old attachment ID to compare - check all extensions
-														$old_attachment_id = 0;
-														foreach ( [ 'woff2', 'woff', 'ttf' ] as $ext ) {
-															if ( isset( $current_font_faces[ $db_key ][ $ext ] ) ) {
-																$old_attachment_id = $current_font_faces[ $db_key ][ $ext ];
-																break;
-															}
-														}
-
-														if ( $old_attachment_id != $new_attachment_id ) {
-															unset( $current_font_faces[ $db_key ] );
-														}
-													}
-
-													// Also check the client format key just in case
-													if ( isset( $current_font_faces[ $variant_key ] ) ) {
-														unset( $current_font_faces[ $variant_key ] );
-													}
-
-													// Look for any variants using the same file but with different key
-													foreach ( $current_font_faces as $old_key => $old_face ) {
-														// Check all possible extensions
-														foreach ( [ 'woff2', 'woff', 'ttf' ] as $ext ) {
-															if ( isset( $old_face[ $ext ] ) ) {
-																if ( $old_face[ $ext ] == $new_attachment_id && $old_key != $db_key && $old_key != $variant_key ) {
-																	unset( $current_font_faces[ $old_key ] );
-																	break; // Break out of extension loop once found
-																}
-															}
-														}
-													}
-
-													// Add/update the variant using the database format key
-													$font_extension = $get_font_extension( $new_font_faces[ $variant_key ] );
-
-													$current_font_faces[ $db_key ] = [
-														$font_extension => $new_attachment_id
-													];
-												}
-											}
-										}
-									}
-
-									// Update the font faces
-									$meta_result = update_post_meta( $post_id, BRICKS_DB_CUSTOM_FONT_FACES, $current_font_faces );
-								}
-							}
-						}
-						// If we have font faces from the client
-						elseif ( isset( $custom_fonts[ $font_id ]['fontFaces'] ) ) {
-							// Convert from URL/type format to extension/attachment_id format
-							if ( is_array( $custom_fonts[ $font_id ]['fontFaces'] ) ) {
-								$converted_font_faces = [];
-								foreach ( $custom_fonts[ $font_id ]['fontFaces'] as $variant_key => $font_data ) {
-									if ( isset( $font_data['url'] ) && $font_data['url'] ) {
-										$font_extension                       = $get_font_extension( $font_data );
-										$attachment_id                        = attachment_url_to_postid( $font_data['url'] );
-										$converted_font_faces[ $variant_key ] = [
-											$font_extension => $attachment_id
-										];
-									}
-								}
-
-								if ( ! empty( $converted_font_faces ) ) {
-									$meta_result = update_post_meta( $post_id, BRICKS_DB_CUSTOM_FONT_FACES, $converted_font_faces );
-								}
-							}
-						}
-					}
-				}
-			}
-
-			// Regenerate custom font face CSS rules after font changes
-			// This ensures fonts are immediately available in frontend/builder
-			if ( ! empty( $font_changes ) || ! empty( $custom_fonts ) ) {
-				// Clear the static cache to force regeneration
-				Custom_Fonts::$fonts           = false;
-				Custom_Fonts::$font_face_rules = '';
-
-				// Get all custom fonts (this regenerates the CSS rules)
-				$fonts = Custom_Fonts::get_custom_fonts();
-
-				// Update the cached CSS rules option
-				if ( Custom_Fonts::$font_face_rules ) {
-					update_option( BRICKS_DB_CUSTOM_FONT_FACE_RULES, Custom_Fonts::$font_face_rules );
-				} else {
-					delete_option( BRICKS_DB_CUSTOM_FONT_FACE_RULES );
-				}
-			}
-		}
-
-		/**
-		 * STEP: Components changed: Regenerate external files CSS
-		 * NOTE: Reconsider if this ends up causing builder save delay on large sites.
-		 *
-		 * @since 2.0
-		 */
-		if ( $bricks_data_changed &&
-			is_array( $components ) &&
-			! empty( $components ) &&
-			Database::get_setting( 'cssLoading' ) === 'file'
-		) {
-			// Create a CRON job to regenerate CSS files in the background
-			Assets_Files::schedule_css_file_regeneration();
 		}
 
 		wp_send_json_success( $_POST );
@@ -2492,7 +1869,7 @@ class Ajax {
 			// Check if template type was just set to password_protection
 			$template_type = get_post_meta( $object_id, BRICKS_DB_TEMPLATE_TYPE, true );
 
-			if ( $template_type === 'password_protection' && Capabilities::current_user_can_use_builder( $object_id ) ) {
+			if ( $template_type === 'password_protection' && Capabilities::current_user_can_use_builder( $object_id ) && Capabilities::current_user_has_full_access() ) {
 				// Get current content
 				$current_content = get_post_meta( $object_id, BRICKS_DB_PAGE_CONTENT, true );
 
@@ -2821,7 +2198,7 @@ class Ajax {
 		self::verify_request( 'bricks-nonce-builder' );
 
 		$post_id = ! empty( $_POST['postId'] ) ? intval( $_POST['postId'] ) : 0;
-		$content = ! empty( $_POST['content'] ) ? wp_kses_post( $_POST['content'] ) : '';
+		$content = ! empty( $_POST['content'] ) ? sanitize_text_field( $_POST['content'] ) : '';
 		$context = ! empty( $_POST['context'] ) ? sanitize_text_field( $_POST['context'] ) : 'text';
 
 		if ( ! $post_id ) {
@@ -2861,17 +2238,7 @@ class Ajax {
 
 		wp_reset_postdata();
 
-		// If controlName is for video background, we handle it differently based on full url or video ID (@since 1.12.3)
-		$control_name = ! empty( $_POST['controlName'] ) ? sanitize_text_field( $_POST['controlName'] ) : false;
-		if ( $control_name === 'backgroundVideoUrl' ) {
-
-			// Only escape URL if it's valid one. If we have a video ID, we don't escape it (so that we don't add http:// as prefix to video ID).
-			if ( filter_var( trim( $content ), FILTER_VALIDATE_URL ) ) {
-				$content = esc_url( $content );
-			}
-		}
-
-		elseif ( 'link' === $context ) {
+		if ( 'link' === $context ) {
 			$content = esc_url( $content );
 		}
 
@@ -2988,7 +2355,7 @@ class Ajax {
 	public function restore_global_class() {
 		self::verify_request( 'bricks-nonce-builder' );
 
-		if ( ! current_user_can( 'edit_posts' ) && ! Builder_Permissions::user_has_permission( 'access_class_manager' ) ) {
+		if ( ! current_user_can( 'edit_posts' ) && ! Capabilities::current_user_has_full_access() ) {
 			wp_send_json_error( 'Unauthorized' );
 		}
 
@@ -3035,7 +2402,7 @@ class Ajax {
 		// Verify nonce and user capabilities
 		self::verify_request( 'bricks-nonce-builder' );
 
-		if ( ! Builder_Permissions::user_has_permission( 'access_class_manager' ) ) {
+		if ( ! Capabilities::current_user_has_full_access() ) {
 			wp_send_json_error( [ 'message' => esc_html__( 'Not allowed', 'bricks' ) ] );
 		}
 
@@ -3133,84 +2500,5 @@ class Ajax {
 				setup_postdata( $post );
 			}
 		}
-	}
-
-	/**
-	 * Clean up orphaned elements across site
-	 *
-	 * @since 2.0
-	 */
-	public function cleanup_orphaned_elements() {
-		self::verify_nonce( 'bricks-nonce-admin' );
-
-		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( [ 'message' => esc_html__( 'Not allowed', 'bricks' ) ] );
-		}
-
-		// Find orphaned elements across the site
-		$orphaned_data = Helpers::find_orphaned_elements_across_site();
-
-		if ( empty( $orphaned_data['orphaned_by_post_id'] ) ) {
-			wp_send_json_success(
-				[
-					'message'       => esc_html__( 'No orphaned elements found.', 'bricks' ),
-					'total_cleaned' => 0,
-					'posts_cleaned' => 0,
-				]
-			);
-		}
-
-		// Clean up orphaned elements
-		$cleanup_result = Helpers::cleanup_orphaned_elements_across_site( $orphaned_data );
-
-		if ( $cleanup_result['success'] ) {
-			$message = sprintf(
-				esc_html__( 'Successfully removed %1$d orphaned elements across %2$d posts.', 'bricks' ),
-				$cleanup_result['total_cleaned'],
-				$cleanup_result['posts_cleaned']
-			);
-
-			wp_send_json_success(
-				[
-					'message'       => $message,
-					'total_cleaned' => $cleanup_result['total_cleaned'],
-					'posts_cleaned' => $cleanup_result['posts_cleaned'],
-				]
-			);
-		} else {
-			wp_send_json_error( [ 'message' => esc_html__( 'Failed to clean up orphaned elements.', 'bricks' ) ] );
-		}
-	}
-
-	/**
-	 * Scan for orphaned elements across site
-	 *
-	 * @since 2.0
-	 */
-	public function scan_orphaned_elements() {
-		self::verify_nonce( 'bricks-nonce-admin' );
-
-		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( [ 'message' => esc_html__( 'Not allowed', 'bricks' ) ] );
-		}
-
-		// Scan for orphaned elements
-		$scan_result = Helpers::find_orphaned_elements_across_site();
-
-		// translators: %1$d: Number of orphaned elements found, %2$d: Number of posts scanned
-		$message = sprintf(
-			esc_html__( 'Scan complete: %1$d orphaned elements found across %2$d posts.', 'bricks' ),
-			$scan_result['total_orphans'],
-			$scan_result['total_posts']
-		);
-
-		wp_send_json_success(
-			[
-				'message'             => $message,
-				'orphaned_by_post_id' => $scan_result['orphaned_by_post_id'],
-				'total_orphans'       => $scan_result['total_orphans'],
-				'total_posts'         => $scan_result['total_posts'],
-			]
-		);
 	}
 }

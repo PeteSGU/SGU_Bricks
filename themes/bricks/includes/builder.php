@@ -6,10 +6,6 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 class Builder {
 	public static $dynamic_data    = []; // key: DD tag; value: DD tag value (@since 1.7.1)
 	public static $html_attributes = []; // key: header, main, footer, element ID; value: array with element attributes (@since 1.10)
-	public static $elements_html   = []; // (@since 2.0)
-	public static $preview_texts   = []; // (@since 2.0)
-	public static $looping_html    = []; // (@since 2.0)
-	public static $templates_data  = []; // (@since 2.0)
 
 	public function __construct() {
 		// Builder: Add login form to page
@@ -17,11 +13,9 @@ class Builder {
 			add_action( 'wp_print_footer_scripts', 'wp_auth_check_html', 5 );
 		}
 
-		// Remove admin bar styles and disable admin bar in builder
-		if ( BRICKS_DEBUG === false || bricks_is_builder_iframe() ) {
-			add_action( 'wp_print_styles', [ $this, 'remove_admin_bar_inline_styles' ] );
-			add_filter( 'show_admin_bar', [ $this, 'show_admin_bar' ] );
-		}
+		add_action( 'wp_print_styles', [ $this, 'remove_admin_bar_inline_styles' ] );
+
+		add_filter( 'show_admin_bar', [ $this, 'show_admin_bar' ] );
 
 		add_action( 'init', [ $this, 'set_language_direction' ] );
 
@@ -46,11 +40,6 @@ class Builder {
 
 		// In the builder force our own template to avoid conflicts with other builders
 		add_filter( 'template_include', [ $this, 'template_include' ], 1001 );
-
-		// Skip loading Cloudflare Rocket Loader (@since 2.0)
-		if ( self::cloudflare_rocket_loader_disabled() ) {
-			add_action( 'template_redirect', [ $this, 'cloudflare_rocket_loader_modify_script_tags' ], 0 );
-		}
 	}
 
 	/**
@@ -248,18 +237,13 @@ class Builder {
 			}
 		}
 
-		// Load Adobe fonts file (@since 1.7.1)
-		// NOTE: Enqueue in the main frame for the font manager (@since 2.0)
-		$adobe_fonts_project_id = ! empty( Database::get_setting( 'adobeFontsProjectId' ) ) ? Database::get_setting( 'adobeFontsProjectId' ) : false;
-
-		if ( $adobe_fonts_project_id ) {
-			wp_enqueue_style( "adobe-fonts-project-id-$adobe_fonts_project_id", "https://use.typekit.net/$adobe_fonts_project_id.css" );
-		}
-
 		if ( bricks_is_builder_iframe() ) {
+			// Load Adobe fonts file (@since 1.7.1)
+			$adobe_fonts_project_id = ! empty( Database::get_setting( 'adobeFontsProjectId' ) ) ? Database::get_setting( 'adobeFontsProjectId' ) : false;
 
-			// Enqueue Dashicons for ACF icon picker (@since 2.0)
-			wp_enqueue_style( 'bricks-dashicons', includes_url( '/css/dashicons.min.css' ), [], null );
+			if ( $adobe_fonts_project_id ) {
+				wp_enqueue_style( "adobe-fonts-project-id-$adobe_fonts_project_id", "https://use.typekit.net/$adobe_fonts_project_id.css" );
+			}
 
 			wp_enqueue_script( 'bricks-countdown' );
 			wp_enqueue_script( 'bricks-counter' );
@@ -321,7 +305,6 @@ class Builder {
 				'defaultTemplatesDisabled'          => Database::get_setting( 'defaultTemplatesDisabled' ),
 				'generateTemplateScreenshots'       => Database::get_setting( 'generateTemplateScreenshots' ),
 				'disableGlobalClasses'              => Database::get_setting( 'builderDisableGlobalClassesInterface', false ),
-				'builderShowCssPropertyName'        => false, // Database::get_setting( 'builderShowCssPropertyName', false ),
 				'disablePanelAutoExpand'            => Database::get_setting( 'builderDisablePanelAutoExpand', false ),
 				'disableElementSpacing'             => Database::get_setting( 'disableElementSpacing', false ),
 				'canvasScrollIntoView'              => Database::get_setting( 'canvasScrollIntoView', false ),
@@ -332,8 +315,6 @@ class Builder {
 				'builderElementBreadcrumbs'         => Database::get_setting( 'builderElementBreadcrumbs', false ),
 				'builderDisableRestApi'             => Database::get_setting( 'builderDisableRestApi', false ),
 				'builderResponsiveControlIndicator' => Database::get_setting( 'builderResponsiveControlIndicator', 'any' ),
-				'builderControlGroupVisibility'     => Database::get_setting( 'builderControlGroupVisibility', 'open' ),
-				'builderFontFamilyControl'          => Database::get_setting( 'builderFontFamilyControl', 'all' ),
 				'builderWrapElement'                => Database::get_setting( 'builderWrapElement', 'block' ),
 				'builderInsertElement'              => Database::get_setting( 'builderInsertElement', 'block' ),
 				'builderInsertLayout'               => Database::get_setting( 'builderInsertLayout', 'block' ),
@@ -347,8 +328,6 @@ class Builder {
 				'builderGlobalClassesSync'          => Database::get_setting( 'builderGlobalClassesSync', false ),
 				'builderVariablePickerHideValue'    => Database::get_setting( 'builderVariablePickerHideValue', false ),
 				'builderCodeVim'                    => Database::get_setting( 'builderCodeVim', false ),
-				'builderCloudflareRocketLoader'     => self::cloudflare_rocket_loader_disabled(),
-				'builderCheckForCorruptData'        => Database::get_setting( 'builderCheckForCorruptData', false ),
 				'autosave'                          => [
 					'disabled' => Database::get_setting( 'builderAutosaveDisabled', false ),
 					'interval' => Database::get_setting( 'builderAutosaveInterval', 60 ),
@@ -369,7 +348,6 @@ class Builder {
 				'wp'                                => self::get_wordpress_data(),
 				'academy'                           => [
 					'home'              => 'https://academy.bricksbuilder.io/',
-					'article'           => 'https://academy.bricksbuilder.io/article/',
 					'components'        => 'https://academy.bricksbuilder.io/article/components/',
 					'layout'            => 'https://academy.bricksbuilder.io/article/layout/',
 					'headerTemplate'    => 'https://academy.bricksbuilder.io/article/create-template/',
@@ -381,11 +359,10 @@ class Builder {
 					'conditions'        => 'https://academy.bricksbuilder.io/article/element-conditions/',
 					'interactions'      => 'https://academy.bricksbuilder.io/article/interactions/',
 					'popups'            => 'https://academy.bricksbuilder.io/article/popup-builder/',
-					'capabilities'      => 'https://academy.bricksbuilder.io/article/builder-access/',
 				],
 
 				'version'                           => BRICKS_VERSION,
-				'debug'                             => isset( $_GET['debug'] ) ? sanitize_text_field( $_GET['debug'] ) : false,
+				'debug'                             => isset( $_GET['debug'] ) && Capabilities::current_user_has_full_access() ? sanitize_text_field( $_GET['debug'] ) : false,
 				'message'                           => isset( $_GET['message'] ) ? sanitize_text_field( $_GET['message'] ) : false,
 				'breakpoints'                       => Breakpoints::$breakpoints,
 				'builderPreviewParam'               => BRICKS_BUILDER_IFRAME_PARAM,
@@ -414,11 +391,10 @@ class Builder {
 				'siteName'                          => get_bloginfo( 'name' ),
 				'siteUrl'                           => get_site_url(),
 				'settingsUrl'                       => Helpers::settings_url(),
-				'elementsManagerUrl'                => Helpers::elements_manager_url(),
 
 				'defaultImageSize'                  => 'large',
 				'author'                            => get_the_author_meta( 'display_name', get_post_field( 'post_author', $post_id ) ),
-				'canManageOptions'                  => current_user_can( 'manage_options' ),
+				'isAdmin'                           => current_user_can( 'manage_options' ),
 				'isTemplate'                        => get_post_type() === BRICKS_DB_TEMPLATE_SLUG,
 				'isRtl'                             => is_rtl(),
 				'postId'                            => $post_id,
@@ -442,8 +418,6 @@ class Builder {
 				'swiperInstances'                   => [], // Necessary to destroy and then reinit SwiperJS instances
 				'isotopeInstances'                  => [], // Necessary to destroy and then reinit Isotope instances
 				'filterInstances'                   => [], // Necessary to destroy and then reinit query filter instances
-				'googleMapInstances'                => [], // Necessary to destroy and then reinit Google Maps instances
-				'activeFiltersCountInstances'       => [], // Necessary to destroy and then reinit query filter instances
 
 				'icons'                             => self::get_icon_font_classes(),
 
@@ -474,9 +448,8 @@ class Builder {
 				'mailchimpLists'                    => Integrations\Form\Actions\Mailchimp::get_list_options(),
 				'wooCommerceActive'                 => Woocommerce::$is_active,
 				'googleFontsDisabled'               => Helpers::google_fonts_disabled(),
-				'fonts'                             => self::get_fonts(),
+				'fonts'                             => self::get_fonts(), // @since 1.7.1
 				'templateManagerThumbnailHeight'    => Database::get_setting( 'templateManagerThumbnailHeight' ),
-				'themeStylesLoadingMethod'          => Database::get_setting( 'themeStylesLoadingMethod', 'specific' ), // @since 2.0
 				'codeMirrorConfig'                  => apply_filters( 'bricks/builder/codemirror_config', [] ), // @since 1.11.1
 				'builderGlobalClassesImport'        => Database::get_setting( 'builderGlobalClassesImport' ),
 				'placeholderImage'                  => [
@@ -485,10 +458,6 @@ class Builder {
 					'svgPath' => self::get_template_placeholder_image( true, 'path' ),
 				], // @since 1.12.2
 				'pasteAndImportImage'               => Database::get_setting( 'importImageOnPaste', false ), // @since 1.12.2
-				'adobeFontsProjectId'               => Database::get_setting( 'adobeFontsProjectId' ),
-				'bricksGoogleMarkerScript'          => BRICKS_URL_ASSETS . 'js/libs/bricks-google-marker.min.js?v=' . BRICKS_VERSION, // @since 2.0
-				'infoboxScript'                     => BRICKS_URL_ASSETS . 'js/libs/infobox.min.js?v=' . BRICKS_VERSION, // @since 2.0
-				'markerClustererScript'             => BRICKS_URL_ASSETS . 'js/libs/markerclusterer.min.js?v=' . BRICKS_VERSION, // @since 2.0
 			]
 		);
 
@@ -708,7 +677,6 @@ class Builder {
 		 * We only need the 'family' & 'variants' properties from the Google fonts API response.
 		 *
 		 * DEV_ONLY: Set $google_fonts_generate below to true to generate the JSON file!
-		 * NOTE First get the Google fonts JSON file from the API response (https://www.googleapis.com/webfonts/v1/webfonts) and save it to the src/assets/fonts/ folder.
 		 *
 		 * @since 1.7.1
 		 */
@@ -776,13 +744,10 @@ class Builder {
 	 *
 	 * @since 1.0
 	 */
-	public static function get_template_placeholder_image( $is_svg = false, $format = 'url' ) {
+	public static function get_template_placeholder_image( $is_svg = false, $prefix = 'directory' ) {
 		$image = $is_svg ? 'placeholder-svg.svg' : 'placeholder-image-800x600.jpg';
 
-		$default_image = $format === 'path' ? BRICKS_PATH . 'assets/images/' . $image : get_template_directory_uri() . '/assets/images/' . $image;
-
-		// @see https://article.bricksbuilder.io/article/filter-placeholder_image/ (@since 2.0)
-		return apply_filters( 'bricks/placeholder_image', $default_image, $is_svg, $format );
+		return $prefix === 'path' ? BRICKS_PATH . 'assets/images/' . $image : get_template_directory_uri() . '/assets/images/' . $image;
 	}
 
 	/**
@@ -1190,27 +1155,22 @@ class Builder {
 		$global_data              = Database::$global_data;
 		$page_data                = Database::$page_data;
 		$theme_styles             = Theme_Styles::$styles;
-		$theme_style_active_ids   = array_keys( Theme_Styles::$settings_by_id );
-		$theme_style_active_id    = end( $theme_style_active_ids ); // Get most specific theme style (@since 2.0)
+		$theme_style_active       = Theme_Styles::$active_id;
 		$template_settings        = Helpers::get_template_settings( $post_id );
 		$template_preview_post_id = Helpers::get_template_setting( 'templatePreviewPostId', $post_id );
 
 		$load_data = [
 			'breakpoints'          => Breakpoints::$breakpoints,
-			'permissions'          => Builder_Permissions::get_current_user_permissions(), // @since 2.0
 			'breakpointActive'     => Breakpoints::$base_key,
 			'themeStyles'          => $theme_styles,
-			'themeStyleActiveIds'  => $theme_style_active_ids,
-			'themeStyleActiveId'   => $theme_style_active_id,
+			'themeStyleActive'     => $theme_style_active,
 			'pinnedElements'       => get_option( BRICKS_DB_PINNED_ELEMENTS, [] ),
-			'elementManager'       => Elements::$manager,
 			'codeExecutionEnabled' => Helpers::code_execution_enabled(),
+			'fullAccess'           => Capabilities::current_user_has_full_access(),
 			'currentUserId'        => get_current_user_id(),
-			'maxQueryResults'      => self::get_query_max_results(),
 			'userCan'              => [
 				'executeCode'  => Capabilities::current_user_can_execute_code(),
 				'uploadSvg'    => Capabilities::current_user_can_upload_svg(),
-				'editPosts'    => current_user_can( 'edit_posts' ), // User can create/edit posts (@since 2.0)
 				'publishPosts' => current_user_can( 'publish_posts' ),
 				'publishPages' => current_user_can( 'publish_pages' ),
 			],
@@ -1229,27 +1189,9 @@ class Builder {
 			$load_data['colorPalette'] = self::default_color_palette();
 		}
 
-		// Add font favorites to load_data
-		if ( ! empty( $global_data['fontFavorites'] ) ) {
-			$load_data['fontFavorites'] = $global_data['fontFavorites'];
-		}
-
 		// Add global variables (@since 1.9.8)
 		if ( ! empty( $global_data['globalVariables'] ) ) {
 			$load_data['globalVariables'] = $global_data['globalVariables'];
-		}
-
-		// Add icon sets (@since 2.0)
-		if ( ! empty( $global_data['iconSets'] ) ) {
-			$load_data['iconSets'] = $global_data['iconSets'];
-		}
-
-		if ( ! empty( $global_data['customIcons'] ) ) {
-			$load_data['customIcons'] = $global_data['customIcons'];
-		}
-
-		if ( ! empty( $global_data['disabledIconSets'] ) ) {
-			$load_data['disabledIconSets'] = $global_data['disabledIconSets'];
 		}
 
 		// Add global variables categories (@since 1.9.8)
@@ -1441,34 +1383,20 @@ class Builder {
 		// Remove setting in builder to get 'elementsHtml' with element ID for all PHP elements (@since 1.7)
 		unset( Database::$global_settings['elementAttsAsNeeded'] );
 
-		// New rendering mode: Collect HTML strings for all elements start (@since 2.0)
-		add_filter( 'bricks/frontend/render_element', [ __CLASS__, 'collect_elements_html' ], 10, 2 );
-		add_filter( 'bricks/frontend/render_loop', [ __CLASS__, 'collect_looping_html' ], 10, 3 );
-
 		// Header
 		if ( $template_type === 'header' && isset( $load_data['header'] ) && is_array( $load_data['header'] ) ) {
-			Frontend::render_data( $load_data['header'], 'header' );
+			$load_data['elementsHtml'] = array_merge( $load_data['elementsHtml'], self::query_content_type_for_elements_html( $load_data['header'], $template_preview_post_id ) );
 		}
 
 		// Content
 		if ( ! in_array( $template_type, [ 'header', 'footer' ] ) && isset( $load_data['content'] ) && is_array( $load_data['content'] ) ) {
-			Frontend::render_data( $load_data['content'], 'content' );
+			$load_data['elementsHtml'] = array_merge( $load_data['elementsHtml'], self::query_content_type_for_elements_html( $load_data['content'], $template_preview_post_id ) );
 		}
 
 		// Footer
 		if ( $template_type === 'footer' && isset( $load_data['footer'] ) && is_array( $load_data['footer'] ) ) {
-			Frontend::render_data( $load_data['footer'], 'footer' );
+			$load_data['elementsHtml'] = array_merge( $load_data['elementsHtml'], self::query_content_type_for_elements_html( $load_data['footer'], $template_preview_post_id ) );
 		}
-
-		remove_filter( 'bricks/frontend/render_loop', [ __CLASS__, 'collect_looping_html' ], 10, 3 );
-		// Collect HTML strings for all elements end (@since 2.0)
-		remove_filter( 'bricks/frontend/render_element', [ __CLASS__, 'collect_elements_html' ], 10, 2 );
-
-		// Set collected HTML strings for all elements for fast initial render, reduce API calls (@since 2.0)
-		$load_data['elementsHtml']  = self::$elements_html;
-		$load_data['previewTexts']  = self::$preview_texts;
-		$load_data['loopingHtml']   = self::$looping_html;
-		$load_data['templatesData'] = self::$templates_data;
 
 		/**
 		 * STEP: Pre-populate dynamic data to minimize AJAX requests on builder load
@@ -1482,13 +1410,6 @@ class Builder {
 		if ( Database::get_setting( 'enableDynamicDataPreview', false ) && is_array( self::$dynamic_data ) && count( self::$dynamic_data ) ) {
 			$load_data['dynamicData'] = self::$dynamic_data;
 		}
-
-		/**
-		 * STEP: Code signatures validation for builder unsignedCodeIds
-		 *
-		 * @since 2.0
-		 */
-		$load_data['invalidCodeSignatures'] = self::get_invalid_code_signatures( $load_data );
 
 		/**
 		 * STEP: Add custom attributes to builder
@@ -1507,129 +1428,135 @@ class Builder {
 	}
 
 	/**
-	 * Bricks 2.0 render mode
+	 * Return array with HTML string of every single element for initial fast builder render
 	 *
-	 * Collect HTML string of every single element for initial fast builder render
-	 *
-	 * Use Frontend::render_data() instead of Ajax::render_element so all attributes can be collected successfully as well without execute apply_filters bricks/element/render_attributes
-	 *
-	 * @since 2.0 (#86c2z8bmd)
+	 * @since 1.0
 	 */
-	public static function collect_elements_html( $html, $instance ) {
-		$element_name = $instance->element['name'] ?? '';
-		$settings     = $instance->element['settings'] ?? [];
+	public static function query_content_type_for_elements_html( $elements, $post_id ) {
+		$elements_html = [];
 
-		/**
-		 * Skip: Nav menu
-		 *
-		 * As inside '.brx-dropdown-content' the nav-menu wrapper, etc. is not needed
-		 *
-		 * @since 1.11
-		 */
-		if ( $element_name === 'nav-menu' ) {
-			return $html;
-		}
+		foreach ( $elements as $element ) {
+			$element_name = $element['name'] ?? '';
 
-		// Skip: Code element to prevent critical errors with code execution enabled on builder load
-		if ( $element_name === 'code' ) {
-			return $html;
-		}
-
-		/**
-		 * Template element
-		 *
-		 * Skip to render template inline CSS in builder (TODO: Improve performance)
-		 *
-		 * @since 2.0: Do not skip if this is a render component call
-		 */
-		if ( $element_name === 'template' && empty( $_POST['isRenderComponent'] ) ) {
-			return $html;
-		}
-
-		/**
-		 * Skip: Shortcode element with bricks_template to render nested accordions, tabs, slider in builder
-		 *
-		 * Necessary as we skip nestable elements below (line 2335)
-		 *
-		 * @since 1.11
-		 */
-		if ( $element_name === 'shortcode' ) {
-			$is_bricks_shortcode = ! empty( $settings['shortcode'] ) && strpos( $settings['shortcode'], 'bricks_template' ) !== false;
-
-			if ( $is_bricks_shortcode ) {
-				return $html;
+			/**
+			 * Skip: Nav menu
+			 *
+			 * As inside '.brx-dropdown-content' the nav-menu wrapper, etc. is not needed
+			 *
+			 * @since 1.11
+			 */
+			if ( $element_name === 'nav-menu' ) {
+				continue;
 			}
-		}
 
-		// Do not skip nestable elements or all inner elements wouldn't have HTML and cause extra render_elements calls in the builder
-		// Skip nestable elements
-		// if ( $instance->nestable ) {
-		// return $html;
-		// }
+			// Skip: Code element to prevent critical errors with code execution enabled on builder load
+			if ( $element_name === 'code' ) {
+				continue;
+			}
 
-		// Handle component: Use unique ID that already considered elements inside component (@since 2.0)
-		$element_id = $instance->uid ?? $instance->id;
+			// Skip: Template element to render template inline CSS in builder
+			if ( $element_name === 'template' ) {
+				continue;
+			}
 
-		if ( ! empty( $_POST['isRenderComponent'] ) ) {
-			// is RenderComponent call - always use the same instance ID so nested component's PHP element can get the correct HTML
-			$root_instance_id = sanitize_key( $_POST['isRenderComponent'] );
-			$element_id       = $instance->id . '-' . $root_instance_id;
-		}
+			/**
+			 * Skip: Shortcode element with bricks_template to render nested accordions, tabs, slider in builder
+			 *
+			 * Necessary as we skip nestable elements below (line 2335)
+			 *
+			 * @since 1.11
+			 */
+			if ( $element_name === 'shortcode' ) {
+				$is_bricks_shortcode = ! empty( $element['settings']['shortcode'] ) && strpos( $element['settings']['shortcode'], 'bricks_template' ) !== false;
 
-		if ( ! isset( self::$elements_html[ $element_id ] ) ) {
-			// Manually run bricks_render_dynamic_data as bricks/frontend/render_data not yet triggered (#86c3reqnt)
-			self::$elements_html[ $element_id ] = bricks_render_dynamic_data( $html );
-		}
-
-		// Pre-populate dynamic data for all elements (Only if not looping #86c4pmh96)
-		if ( Database::get_setting( 'enableDynamicDataPreview', false ) && ! empty( $settings ) && ! Query::is_any_looping() ) {
-			$settings_string = wp_json_encode( $settings );
-
-			// Get all dynamic data tags inside element settings
-			preg_match_all( '/\{([^{}"]+)\}/', $settings_string, $matches );
-			$dynamic_data_tags = $matches[1];
-
-			foreach ( $dynamic_data_tags as $dynamic_data_tag ) {
-				$dynamic_data_value = \Bricks\Integrations\Dynamic_Data\Providers::render_tag( $dynamic_data_tag, $instance->post_id );
-
-				if ( $dynamic_data_value ) {
-					self::$dynamic_data[ "{$dynamic_data_tag}" ] = $dynamic_data_value;
+				if ( $is_bricks_shortcode ) {
+					continue;
 				}
 			}
-		}
 
-		// Generate preview text for 1st looping element, exclude nestable element to avoid unnecessary HTML generation, previewTexts are used by contentEditable elements
-		if ( Query::is_any_looping() && ! $instance->nestable ) {
-			if ( ! isset( self::$preview_texts[ $element_id ] ) ) {
-				// Manually run bricks_render_dynamic_data as bricks/frontend/render_data not yet triggered (#86c3reqnt)
-				self::$preview_texts[ $element_id ] = bricks_render_dynamic_data( wp_strip_all_tags( $html ) );
+			/**
+			 * Get component instance (root) settings
+			 *
+			 * component.elements (children) are requested in builder.
+			 *
+			 * @since 1.12
+			 */
+			$component_instance_settings = Helpers::get_component_instance( $element, 'settings' );
+
+			if ( is_array( $component_instance_settings ) ) {
+				$element['settings'] = $component_instance_settings;
 			}
+
+			// STEP: Pre-populate dynamic data for all elements (@since 1.7.1)
+			if ( Database::get_setting( 'enableDynamicDataPreview', false ) && ! empty( $element['settings'] ) ) {
+				$settings_string = wp_json_encode( $element['settings'] );
+
+				// Get all dynamic data tags inside element settings
+				preg_match_all( '/\{([^{}"]+)\}/', $settings_string, $matches );
+				$dynamic_data_tags = $matches[1];
+
+				foreach ( $dynamic_data_tags as $dynamic_data_tag ) {
+					$dynamic_data_value = \Bricks\Integrations\Dynamic_Data\Providers::render_tag( $dynamic_data_tag, $post_id );
+
+					if ( $dynamic_data_value ) {
+						self::$dynamic_data[ "{$dynamic_data_tag}" ] = $dynamic_data_value;
+					}
+				}
+			}
+
+			$element_class_name = Elements::$elements[ $element_name ]['class'] ?? false;
+
+			// Return: Element class does not exist
+			if ( ! $element_class_name || ! class_exists( $element_class_name ) ) {
+				continue;
+			}
+
+			$element_instance = new $element_class_name( $element );
+
+			/**
+			 * Get HTML attributes from every element in the builder
+			 *
+			 * Otherwise missing: All layout elements (section/container/div/block).
+			 *
+			 * @see: https://academy.bricksbuilder.io/article/filter-bricks-element-render_attributes/
+			 * @since 1.11
+			 */
+			$element_attributes = apply_filters( 'bricks/element/render_attributes', $element_instance->attributes, '_root', $element_instance );
+			if ( isset( $element['id'] ) && isset( $element_attributes['_root'] ) && is_array( $element_attributes ) && count( $element_attributes ) ) {
+				self::$html_attributes[ $element['id'] ] = $element_attributes;
+			}
+
+			// Skip nestable elements
+			if ( $element_instance->nestable ) {
+				unset( $element_instance );
+				continue;
+			}
+
+			// Check for and populate global element settings (@since 1.2.1)
+			foreach ( Database::$global_data['elements'] as $index => $global_element ) {
+				if ( ! empty( $global_element['global'] ) && ! empty( $element['global'] ) && $global_element['global'] === $element['global'] ) {
+					unset( $element['settings'] );
+
+					$element['settings'] = $global_element['settings'];
+				}
+
+				// Pre 1.2.1: Use 'id' instead of 'global' property
+				elseif ( ! empty( $global_element['id'] ) && $global_element['id'] === $element['id'] ) {
+					unset( $element['settings'] );
+
+					$element['settings'] = $global_element['settings'];
+				}
+
+				// Last global element checked: The global element doesn't exist in this installation: Remove element.global property
+				elseif ( $index + 1 === count( Database::$global_data['elements'] ) ) {
+					unset( $element['global'] );
+				}
+			}
+
+			$elements_html[ $element['id'] ] = Ajax::render_element( [ 'element' => $element ] );
 		}
 
-		return $html;
-	}
-
-	/**
-	 * Bricks 2.0 builder render mode
-	 *
-	 * Collect query loop first node HTML string if the query located inside a component.
-	 *
-	 * @since 2.0
-	 */
-	public static function collect_looping_html( $html, $element_data, $instance ) {
-		$element_id = $instance->uid ?? $instance->id;
-
-		if ( ! empty( $_POST['isRenderComponent'] ) ) {
-			// is RenderComponent call - always use the same instance ID so nested component's PHP element can get the correct HTML
-			$root_instance_id = sanitize_key( $_POST['isRenderComponent'] );
-			$element_id       = $instance->id . '-' . $root_instance_id;
-		}
-
-		if ( ! isset( self::$looping_html[ $element_id ] ) ) {
-			self::$looping_html[ $element_id ] = $html;
-		}
-
-		return $html;
+		return $elements_html;
 	}
 
 	/**
@@ -1714,12 +1641,19 @@ class Builder {
 	public static function is_builder_call() {
 		/**
 		 * STEP: Builder AJAX call: Check data for 'bricks-is-builder'
+		 *
+		 * @since 1.5.5
 		 */
-		if ( bricks_is_ajax_call() && check_ajax_referer( 'bricks-nonce-builder', 'nonce', false ) ) {
+		if ( bricks_is_ajax_call() ) {
 			$action     = isset( $_REQUEST['action'] ) ? $_REQUEST['action'] : '';
 			$is_builder = isset( $_REQUEST['bricks-is-builder'] );
 
 			if ( $is_builder ) {
+				return true;
+			}
+
+			// Check if call action starts with 'bricks_'
+			if ( strpos( $action, 'bricks_' ) === 0 ) {
 				return true;
 			}
 		}
@@ -1772,174 +1706,5 @@ class Builder {
 	 */
 	public static function get_query_max_results_info() {
 		return sprintf( esc_html__( 'Query loop results in the builder are limited to %1$s.', 'bricks' ), self::get_query_max_results() ) . ' <a href="' . admin_url( 'admin.php?page=bricks-settings#tab-builder' ) . '" target="_blank">[' . esc_html__( 'Edit', 'bricks' ) . ']</a>';
-	}
-
-	/**
-	 * Check if user enabled through Bricks > Settings > Builder builderCloudflareRocketLoader
-	 *
-	 * - Ensure that the request is coming from Cloudflare.
-	 * - TODO: Will be set as default in a future version of Bricks. (#86c2rdm5a)
-	 *
-	 * @since 2.0
-	 */
-	public static function cloudflare_rocket_loader_disabled() {
-		return ! empty( $_SERVER['HTTP_CF_CONNECTING_IP'] ) && Database::get_setting( 'builderCloudflareRocketLoader', false );
-	}
-
-	/**
-	 * Add data-cfasync="false" to all <script> tags to avoid Cloudflare Rocket Loader
-	 *
-	 * @since 2.0
-	 */
-	public function cloudflare_rocket_loader_modify_script_tags() {
-		ob_start(
-			function ( $html ) {
-				// Use preg_replace to add data-cfasync="false" to all <script> tags
-				$html = preg_replace_callback(
-					'/<script\b([^>]*)>/i',
-					function ( $matches ) {
-						// Check if the script tag already has data-cfasync="false"
-						if ( isset( $matches[1] ) && $matches[1] !== '' && strpos( $matches[1], 'data-cfasync' ) === false ) {
-							// Add data-cfasync="false" to the script tag
-							return '<script data-cfasync="false" ' . $matches[1] . '>';
-						}
-
-						// Return the original ta
-						return $matches[0];
-					},
-					$html
-				);
-
-				return $html;
-			}
-		);
-	}
-
-	/**
-	 * Returns an array of invalid code signatures elements IDs
-	 *
-	 * @param array $data (elements data)
-	 * @since 2.0
-	 */
-	public static function get_invalid_code_signatures( $data ) {
-		$invalid_code_signatures = [];
-
-		// Check from 'header', 'content', 'footer'
-		$elements = array_merge(
-			$data['header'] ?? [],
-			$data['content'] ?? [],
-			$data['footer'] ?? []
-		);
-
-		// Elements from components
-		foreach ( Database::$global_data['components'] as $component ) {
-			if ( ! empty( $component['elements'] ) && is_array( $component['elements'] ) ) {
-				$elements = array_merge( $elements, $component['elements'] );
-			}
-		}
-
-		foreach ( $elements as $element ) {
-			$element_settings = $element['settings'] ?? [];
-			$element_name     = $element['name'] ?? '';
-
-			$global_settings = Helpers::get_global_element( $element, 'settings' );
-
-			if ( $global_settings ) {
-				$element_settings = $global_settings;
-			}
-
-			// Check: Component root
-			$component_instance_settings = ! empty( $element['cid'] ) ? Helpers::get_component_instance( $element, 'settings' ) : false;
-
-			if ( $component_instance_settings ) {
-				$element_settings = $component_instance_settings;
-			}
-
-			if ( empty( $element_settings ) ) {
-				continue;
-			}
-
-			// STEP: Code element
-			if ( $element_name === 'code' ) {
-				$element['execute_code'] = isset( $element_settings['executeCode'] );
-
-				// Execute code
-				if ( $element['execute_code'] ) {
-					$element_settings_code = isset( $element_settings['code'] ) ? $element_settings['code'] : '';
-
-					// Skip if no code or empty code
-					if ( empty( $element_settings_code ) ) {
-						continue;
-					}
-
-					$valid = false;
-
-					if ( ! empty( $element_settings['signature'] ) ) {
-						$valid = Helpers::verify_code_signature( $element_settings['signature'], $element_settings_code );
-					}
-
-					if ( ! $valid ) {
-						$invalid_code_signatures[] = $element['id'];
-					}
-				}
-
-				continue;
-			}
-
-			// STEP: SVG element
-			if ( $element_name === 'svg' ) {
-				$element['execute_code'] = isset( $element_settings['code'] ) && ! empty( $element_settings['code'] );
-
-				if ( $element['execute_code'] ) {
-					$element_settings_code = isset( $element_settings['code'] ) ? $element_settings['code'] : '';
-
-					// Skip if no code or empty code
-					if ( empty( $element_settings_code ) ) {
-						continue;
-					}
-
-					$valid = false;
-
-					if ( ! empty( $element_settings['signature'] ) ) {
-						$valid = Helpers::verify_code_signature( $element_settings['signature'], $element_settings_code );
-					}
-
-					if ( ! $valid ) {
-						$invalid_code_signatures[] = $element['id'];
-					}
-				}
-
-				continue;
-			}
-
-			// STEP: Query editor element
-			if ( isset( $element_settings['query']['queryEditor'] ) ) {
-				$element['execute_code'] = isset( $element_settings['query']['useQueryEditor'] );
-
-				if ( $element['execute_code'] ) {
-					$element_settings_code = isset( $element_settings['query']['queryEditor'] ) ? $element_settings['query']['queryEditor'] : '';
-
-					// Skip if no code or empty code
-					if ( empty( $element_settings_code ) ) {
-						continue;
-					}
-
-					$valid = false;
-
-					if ( ! empty( $element_settings['query']['signature'] ) ) {
-						$valid = Helpers::verify_code_signature( $element_settings['query']['signature'], $element_settings_code );
-					}
-
-					if ( ! $valid ) {
-						$invalid_code_signatures[] = $element['id'];
-					}
-				}
-
-				continue;
-			}
-
-		}
-
-		return $invalid_code_signatures;
 	}
 }

@@ -39,7 +39,7 @@ function bricks_list_comments( $comment, $args, $depth ) {
 				$commentator = get_comment();
 				if ( user_can( $commentator->user_id, 'manage_options' ) ) {
 					?>
-				<div class="administrator-badge" data-balloon="<?php esc_attr_e( 'Admin', 'bricks' ); ?>">A</div>
+				<div class="administrator-badge" data-balloon="<?php esc_attr_e( 'Admin', 'bricks' ); ?>" data-balloon-pos="top">A</div>
 				<?php } ?>
 			</div>
 			<?php } ?>

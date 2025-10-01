@@ -303,12 +303,11 @@ class Element_Accordion_Nested extends Element {
 						[
 							'name'     => 'icon',
 							'settings' => [
-								'icon'            => [
+								'icon'     => [
 									'icon'    => 'ion-ios-arrow-forward',
 									'library' => 'ionicons',
 								],
-								'iconSize'        => '1em',
-								'isAccordionIcon' => true, // @since 2.0
+								'iconSize' => '1em',
 							],
 						],
 					],

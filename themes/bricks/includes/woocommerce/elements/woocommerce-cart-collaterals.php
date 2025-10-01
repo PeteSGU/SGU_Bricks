@@ -213,11 +213,6 @@ class Woocommerce_Cart_Collaterals extends Element {
 
 		Woocommerce_Helpers::maybe_init_cart_context();
 
-		// Avoid Fatal error if WC()->cart is not defined (@since 2.0)
-		if ( ! function_exists( 'WC' ) || ! WC()->cart ) {
-			return;
-		}
-
 		add_filter( 'bricks/woocommerce/cart_proceed_label', [ $this, 'proceed_to_checkout_button' ], 10, 1 );
 
 		// WooCommerce template

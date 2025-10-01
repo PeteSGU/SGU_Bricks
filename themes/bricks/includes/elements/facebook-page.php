@@ -109,16 +109,7 @@ class Element_Facebook_Page extends Element {
 			$this->set_attribute( 'widget', 'data-height', $settings['height'] );
 		}
 
-		$tabs = $settings['tabs'] ?? '';
-
-		if ( is_array( $tabs ) ) {
-			$tabs = join( ',', $tabs );
-		}
-
-		if ( $tabs ) {
-			$this->set_attribute( 'widget', 'data-tabs', $tabs );
-		}
-
+		$this->set_attribute( 'widget', 'data-tabs', isset( $settings['tabs'] ) ? join( ',', $settings['tabs'] ) : '' );
 		$this->set_attribute( 'widget', 'data-hide-cover', isset( $settings['hideCover'] ) ? 'true' : 'false' );
 		$this->set_attribute( 'widget', 'data-show-facepile', isset( $settings['profilePhotos'] ) ? 'true' : 'false' );
 		$this->set_attribute( 'widget', 'data-hide-cta', isset( $settings['hideCta'] ) ? 'true' : 'false' );

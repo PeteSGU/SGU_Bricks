@@ -81,8 +81,8 @@ class Setup {
 		// Site layout: boxed, wide (default)
 		if ( ! bricks_is_builder_main() && ! empty( Database::$page_settings['siteLayout'] ) ) {
 			$classes[] = 'brx-' . Database::$page_settings['siteLayout'];
-		} elseif ( ! bricks_is_builder_main() && Theme_Styles::get_setting_by_key( 'general', 'siteLayout' ) ) {
-			$classes[] = 'brx-' . Theme_Styles::get_setting_by_key( 'general', 'siteLayout' );
+		} elseif ( ! bricks_is_builder_main() && ! empty( Theme_Styles::$active_settings['general']['siteLayout'] ) ) {
+			$classes[] = 'brx-' . Theme_Styles::$active_settings['general']['siteLayout'];
 		}
 
 		// Header position: Left, right
@@ -136,8 +136,6 @@ class Setup {
 		}
 
 		echo "<body {$body_attributes_string}>";
-
-		wp_body_open(); // @since 2.0
 	}
 
 	public function init_control_options() {
@@ -228,15 +226,17 @@ class Setup {
 			return;
 		}
 
-		// Return: Page is rendered with Bricks
-		$is_rendered_with_bricks = Helpers::render_with_bricks( $post_id );
+		// Return: No Bricks data exists (= page created/rendered with WordPress)
+		$bricks_data = get_post_meta( $post_id, BRICKS_DB_PAGE_CONTENT, true );
 
-		if ( $is_rendered_with_bricks ) {
-			wp_dequeue_style( 'wp-block-library' );
-
-			// After WP 5.9
-			wp_dequeue_style( 'global-styles' );
+		if ( ! $bricks_data ) {
+			return;
 		}
+
+		wp_dequeue_style( 'wp-block-library' );
+
+		// After WP 5.9
+		wp_dequeue_style( 'global-styles' );
 	}
 
 	public function wp_default_scripts( $scripts ) {
@@ -365,17 +365,21 @@ class Setup {
 
 		// Load frontend CSS files OR inline styles (default: inline style)
 		if ( Database::get_setting( 'cssLoading' ) !== 'file' || bricks_is_builder() ) {
-			if ( ! Database::get_setting( 'disableBricksCascadeLayer' ) ) { // @since 2.0
+			if ( Database::get_setting( 'bricksCascadeLayer' ) ) { // @since 1.12
 				wp_enqueue_style( 'bricks-frontend', BRICKS_URL_ASSETS . 'css/frontend-layer.min.css', [], filemtime( BRICKS_PATH_ASSETS . 'css/frontend-layer.min.css' ) );
 			} else {
 				wp_enqueue_style( 'bricks-frontend', BRICKS_URL_ASSETS . 'css/frontend.min.css', [], filemtime( BRICKS_PATH_ASSETS . 'css/frontend.min.css' ) );
 			}
 		} else {
-			if ( ! Database::get_setting( 'disableBricksCascadeLayer' ) ) { // @since 2.0
+			if ( Database::get_setting( 'bricksCascadeLayer' ) ) { // @since 1.12
 				wp_enqueue_style( 'bricks-frontend', BRICKS_URL_ASSETS . 'css/frontend-light-layer.min.css', [], filemtime( BRICKS_PATH_ASSETS . 'css/frontend-light-layer.min.css' ) );
 			} else {
 				wp_enqueue_style( 'bricks-frontend', BRICKS_URL_ASSETS . 'css/frontend-light.min.css', [], filemtime( BRICKS_PATH_ASSETS . 'css/frontend-light.min.css' ) );
 			}
+		}
+
+		if ( is_rtl() ) {
+			wp_enqueue_style( 'bricks-frontend-rtl', BRICKS_URL_ASSETS . 'css/frontend-rtl.min.css', [], filemtime( BRICKS_PATH_ASSETS . 'css/frontend-rtl.min.css' ) );
 		}
 
 		/**
@@ -418,15 +422,19 @@ class Setup {
 			wp_register_script( 'bricks-turnstile', 'https://challenges.cloudflare.com/turnstile/v0/api.js', null, true );
 		}
 
+		// Element Map
+		if ( ! empty( Database::$global_settings['apiKeyGoogleMaps'] ) ) {
+			wp_register_script( 'bricks-google-maps', 'https://maps.googleapis.com/maps/api/js?callback=bricksMap&v=3.exp&key={' . Database::$global_settings['apiKeyGoogleMaps'] . '}', [ 'bricks-scripts' ], null, true );
+			wp_register_script( 'bricks-google-maps-infobox', BRICKS_URL_ASSETS . 'js/libs/infobox.min.js', [ 'bricks-google-maps' ], null, true );
+		}
+
 		// STEP: Register scripts
 		wp_register_script( 'bricks-flatpickr', BRICKS_URL_ASSETS . 'js/libs/flatpickr.min.js', [ 'bricks-scripts' ], '4.5.2', true );
 		wp_register_script( 'bricks-isotope', BRICKS_URL_ASSETS . 'js/libs/isotope.min.js', [ 'bricks-scripts' ], '3.0.4', true );
 
-		/**
-		 * NOTE: Renamed JS class 'PhotoSwipe' JS class to 'PhotoSwipe5' in photoswipe.umd.min.js to avoid conflicts with WooCommerce PhotoSwipe 4 version
-		 */
-		wp_register_script( 'bricks-photoswipe', BRICKS_URL_ASSETS . 'js/libs/photoswipe.umd.min.js', [ 'bricks-scripts' ], '5.4.4', true );
-		wp_register_script( 'bricks-photoswipe-lightbox', BRICKS_URL_ASSETS . 'js/libs/photoswipe-lightbox.umd.min.js', [ 'bricks-scripts' ], '5.4.4', true );
+		// Append '-brx' version suffix to avoid caching issues after renaming 'PhotoSwipe' JS class to 'PhotoSwipe5'
+		wp_register_script( 'bricks-photoswipe', BRICKS_URL_ASSETS . 'js/libs/photoswipe.umd.min.js', [ 'bricks-scripts' ], '5.3.7-brx', true );
+		wp_register_script( 'bricks-photoswipe-lightbox', BRICKS_URL_ASSETS . 'js/libs/photoswipe-lightbox.umd.min.js', [ 'bricks-scripts' ], '5.3.7', true );
 		wp_register_script( 'bricks-photoswipe-caption', BRICKS_URL_ASSETS . 'js/libs/photoswipe-caption.umd.min.js', [ 'bricks-scripts' ], '1.2.7', true );
 
 		wp_register_script( 'bricks-piechart', BRICKS_URL_ASSETS . 'js/libs/easypiechart.min.js', [ 'bricks-scripts' ], '2.1.7', true );
@@ -437,30 +445,22 @@ class Setup {
 		wp_register_script( 'bricks-tocbot', BRICKS_URL_ASSETS . 'js/libs/tocbot.min.js', [ 'bricks-scripts' ], '4.21.0', true ); // @since 1.8.5
 
 		// STEP: Register styles
-		if ( ! Database::get_setting( 'disableBricksCascadeLayer' ) ) { // @since 2.0
+		wp_register_style( 'bricks-animate', BRICKS_URL_ASSETS . 'css/libs/animate.min.css', [ 'bricks-frontend' ], filemtime( BRICKS_PATH_ASSETS . 'css/libs/animate.min.css' ) );
+		wp_register_style( 'bricks-flatpickr', BRICKS_URL_ASSETS . 'css/libs/flatpickr.min.css', [ 'bricks-frontend' ], filemtime( BRICKS_PATH_ASSETS . 'css/libs/flatpickr.min.css' ) );
+		wp_register_style( 'bricks-isotope', BRICKS_URL_ASSETS . 'css/libs/isotope.min.css', [ 'bricks-frontend' ], filemtime( BRICKS_PATH_ASSETS . 'css/libs/isotope.min.css' ) );
+		wp_register_style( 'bricks-photoswipe', BRICKS_URL_ASSETS . 'css/libs/photoswipe.min.css', [ 'bricks-frontend' ], filemtime( BRICKS_PATH_ASSETS . 'css/libs/photoswipe.min.css' ) );
+		wp_register_style( 'bricks-prettify', BRICKS_URL_ASSETS . 'css/libs/prettify.min.css', [ 'bricks-frontend' ], filemtime( BRICKS_PATH_ASSETS . 'css/libs/prettify.min.css' ) );
+		wp_register_style( 'bricks-swiper', BRICKS_URL_ASSETS . 'css/libs/swiper.min.css', [ 'bricks-frontend' ], filemtime( BRICKS_PATH_ASSETS . 'css/libs/swiper.min.css' ) );
+		if ( Database::get_setting( 'bricksCascadeLayer' ) ) { // @since 1.12
 			wp_register_style( 'bricks-splide', BRICKS_URL_ASSETS . 'css/libs/splide-layer.min.css', [ 'bricks-frontend' ], filemtime( BRICKS_PATH_ASSETS . 'css/libs/splide-layer.min.css' ) );
-			wp_register_style( 'bricks-animate', BRICKS_URL_ASSETS . 'css/libs/animate-layer.min.css', [ 'bricks-frontend' ], filemtime( BRICKS_PATH_ASSETS . 'css/libs/animate-layer.min.css' ) );
-			wp_register_style( 'bricks-flatpickr', BRICKS_URL_ASSETS . 'css/libs/flatpickr-layer.min.css', [ 'bricks-frontend' ], filemtime( BRICKS_PATH_ASSETS . 'css/libs/flatpickr-layer.min.css' ) );
-			wp_register_style( 'bricks-isotope', BRICKS_URL_ASSETS . 'css/libs/isotope-layer.min.css', [ 'bricks-frontend' ], filemtime( BRICKS_PATH_ASSETS . 'css/libs/isotope-layer.min.css' ) );
-			wp_register_style( 'bricks-photoswipe', BRICKS_URL_ASSETS . 'css/libs/photoswipe-layer.min.css', [ 'bricks-frontend' ], filemtime( BRICKS_PATH_ASSETS . 'css/libs/photoswipe-layer.min.css' ) );
-			wp_register_style( 'bricks-prettify', BRICKS_URL_ASSETS . 'css/libs/prettify-layer.min.css', [ 'bricks-frontend' ], filemtime( BRICKS_PATH_ASSETS . 'css/libs/prettify-layer.min.css' ) );
-			wp_register_style( 'bricks-swiper', BRICKS_URL_ASSETS . 'css/libs/swiper-layer.min.css', [ 'bricks-frontend' ], filemtime( BRICKS_PATH_ASSETS . 'css/libs/swiper-layer.min.css' ) );
-			wp_register_style( 'bricks-tooltips', BRICKS_URL_ASSETS . 'css/libs/tooltips-layer.min.css', [ 'bricks-frontend' ], filemtime( BRICKS_PATH_ASSETS . 'css/libs/tooltips-layer.min.css' ) );
-			wp_register_style( 'bricks-ajax-loader', BRICKS_URL_ASSETS . 'css/libs/loading-animation-layer.min.css', [ 'bricks-frontend' ], filemtime( BRICKS_PATH_ASSETS . 'css/libs/loading-animation-layer.min.css' ) );
 		} else {
 			wp_register_style( 'bricks-splide', BRICKS_URL_ASSETS . 'css/libs/splide.min.css', [ 'bricks-frontend' ], filemtime( BRICKS_PATH_ASSETS . 'css/libs/splide.min.css' ) );
-			wp_register_style( 'bricks-animate', BRICKS_URL_ASSETS . 'css/libs/animate.min.css', [ 'bricks-frontend' ], filemtime( BRICKS_PATH_ASSETS . 'css/libs/animate.min.css' ) );
-			wp_register_style( 'bricks-flatpickr', BRICKS_URL_ASSETS . 'css/libs/flatpickr.min.css', [ 'bricks-frontend' ], filemtime( BRICKS_PATH_ASSETS . 'css/libs/flatpickr.min.css' ) );
-			wp_register_style( 'bricks-isotope', BRICKS_URL_ASSETS . 'css/libs/isotope.min.css', [ 'bricks-frontend' ], filemtime( BRICKS_PATH_ASSETS . 'css/libs/isotope.min.css' ) );
-			wp_register_style( 'bricks-photoswipe', BRICKS_URL_ASSETS . 'css/libs/photoswipe.min.css', [ 'bricks-frontend' ], filemtime( BRICKS_PATH_ASSETS . 'css/libs/photoswipe.min.css' ) );
-			wp_register_style( 'bricks-prettify', BRICKS_URL_ASSETS . 'css/libs/prettify.min.css', [ 'bricks-frontend' ], filemtime( BRICKS_PATH_ASSETS . 'css/libs/prettify.min.css' ) );
-			wp_register_style( 'bricks-swiper', BRICKS_URL_ASSETS . 'css/libs/swiper.min.css', [ 'bricks-frontend' ], filemtime( BRICKS_PATH_ASSETS . 'css/libs/swiper.min.css' ) );
-			wp_register_style( 'bricks-tooltips', BRICKS_URL_ASSETS . 'css/libs/tooltips.min.css', [ 'bricks-frontend' ], filemtime( BRICKS_PATH_ASSETS . 'css/libs/tooltips.min.css' ) );
-			wp_register_style( 'bricks-ajax-loader', BRICKS_URL_ASSETS . 'css/libs/loading-animation.min.css', [ 'bricks-frontend' ], filemtime( BRICKS_PATH_ASSETS . 'css/libs/loading-animation.min.css' ) );
 		}
+		wp_register_style( 'bricks-tooltips', BRICKS_URL_ASSETS . 'css/libs/tooltips.min.css', [ 'bricks-frontend' ], filemtime( BRICKS_PATH_ASSETS . 'css/libs/tooltips.min.css' ) );
+		wp_register_style( 'bricks-ajax-loader', BRICKS_URL_ASSETS . 'css/libs/loading-animation.min.css', [ 'bricks-frontend' ], filemtime( BRICKS_PATH_ASSETS . 'css/libs/loading-animation.min.css' ) );
 
 		// Icon fonts
-		if ( ! Database::get_setting( 'disableBricksCascadeLayer' ) ) { // @since 2.0
+		if ( Database::get_setting( 'bricksCascadeLayer' ) ) { // @since 1.12
 			wp_register_style( 'bricks-font-awesome-6', BRICKS_URL_ASSETS . 'css/libs/font-awesome-6-layer.min.css', [ 'bricks-frontend' ], filemtime( BRICKS_PATH_ASSETS . 'css/libs/font-awesome-6-layer.min.css' ) );
 			wp_register_style( 'bricks-font-awesome-6-brands', BRICKS_URL_ASSETS . 'css/libs/font-awesome-6-brands-layer.min.css', [ 'bricks-frontend' ], filemtime( BRICKS_PATH_ASSETS . 'css/libs/font-awesome-6-brands-layer.min.css' ) );
 			wp_register_style( 'bricks-ionicons', BRICKS_URL_ASSETS . 'css/libs/ionicons-layer.min.css', [ 'bricks-frontend' ], filemtime( BRICKS_PATH_ASSETS . 'css/libs/ionicons-layer.min.css' ) );
@@ -576,8 +576,7 @@ class Setup {
 		$wp_admin_bar->add_menu(
 			[
 				'id'    => 'edit_with_bricks',
-				/* translators: %s: "Bricks" (theme name) */
-				'title' => sprintf( esc_html__( 'Edit with %s', 'bricks' ), 'Bricks' ),
+				'title' => esc_html__( 'Edit with Bricks', 'bricks' ),
 				'href'  => $post_id ? Helpers::get_builder_edit_link( $post_id ) : '#',
 			]
 		);
@@ -636,7 +635,7 @@ class Setup {
 			[
 				'parent' => 'edit_with_bricks',
 				'id'     => 'bricks_settings',
-				'title'  => esc_html__( 'Go to', 'bricks' ) . ': Bricks > ' . esc_html__( 'Settings', 'bricks' ),
+				'title'  => esc_html__( 'Go to: Bricks Settings', 'bricks' ),
 				'href'   => admin_url( 'admin.php?page=bricks-settings' ),
 			]
 		);
@@ -645,7 +644,7 @@ class Setup {
 			[
 				'parent' => 'edit_with_bricks',
 				'id'     => 'bricks_templates',
-				'title'  => esc_html__( 'Go to', 'bricks' ) . ': Bricks > ' . esc_html__( 'Templates', 'bricks' ),
+				'title'  => esc_html__( 'Go to: Bricks Templates', 'bricks' ),
 				'href'   => admin_url( 'edit.php?post_type=' . BRICKS_DB_TEMPLATE_SLUG ),
 			]
 		);
@@ -684,9 +683,8 @@ class Setup {
 			$editor_mode = sanitize_text_field( $_GET['editor_mode'] );
 		}
 
-		// Bricks mode selected, but no Bricks data exists: Show "Render with WordPress" (@since 1.12)
+		// Bricks mode selected, but no Bricks data exists: Show "Render with (@since 1.12)
 		Database::set_active_templates();
-
 		if (
 			$editor_mode === 'bricks' &&
 			! Helpers::get_bricks_data( $post_id, 'content' )
@@ -695,8 +693,8 @@ class Setup {
 			$editor_mode = 'wordpress';
 		}
 
-		$rendered_with_bricks    = sprintf( esc_html__( 'Rendered with %s', 'bricks' ), 'Bricks' ); // translators: %s: "Bricks" (theme name)
-		$rendered_with_wordpress = sprintf( esc_html__( 'Rendered with %s', 'bricks' ), 'WordPress' ); // translators: %s: "WordPress"
+		$rendered_with_bricks    = esc_html__( 'Rendered with Bricks', 'bricks' );
+		$rendered_with_wordpress = esc_html__( 'Rendered with WordPress', 'bricks' );
 
 		$wp_admin_bar->add_menu(
 			[
@@ -705,8 +703,8 @@ class Setup {
 			]
 		);
 
-		$render_with_bricks    = sprintf( esc_html__( 'Render with %s', 'bricks' ), 'Bricks' ); // translators: %s: "Bricks" (theme name)
-		$render_with_wordpress = sprintf( esc_html__( 'Render with %s', 'bricks' ), 'WordPress' ); // translators: %s: "WordPress"
+		$render_with_bricks    = esc_html__( 'Render with Bricks', 'bricks' );
+		$render_with_wordpress = esc_html__( 'Render with WordPress', 'bricks' );
 
 		if ( $editor_mode === 'wordpress' ) {
 			$wp_admin_bar->add_menu(
@@ -767,8 +765,7 @@ class Setup {
 		$edit_with_bricks = sprintf(
 			'<a href="%s" class="button button-primary">%s</a>',
 			$post_id ? Helpers::get_builder_edit_link( $post_id ) : '#',
-			// translators: %s: "Bricks" (theme name)
-			sprintf( esc_html__( 'Edit with %s', 'bricks' ), 'Bricks' )
+			esc_html__( 'Edit with Bricks', 'bricks' ),
 		);
 
 		echo '<div class="bricks-classic-editor-wrapper">' . $edit_with_bricks . '</div>';
@@ -1020,6 +1017,12 @@ class Setup {
 			$control_options['iconPosition'] = [
 				'left'  => esc_html__( 'Left', 'bricks' ),
 				'right' => esc_html__( 'Right', 'bricks' ),
+			];
+
+			$control_options['imageRatio'] = [
+				'ratio-square' => esc_html__( 'Square', 'bricks' ),
+				'ratio-16-9'   => '16:9',
+				'ratio-4-3'    => '4:3',
 			];
 
 			$control_options['objectFit'] = [

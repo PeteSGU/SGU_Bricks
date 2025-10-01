@@ -371,19 +371,21 @@ class Filter_Active_Filters extends Filter_Element {
 		$instance_name = $filter_info['instance_name'];
 		$url_param     = $filter_info['url_param'];
 		$filter_action = $settings['filterAction'] ?? 'filter';
-		$label         = '';
-		$title         = '';
 
 		if ( $filter_action === 'filter' ) {
 			// Handle range filter - Use labelMin and labelMax
 			if ( in_array( $instance_name, [ 'filter-range' ] ) ) {
 				$min_label       = $settings['labelMin'] ?? '';
 				$max_label       = $settings['labelMax'] ?? '';
+				$mode            = $settings['displayMode'] ?? 'range';
+				$separator       = $settings['labelThousandSeparator'] ?? false;
+				$sep_label       = $settings['labelSeparatorText'] ?? ',';
+				$use_sep         = $mode === 'range' && $separator; // Only use separator if mode is range
 				$label_direction = $settings['labelDirection'] ?? false; // @since 1.12.2
 
 				if ( is_array( $value ) ) {
-					$min_label_value = self::get_range_formatted_value( $value[0], $settings );
-					$max_label_value = self::get_range_formatted_value( $value[1], $settings );
+					$min_label_value = $use_sep ? number_format( $value[0], 0, '.', $sep_label ) : $value[0];
+					$max_label_value = $use_sep ? number_format( $value[1], 0, '.', $sep_label ) : $value[1];
 
 					// Set label direction based on the filter setting (@since 1.12.2)
 					if ( $label_direction === 'row-reverse' ) {
@@ -395,7 +397,7 @@ class Filter_Active_Filters extends Filter_Element {
 					$value = $value[0]; // Change the value to min value only - no array value
 				} else {
 					// Thousand separator
-					$label_value = self::get_range_formatted_value( $value, $settings );
+					$label_value = $use_sep ? number_format( $value, 0, '.', $sep_label ) : $value;
 
 					// Set label direction based on the filter setting (@since 1.12.2)
 					$label = $label_direction === 'row-reverse' ? "{$label_value} {$min_label}" : "{$min_label} {$label_value}";
@@ -404,8 +406,6 @@ class Filter_Active_Filters extends Filter_Element {
 
 			// Handle datepicker filter
 			elseif ( in_array( $instance_name, [ 'filter-datepicker' ] ) ) {
-				// Set default label, cannot retrieve from db, must be escaped as it's user input (@since 2.0)
-				$label       = esc_attr( $value );
 				$placeholder = ! empty( $settings['placeholder'] ) ? $this->render_dynamic_data( $settings['placeholder'] ) : '';
 				if ( ! empty( $placeholder ) ) {
 					$label = "{$placeholder} {$value}";
@@ -440,7 +440,6 @@ class Filter_Active_Filters extends Filter_Element {
 
 						case 'wpField':
 						case 'customField':
-						case 'wcField':
 							$label_mapping        = $settings['labelMapping'] ?? 'value';
 							$custom_label_mapping = $settings['customLabelMapping'] ?? [];
 
@@ -498,6 +497,8 @@ class Filter_Active_Filters extends Filter_Element {
 		}
 
 		// Add active filter prefix, suffix or title attribute
+		$title = '';
+
 		if ( isset( $settings['filterActivePrefix'] ) ) {
 			$label = esc_attr( $this->render_dynamic_data( $settings['filterActivePrefix'] ) ) . $label;
 		}

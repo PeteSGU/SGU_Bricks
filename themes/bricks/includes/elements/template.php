@@ -119,7 +119,7 @@ class Element_Template extends Element {
 			 *
 			 * If builder call OR 'noRoot' setting is not set (@since 1.8) && if template is not a popup template
 			 */
-			$render_root_div = ( bricks_is_builder() || bricks_is_builder_call() ) || ( ! isset( $settings['noRoot'] ) && $template_type !== 'popup' );
+			$render_root_div = bricks_is_builder_call() || ( ! isset( $settings['noRoot'] ) && $template_type !== 'popup' );
 
 			// Always render .brxe-template in builder (as we need a single root element in the Vue component)
 			if ( $render_root_div ) {

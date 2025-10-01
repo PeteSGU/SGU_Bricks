@@ -867,12 +867,8 @@ class Conditions {
 	 * @since 1.5.4
 	 */
 	public static function check( $conditions, $instance ) {
-		/**
-		 * Return: Always render element in builder dynamic area
-		 *
-		 * @since 2.0: Add check that request if not coming from a static area.
-		 */
-		if ( ! isset( $_POST['staticArea'] ) && ( bricks_is_builder() || bricks_is_builder_call() ) ) {
+		// Return: Always render element in builder
+		if ( bricks_is_builder() || bricks_is_builder_call() ) {
 			return true;
 		}
 

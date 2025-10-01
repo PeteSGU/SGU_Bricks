@@ -103,9 +103,8 @@ class Element_Post_Content extends Element {
 				// Reset the main render_data self::$elements
 				Frontend::$elements = $store_elements;
 
-				// Add elements & global classes CSS inline in the builder or frontend (with Query Loop + External Files)
-				// Don't add global classes CSS when rendering static area e.g. show outer post content (@since 1.12.3)
-				if ( ! isset( $_POST['staticArea'] ) && ( bricks_is_builder() || bricks_is_builder_call() || ( Query::is_looping() && Database::get_setting( 'cssLoading' ) === 'file' ) ) ) {
+				// Add elements & global classes CSS inlince in the builder or frontend (with Query Loop + External Files)
+				if ( bricks_is_builder() || bricks_is_builder_call() || ( Query::is_looping() && Database::get_setting( 'cssLoading' ) === 'file' ) ) {
 					Assets::$inline_css['content'] = '';
 
 					// Clear the list of elements already styled

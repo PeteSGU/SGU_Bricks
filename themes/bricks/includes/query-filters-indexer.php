@@ -327,10 +327,6 @@ class Query_Filters_Indexer {
 				// Get 100 terms
 				$args['number'] = 100;
 				$args['offset'] = $processing_row;
-				if ( $filter_source === 'wpField' ) {
-					// We need the whole term object
-					unset( $args['fields'] );
-				}
 
 				$terms = new \WP_Term_Query( $args );
 				$terms = $terms->get_terms();
@@ -488,7 +484,7 @@ class Query_Filters_Indexer {
 						break;
 
 					case 'term':
-						$selected_field = $filter_settings['wpTermField'] ?? false;
+						// not implemented
 						break;
 				}
 
@@ -518,9 +514,7 @@ class Query_Filters_Indexer {
 
 			default:
 			case 'unknown':
-				// Undocumented (WooCommerce)
-				$validate = (bool) apply_filters( 'bricks/query_filters_indexer/validate_job_settings', false, $filter_source, $filter_settings );
-				return $validate;
+				return false;
 
 				break;
 		}
@@ -532,7 +526,6 @@ class Query_Filters_Indexer {
 	 * Get index args for the job
 	 */
 	private static function get_index_args( $filter_source = '', $filter_settings = [], $query_type = 'wp_query' ) {
-		$args = [];
 
 		if ( $query_type === 'wp_query' ) {
 			// NOTE: 'exclude_from_search' => false not in use as we might miss some post types which are excluded from search
@@ -601,6 +594,7 @@ class Query_Filters_Indexer {
 
 					break;
 
+				default:
 				case 'taxonomy':
 					$filter_taxonomy = $filter_settings['filterTaxonomy'] ?? false;
 
@@ -740,6 +734,7 @@ class Query_Filters_Indexer {
 
 				break;
 
+			default:
 			case 'taxonomy':
 				$taxonomy = $filter_settings['filterTaxonomy'] ?? false;
 
@@ -762,12 +757,6 @@ class Query_Filters_Indexer {
 						)
 					);
 				}
-				break;
-
-			default:
-			case 'unknown':
-				// Undocumented (WooCommerce)
-				$rows_to_insert = apply_filters( 'bricks/query_filters_indexer/post/' . $filter_source, [], $post, $filter_id, $filter_settings );
 				break;
 		}
 
@@ -803,35 +792,6 @@ class Query_Filters_Indexer {
 
 		switch ( $filter_source ) {
 			case 'wpField':
-				// Support filter Term Query by term ID (@since 2.0)
-				$field_type = $filter_settings['sourceFieldType'] ?? 'post';
-
-				if ( ! $field_type || $field_type !== 'term' ) {
-					return;
-				}
-
-				$selected_field = $filter_settings['wpTermField'] ?? false;
-
-				if ( ! $selected_field ) {
-					return;
-				}
-
-				$term_rows = $this->query_filters::generate_term_field_index_rows( $term, $selected_field );
-
-				// Build $rows_to_insert, insert filter_id
-				if ( ! empty( $term_rows ) ) {
-					$rows_to_insert = array_merge(
-						$rows_to_insert,
-						array_map(
-							function( $row ) use ( $filter_id ) {
-								$row['filter_id'] = $filter_id;
-								return $row;
-							},
-							$term_rows
-						)
-					);
-				}
-
 				break;
 
 			case 'customField':
@@ -858,7 +818,6 @@ class Query_Filters_Indexer {
 						)
 					);
 				}
-
 				break;
 
 			default:
@@ -1044,35 +1003,32 @@ class Query_Filters_Indexer {
 		}
 
 		// Get index args
-		$args       = self::get_index_args( $filter_source, $filter_settings, $query_type );
-		$total_rows = 0;
+		$args = self::get_index_args( $filter_source, $filter_settings, $query_type );
 
 		// Get total rows
-		if ( ! empty( $args ) ) {
-			if ( $query_type === 'wp_query' ) {
-				$query      = new \WP_Query( $args );
-				$total_rows = count( $query->posts );
-				// Release memory
-				unset( $query );
-			}
+		if ( $query_type === 'wp_query' ) {
+			$query      = new \WP_Query( $args );
+			$total_rows = count( $query->posts );
+			// Release memory
+			unset( $query );
+		}
 
-			elseif ( $query_type === 'wp_term_query' ) {
-				$term_query = new \WP_Term_Query( $args );
-				$terms      = $term_query->get_terms();
-				$total_rows = count( $terms );
+		elseif ( $query_type === 'wp_term_query' ) {
+			$term_query = new \WP_Term_Query( $args );
+			$terms      = $term_query->get_terms();
+			$total_rows = count( $terms );
 
-				// Release memory
-				unset( $term_query );
-				unset( $terms );
-			}
+			// Release memory
+			unset( $term_query );
+			unset( $terms );
+		}
 
-			elseif ( $query_type === 'wp_user_query' ) {
-				$user_query = new \WP_User_Query( $args );
-				$total_rows = $user_query->get_total();
+		elseif ( $query_type === 'wp_user_query' ) {
+			$user_query = new \WP_User_Query( $args );
+			$total_rows = $user_query->get_total();
 
-				// Release memory
-				unset( $user_query );
-			}
+			// Release memory
+			unset( $user_query );
 		}
 
 		if ( $total_rows === 0 ) {

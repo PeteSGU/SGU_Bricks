@@ -3,20 +3,7 @@ namespace Bricks;
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-$settings = Database::$global_settings;
-
-/**
- * Global elements review
- *
- * To identify all Bricks pages & templates that contain global elements
- * to convert to components or manually review and unlink them.
- * As of Bricks 2.0 global elements are deprecated.
- *
- * @since 2.0
- */
-$global_elements_review = ! empty( $_GET['global-elements-review'] ) ? sanitize_key( $_GET['global-elements-review'] ) : false;
-
-$all_echo_tags          = [];
+$settings               = Database::$global_settings;
 $code_review            = ! empty( $_GET['code-review'] ) ? sanitize_key( $_GET['code-review'] ) : false;
 $code_signature_results = [
 	'missing' => 0,
@@ -24,50 +11,7 @@ $code_signature_results = [
 	'valid'   => 0,
 	'total'   => 0,
 ];
-
-// STEP: Get global elements from all Bricks pages & templates
-$bricks_post_ids            = [];
-$global_elements_by_post_id = [];
-
-// Get IDs of all Bricks templates
-$template_ids    = Templates::get_all_template_ids();
-$bricks_post_ids = array_merge( $bricks_post_ids, $template_ids );
-
-// Get IDs of all Bricks data posts
-$post_ids        = Helpers::get_all_bricks_post_ids();
-$bricks_post_ids = array_merge( $bricks_post_ids, $post_ids );
-
-// Loop over all posts and templates to get global elements data
-foreach ( $bricks_post_ids as $bricks_post_id ) {
-	$global_elements_by_post_id[ $bricks_post_id ] = [];
-
-	$elements = get_post_meta( $bricks_post_id, BRICKS_DB_PAGE_CONTENT, true );
-
-	// Is Bricks template: Get elements from template by type
-	$post_type = get_post_type( $bricks_post_id );
-	if ( ! $elements && $post_type === BRICKS_DB_TEMPLATE_SLUG ) {
-		$elements = get_post_meta( $bricks_post_id, BRICKS_DB_PAGE_HEADER, true );
-
-		if ( ! $elements ) {
-			$elements = get_post_meta( $bricks_post_id, BRICKS_DB_PAGE_FOOTER, true );
-		}
-	}
-
-	// Collect all elements based on filter type
-	if ( is_array( $elements ) && ! empty( $elements ) ) {
-		foreach ( $elements as $element ) {
-			$global_element = Helpers::get_global_element( $element );
-			if ( $global_element ) {
-				$global_elements_by_post_id[ $bricks_post_id ][] = $global_element;
-			}
-		}
-	}
-
-	// Remove empty arrays
-	if ( empty( $global_elements_by_post_id[ $bricks_post_id ] ) ) {
-		unset( $global_elements_by_post_id[ $bricks_post_id ] );
-	}
-}
+$all_echo_tags          = [];
 
 /**
  * Code review
@@ -77,25 +21,9 @@ foreach ( $bricks_post_ids as $bricks_post_id ) {
  * @since 1.9.7
  */
 if ( $code_review ) {
-	$code_review_items = [];
-
-	// Handle: Code review items from components (@since 2.0)
-	$component_elements = [];
-	foreach ( Database::$global_data['components'] as $component ) {
-		$component_elements = array_merge( $component_elements, Admin::code_review_items( $component['elements'] ?? [], $code_review, $code_signature_results ) );
-	}
-
-	// Group all component elements as one item (1 post)
-	if ( count( $component_elements ) ) {
-		$code_review_items[] = [
-			'post_id'       => 0,
-			'template_type' => 'components',
-			'elements'      => $component_elements,
-		];
-	}
-
-	// Handle: Code review items from each post
 	$posts_ids_with_code = new \WP_Query( Admin::get_code_instances_query_args( $code_review ) );
+	$code_review_items   = [];
+
 	// Populate $code_review_items with data
 	foreach ( $posts_ids_with_code->posts as $post_id ) {
 		$template_type = 'content';
@@ -110,7 +38,169 @@ if ( $code_review ) {
 		$elements    = [];
 
 		// Collect all elements based on filter type
-		$elements = Admin::code_review_items( $bricks_data, $code_review, $code_signature_results );
+		if ( is_array( $bricks_data ) && ! empty( $bricks_data ) ) {
+			foreach ( $bricks_data as $element ) {
+				$element_settings = $element['settings'] ?? [];
+				$element_name     = $element['name'] ?? '';
+
+				$global_settings = Helpers::get_global_element( $element, 'settings' );
+
+				if ( $global_settings ) {
+					$element_settings = $global_settings;
+				}
+
+				if ( empty( $element_settings ) ) {
+					continue;
+				}
+
+				// STEP: Code element
+				if ( $element_name === 'code' && array_key_exists( 'code', $element_settings ) && in_array( $code_review, [ 'code', 'all' ] ) ) {
+					$element['execute_code'] = isset( $element_settings['executeCode'] );
+
+					// Code signature
+					if ( $element['execute_code'] ) {
+						$element['signature'] = [
+							'label' => esc_html__( 'No signature', 'bricks' ),
+							'type'  => 'missing',
+						];
+
+						if ( ! empty( $element_settings['signature'] ) ) {
+							// Valid signature
+							$element_settings_code = isset( $element_settings['code'] ) ? $element_settings['code'] : '';
+							if ( Helpers::verify_code_signature( $element_settings['signature'], $element_settings_code ) ) {
+								$element['signature']['label'] = esc_html__( 'Valid signature', 'bricks' );
+								$element['signature']['type']  = 'valid';
+							}
+
+							// Invalid signature
+							else {
+								$element['signature']['label'] = esc_html__( 'Invalid signature', 'bricks' );
+								$element['signature']['type']  = 'invalid';
+							}
+						}
+
+						// User who signed the code + timestamp
+						$element['signature']['meta'] = '';
+						if ( isset( $element['settings']['user_id'] ) ) {
+							$user = get_userdata( $element['settings']['user_id'] );
+
+							if ( $user ) {
+								$element['signature']['meta'] = $user->display_name ?? $user->user_login;
+							}
+						}
+
+						if ( isset( $element['settings']['time'] ) ) {
+							// Timestamp to datetime
+							$element['signature']['meta'] .= ' (' . wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $element['settings']['time'] ) . ')';
+						}
+					}
+
+					$element['type'] = 'code';
+					$elements[]      = $element;
+				}
+
+				// STEP: Query editor element
+				elseif ( isset( $element_settings['query']['queryEditor'] ) && in_array( $code_review, [ 'queryEditor', 'all' ] ) ) {
+					$element['execute_code'] = isset( $element_settings['query']['useQueryEditor'] );
+
+					// Code signature
+					$element['signature'] = [
+						'label' => esc_html__( 'No signature', 'bricks' ),
+						'type'  => 'missing',
+					];
+
+					if ( ! empty( $element_settings['query']['signature'] ) ) {
+						// Valid signature
+						if ( Helpers::verify_code_signature( $element_settings['query']['signature'], $element_settings['query']['queryEditor'] ) ) {
+							$element['signature']['label'] = esc_html__( 'Valid signature', 'bricks' );
+							$element['signature']['type']  = 'valid';
+						}
+
+						// Invalid signature
+						else {
+							$element['signature']['label'] = esc_html__( 'Invalid signature', 'bricks' );
+							$element['signature']['type']  = 'invalid';
+						}
+					}
+
+					// User who signed the code + timestamp
+					$element['signature']['meta'] = '';
+					if ( isset( $element['settings']['query']['user_id'] ) ) {
+						$user = get_userdata( $element['settings']['query']['user_id'] );
+
+						if ( $user ) {
+							$element['signature']['meta'] = $user->display_name ?? $user->user_login;
+						}
+					}
+
+					if ( isset( $element['settings']['query']['time'] ) ) {
+						// Timestamp to datetime
+						$element['signature']['meta'] .= ' (' . wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $element['settings']['query']['time'] ) . ')';
+					}
+
+					$element['type'] = 'queryEditor';
+					$elements[]      = $element;
+				}
+
+				// STEP: SVG element
+				elseif ( $element_name === 'svg' && array_key_exists( 'code', $element_settings ) && in_array( $code_review, [ 'svg', 'all' ] ) ) {
+					$element['execute_code'] = true;
+
+					// Code signature
+					$element['signature'] = [
+						'label' => esc_html__( 'No signature', 'bricks' ),
+						'type'  => 'missing',
+					];
+
+					if ( ! empty( $element_settings['signature'] ) ) {
+						// Valid signature
+						if ( Helpers::verify_code_signature( $element_settings['signature'], $element_settings['code'] ) ) {
+							$element['signature']['label'] = esc_html__( 'Valid signature', 'bricks' );
+							$element['signature']['type']  = 'valid';
+						}
+
+						// Invalid signature
+						else {
+							$element['signature']['label'] = esc_html__( 'Invalid signature', 'bricks' );
+							$element['signature']['type']  = 'invalid';
+						}
+					}
+
+					// User who signed the code + timestamp
+					$element['signature']['meta'] = '';
+					if ( isset( $element['settings']['user_id'] ) ) {
+						$user = get_userdata( $element['settings']['user_id'] );
+
+						if ( $user ) {
+							$element['signature']['meta'] = $user->display_name ?? $user->user_login;
+						}
+					}
+
+					if ( isset( $element['settings']['time'] ) ) {
+						// Timestamp to datetime
+						$element['signature']['meta'] .= ' (' . wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $element['settings']['time'] ) . ')';
+					}
+
+					$element['type'] = 'code';
+					$elements[]      = $element;
+				}
+
+				// Add element code 'signature' results to $code_signature_results
+				$signature_type = $element['signature']['type'] ?? '';
+				if ( $signature_type ) {
+					$code_signature_results[ $signature_type ] += 1;
+					$code_signature_results['total']           += 1;
+				}
+
+				// STEP: Echo tag instances
+				$settings_string = wp_json_encode( $element_settings );
+				if ( strpos( $settings_string, '{echo:' ) !== false && in_array( $code_review, [ 'echo', 'all' ] ) ) {
+					$element['execute_code'] = true;
+					$element['type']         = 'echo';
+					$elements[]              = $element;
+				}
+			}
+		}
 
 		if ( count( $elements ) ) {
 			$code_review_items[] = [
@@ -120,7 +210,6 @@ if ( $code_review ) {
 			];
 		}
 	}
-
 }
 ?>
 
@@ -169,94 +258,13 @@ if ( $code_review ) {
 	<form id="bricks-settings" class="bricks-admin-wrapper" method="post" autocomplete="off">
 		<table id="tab-general" class="active">
 			<tbody>
-				<!-- Global elements (deprecated @since 2.0) -->
-				<tr>
-					<th>
-						<label for="search_replace"><?php esc_html_e( 'Global elements', 'bricks' ); ?></label> <span class="badge"><?php esc_html_e( 'deprecated', 'bricks' ); ?></span>
-					</th>
-
-					<td>
-						<div class="section-wrapper">
-							<p class="message error"><strong><?php esc_html_e( 'Global elements are deprecated since version 2.0 and must be converted to components or unlinked.', 'bricks' ); ?></strong></p>
-							<p class="message info"><?php esc_html_e( 'Click the button to retrieve a list of all global element instances. Then review and convert them to components either individually, in bulk, or by manually unlinking them in the builder. Once done, please delete all global elements from the elements panel in the builder.', 'bricks' ); ?></p>
-
-							<a href="<?php echo admin_url( 'admin.php?page=bricks-settings&global-elements-review=all#tab-general' ); ?>">
-								<button type="button" id="start-global-elements-review" class="button button-secondary">
-									<?php echo esc_html__( 'Start', 'bricks' ) . ': ' . esc_html__( 'Global elements review', 'bricks' ); ?>
-								</button>
-							</a>
-
-							<?php
-							if ( $global_elements_review ) {
-								echo '<div class="separator"></div>';
-
-								echo '<h3 class="hero">' . esc_html__( 'Results', 'bricks' ) . ': ' . esc_html__( 'Global elements review', 'bricks' ) . ' (' . count( $global_elements_by_post_id ) . ')' . '</h3>';
-
-								foreach ( $global_elements_by_post_id as $post_id => $global_elements ) {
-									?>
-									<div class="bricks-code-review-item">
-										<div class="bricks-code-review-item-header">
-											<a class="inherit" href="<?php echo Helpers::get_builder_edit_link( $post_id ); ?>" target="_blank"><div class="post-title"><?php echo get_the_title( $post_id ); ?></div></a>
-
-											<div class="actions">
-												<a class="clean" href="<?php echo Helpers::get_builder_edit_link( $post_id ); ?>" target="_blank">
-													<button type="button" class="button">
-													<?php
-													// translators: %s = "Bricks" (theme name)
-													printf( esc_html__( 'Edit with %s', 'bricks' ), 'Bricks' );
-													?>
-												</button></a>
-												<button class="button ajax flex bricks-convert-global-elements" data-post-id="<?php echo esc_attr( $post_id ); ?>"><?php esc_html_e( 'Convert to components', 'bricks' ); ?></button>
-											</div>
-										</div>
-
-										<div class="bricks-code-review-item-body">
-											<div class="bricks-code-review-item-element">
-												<div class="title-wrapper">
-													<div class="name"><?php esc_html_e( 'Global elements', 'bricks' ); ?></div>
-												</div>
-
-												<ul class="echo-found-in">
-													<?php
-													Elements::load_elements();
-													$has_nestable_elements = false;
-
-													foreach ( $global_elements as $global_element ) {
-														$element             = Elements::$elements[ $global_element['name'] ] ?? [];
-														$element_label       = $global_element['label'] ?? $element['label'] ?? '';
-														$element_is_nestable = $element['nestable'] ?? false;
-
-														if ( $element_is_nestable ) {
-															$has_nestable_elements = true;
-															$element_label        .= ' <span class="nestable">(' . esc_html__( 'Nestable', 'bricks' ) . ')</span>';
-														}
-
-														echo '<li>' . $element_label . '</li>';
-													}
-													?>
-												</ul>
-
-												<?php if ( $has_nestable_elements ) { ?>
-												<div class="message info"><?php esc_html_e( 'Nestable elements can\'t be converted to components. You can either unlink them manually by right-clicking the global element in the builder or convert them automatically by clicking the "Convert to components" button above and then confirm the prompt.', 'bricks' ); ?></div>
-												<?php } ?>
-											</div>
-										</div>
-									</div>
-									<?php
-								}
-							}
-							?>
-						</div>
-					</td>
-				</tr>
-
 				<tr>
 					<th>
 						<label for="postTypes"><?php esc_html_e( 'Post types', 'bricks' ); ?></label>
 						<p class="description">
 							<?php
-							// translators: %s: "Bricks" (theme name)
-							echo sprintf( esc_html__( 'Select post types to edit with %s.', 'bricks' ), 'Bricks' );
+							// translators: %s = article link
+							printf( esc_html__( 'Select post types to %s.', 'bricks' ), Helpers::article_link( 'editing-with-bricks', esc_html__( 'edit with Bricks', 'bricks' ) ) );
 							?>
 						</p>
 					</th>
@@ -388,23 +396,6 @@ if ( $code_review ) {
 						<div class="setting-wrapper">
 							<input type="checkbox" name="searchResultsQueryBricksData" id="searchResultsQueryBricksData" <?php checked( isset( $settings['searchResultsQueryBricksData'] ) ); ?>>
 							<label for="searchResultsQueryBricksData"><?php esc_html_e( 'Query Bricks data in search results', 'bricks' ); ?></label>
-						</div>
-					</td>
-				</tr>
-
-				<tr>
-					<th>
-						<label><?php echo esc_html__( 'Theme styles', 'bricks' ) . ': ' . esc_html__( 'Loading method', 'bricks' ); ?><?php echo Helpers::render_badge( '2.0' ); ?></label>
-					</th>
-
-					<td>
-						<div class="setting-wrapper">
-							<?php $theme_styles_Loading_method = $settings['themeStylesLoadingMethod'] ?? ''; ?>
-							<select name="themeStylesLoadingMethod" id="themeStylesLoadingMethod">
-								<option value=""><?php esc_html_e( 'Most specific', 'bricks' ) . ' (' . esc_html__( 'Default', 'bricks' ) . ')'; ?></option>
-								<option value="all" <?php selected( 'all', $theme_styles_Loading_method ); ?>><?php esc_html_e( 'Load all matching theme styles', 'bricks' ); ?></option>
-							</select>
-							<p class="description"><?php esc_html_e( 'By default, only the most specific theme style is loaded. To load all theme styles whose conditions are met, select "Load all matching theme styles".', 'bricks' ); ?></p>
 						</div>
 					</td>
 				</tr>
@@ -609,7 +600,7 @@ if ( $code_review ) {
 					</td>
 				</tr>
 
-				<tr style="display: none !important;">
+				<tr>
 					<th>
 						<label for="search_replace"><?php esc_html_e( 'Convert', 'bricks' ); ?></label>
 						<p class="description">
@@ -632,7 +623,7 @@ if ( $code_review ) {
 
 							<li>
 								<input type="checkbox" name="convert_element_ids_classes" id="convert_element_ids_classes">
-								<label for="convert_element_ids_classes" title="Bricks 1.4: bricks-element- to brxe-"><?php esc_html_e( 'Convert element IDs & classes', 'bricks' ); ?></label>
+								<label for="convert_element_ids_classes"><?php esc_html_e( 'Convert element IDs & classes', 'bricks' ); ?></label>
 							</li>
 
 							<li>
@@ -644,9 +635,15 @@ if ( $code_review ) {
 								<input type="checkbox" name="entry_animation_to_interaction" id="entry_animation_to_interaction">
 								<label for="entry_animation_to_interaction"><?php esc_html_e( 'Entry animation to interaction', 'bricks' ); ?></label>
 							</li>
+
+							<!-- TODO NEXT: Disable in production in 1.5 (might introduce at a later stage) -->
+							<!-- <li>
+								<input type="checkbox" name="convert_to_nestable_elements" id="convert_to_nestable_elements">
+								<label for="convert_to_nestable_elements"><?php echo esc_html__( 'Convert elements to nestable elements', 'bricks' ) . ' (' . esc_html__( 'Slider', 'bricks' ) . ', ' . esc_html__( 'Testimonials', 'bricks' ) . ', ' . esc_html__( 'Carousel', 'bricks' ) . ')'; ?></label>
+							</li> -->
 						</ul>
 
-						<button type="button" class="bricks-run-converter ajax button button-secondary">
+						<button type="button" id="bricks-run-converter" class="ajax button button-secondary">
 							<span class="text"><?php esc_html_e( 'Convert', 'bricks' ); ?></span>
 							<span class="spinner is-active"></span>
 						</button>
@@ -672,8 +669,6 @@ if ( $code_review ) {
 										'posts_per_page'   => -1,
 										'post_status'      => 'publish',
 										'post_type'        => 'page',
-										'orderby'          => 'title',
-										'order'            => 'ASC',
 										'lang'             => '', // Polylang
 										'suppress_filters' => true, // WPML
 									]
@@ -802,50 +797,15 @@ if ( $code_review ) {
 					</td>
 				</tr>
 
+				<!-- Password protection @since 1.11.1 -->
 				<tr>
 					<th>
-						<label><?php esc_html_e( 'Password protection', 'bricks' ); ?></label></span>
-						<p class="description"><?php esc_html_e( 'Password protection limits access to content on the rendered frontend only. It does not restrict alternative access methods (e.g. REST API). For sensitive data, consider stricter security controls.', 'bricks' ); ?></p>
+						<label><?php esc_html_e( 'Password protection', 'bricks' ); ?></label> <span class="badge"><?php esc_html_e( 'experimental', 'bricks' ); ?></span>
 					</th>
 					<td>
 						<input type="checkbox" name="passwordProtectionEnabled" id="passwordProtectionEnabled" <?php checked( isset( $settings['passwordProtectionEnabled'] ) ); ?>>
 						<label for="passwordProtectionEnabled"><?php esc_html_e( 'Password protection', 'bricks' ); ?></label>
-					</td>
-				</tr>
-
-				<tr>
-					<th>
-						<label><?php esc_html_e( 'Orphaned elements', 'bricks' ); ?></label>
-						<?php echo Helpers::render_badge( '2.0' ); ?>
-					</th>
-					<td>
-						<input type="checkbox" name="builderCheckForCorruptData" id="builderCheckForCorruptData" <?php checked( isset( $settings['builderCheckForCorruptData'] ) ); ?>>
-						<label for="builderCheckForCorruptData"><?php esc_html_e( 'Check for orphaned elements on builder save', 'bricks' ); ?></label>
-						<p class="description">
-							<?php
-							/* translators: %1$s: Link to orphaned elements documentation, %2$s: URL parameter */
-							printf(
-								esc_html__( 'Checks for %1$s on builder save to check for orphaned elements. Always checked on load regardless of this setting. Can also be manually enabled by adding %2$s to the builder URL.', 'bricks' ),
-								Helpers::article_link( 'known-issues/#orphaned-elements', 'orphaned elements' ),
-								'<code>?check=orphaned</code>'
-							);
-							?>
-						</p>
-
-						<div class="separator"></div>
-
-						<div class="section-wrapper">
-							<p class="message info"><?php echo esc_html__( 'Scan your site for orphaned elements that may cause issues.', 'bricks' ) . ' ' . Helpers::article_link( 'known-issues/#orphaned-elements', esc_html__( 'Learn more', 'bricks' ) ); ?></p>
-
-							<button type="button" id="scan-orphaned-elements" class="ajax button button-secondary">
-								<span class="text"><?php echo esc_html__( 'Start', 'bricks' ) . ': ' . esc_html__( 'Orphaned elements review', 'bricks' ); ?></span>
-								<span class="spinner is-active"></span>
-								<i class="dashicons dashicons-yes hide"></i>
-							</button>
-
-							<!-- Results container for AJAX response -->
-							<div id="orphaned-elements-results" style="display: none;"></div>
-						</div>
+						<p class="description"><?php esc_html_e( 'Enable to use the experimental password protection feature, including the new template type and form action.', 'bricks' ); ?></p>
 					</td>
 				</tr>
 			</tbody>
@@ -853,108 +813,6 @@ if ( $code_review ) {
 
 		<table id="tab-builder-access">
 			<tbody>
-				<tr>
-					<th>
-						<label><?php esc_html_e( 'Builder capabilities', 'bricks' ); ?></label> <span class="badge"><?php esc_html_e( 'experimental', 'bricks' ); ?></span>
-
-						<p class="description">
-							<?php
-							esc_html_e( 'Set up your own capabilities with the exact permissions you want to allow. Then assign it to specific user roles from the "Builder Access" dropdown below.', 'bricks' );
-							?>
-
-							<?php echo ' (' . Helpers::article_link( 'builder-access', esc_html__( 'Learn more', 'bricks' ) ) . ')'; ?>
-						</p>
-					</th>
-					<td>
-						<div class="bricks-custom-capabilities-wrapper">
-							<div class="bricks-custom-capabilities-list">
-								<div class="sub">Default</div>
-								<?php
-								// Get all capabilities with their permissions
-								$capabilities = get_option( BRICKS_DB_CAPABILITIES_PERMISSIONS, [] );
-
-								// First render default capabilities
-								foreach ( Builder_Permissions::DEFAULT_CAPABILITIES as $cap_name => $cap_label ) {
-									$cap_data = Builder_Permissions::get_default_capability_permissions( $cap_name );
-									?>
-									<div class="capability-item" data-capability="<?php echo esc_attr( $cap_name ); ?>" data-is-default="true">
-										<div class="capability-header">
-											<div class="capability-name">
-												<?php echo esc_html( $cap_label ); ?> <em>(<?php esc_html_e( 'Default', 'bricks' ); ?>)</em>
-												<span class="capability-id"><?php echo esc_html( $cap_name ); ?></span>
-											</div>
-											<div class="capability-actions">
-												<button type="button" class="button view-capability">
-													<?php esc_html_e( 'View', 'bricks' ); ?>
-												</button>
-											</div>
-										</div>
-									</div>
-									<?php
-								}
-
-								// Then render custom capabilities
-								if ( ! empty( $capabilities ) ) {
-									$custom_capabilities = array_diff_key( $capabilities, Builder_Permissions::DEFAULT_CAPABILITIES );
-								}
-
-								if ( ! empty( $custom_capabilities ) ) {
-									foreach ( $custom_capabilities as $cap_name => $cap_data ) {
-										// Get label from data structure if available, otherwise use name
-										$cap_label = isset( $cap_data['label'] ) ? $cap_data['label'] : $cap_name;
-										?>
-										<div class="capability-item" data-capability="<?php echo esc_attr( $cap_name ); ?>">
-											<div class="capability-header">
-												<div class="capability-name">
-													<?php echo esc_html( $cap_label ); ?>
-													<span class="capability-id"><?php echo esc_html( $cap_name ); ?></span>
-												</div>
-												<div class="capability-actions">
-													<button type="button" class="button edit-capability">
-														<?php esc_html_e( 'Edit', 'bricks' ); ?>
-													</button>
-													<button type="button" class="button duplicate-capability">
-													<?php esc_html_e( 'Duplicate', 'bricks' ); ?>
-													</button>
-													<button type="button" class="button delete-capability">
-													<?php esc_html_e( 'Delete', 'bricks' ); ?>
-													</button>
-												</div>
-											</div>
-										</div>
-										<?php
-									}
-								}
-								?>
-							</div>
-
-							<?php
-							// Convert custom capabilities to array format expected by JavaScript
-							$capabilities_array = [];
-
-							if ( ! empty( $custom_capabilities ) ) {
-								foreach ( $custom_capabilities as $id => $cap_data ) {
-									$capabilities_array[] = [
-										'id'          => $id,
-										'label'       => isset( $cap_data['label'] ) ? $cap_data['label'] : $id,
-										'description' => isset( $cap_data['description'] ) ? $cap_data['description'] : '',
-										'permissions' => isset( $cap_data['permissions'] ) ? $cap_data['permissions'] : []
-									];
-								}
-							}
-							?>
-							<input type="hidden" name="customCapabilities" value="<?php echo esc_attr( wp_json_encode( $capabilities_array ) ); ?>">
-
-							<div class="bricks-custom-capabilities-actions">
-								<button type="button" class="button new-capability">
-									<span class="dashicons dashicons-plus-alt2"></span>
-									<?php esc_html_e( 'Add new capability', 'bricks' ); ?>
-								</button>
-							</div>
-						</div>
-					</td>
-				</tr>
-
 				<tr>
 					<th>
 						<label><?php esc_html_e( 'Builder access', 'bricks' ); ?></label>
@@ -1009,7 +867,6 @@ if ( $code_review ) {
 				</tr>
 			</tbody>
 		</table>
-
 		<table id="tab-templates">
 			<tbody>
 				<tr>
@@ -1242,7 +1099,7 @@ if ( $code_review ) {
 						</p>
 					</th>
 					<td>
-						<textarea class="bricks-code" name="builderModeCss" id="builderModeCss" cols="30" rows="20" spellcheck="false"><?php echo empty( $settings['builderModeCss'] ) ? '' : $settings['builderModeCss']; ?></textarea>
+						<textarea class="bricks-code" name="builderModeCss" id="builderModeCss" cols="30" rows="20" spellcheck="false"><?php echo empty( $settings['builderModeCss'] ) ? '' : stripslashes_deep( $settings['builderModeCss'] ); ?></textarea>
 					</td>
 				</tr>
 				<?php } ?>
@@ -1412,24 +1269,6 @@ if ( $code_review ) {
 						<p class="description">
 							<?php esc_html_e( 'Set to show the responsive indicator next to controls that can have different values at each breakpoint.', 'bricks' ); ?>
 						</p>
-
-						<div class="separator"></div>
-
-						<div class="title"><?php echo esc_html__( 'Control group visibility', 'bricks' ); ?>:</div>
-
-						<select name="builderControlGroupVisibility" id="builderControlGroupVisibility" style="width: 100%">
-							<option value="" <?php selected( '', $settings['builderControlGroupVisibility'] ?? '' ); ?>><?php echo esc_html__( 'Hide if not open', 'bricks' ) . ' (' . esc_html__( 'Default', 'bricks' ) . ')'; ?></option>
-							<option value="always" <?php selected( 'always', $settings['builderControlGroupVisibility'] ?? '' ); ?>><?php esc_html_e( 'Always show', 'bricks' ); ?></option>
-						</select>
-
-						<div class="separator"></div>
-
-						<div class="title"><?php esc_html_e( 'Font family', 'bricks' ); ?>: <?php esc_html_e( 'Options', 'bricks' ); ?></div>
-
-						<select name="builderFontFamilyControl" id="builderFontFamilyControl">
-							<option value="" <?php selected( '', $settings['builderFontFamilyControl'] ?? '' ); ?>><?php echo esc_html__( 'Show all fonts', 'bricks' ) . ' (' . esc_html__( 'Default', 'bricks' ) . ')'; ?></option>
-							<option value="favorites" <?php selected( 'favorites', $settings['builderFontFamilyControl'] ?? '' ); ?>><?php esc_html_e( 'Show favorites only', 'bricks' ); ?></option>
-						</select>
 					</td>
 				</tr>
 
@@ -1517,7 +1356,22 @@ if ( $code_review ) {
 						<label for="importImageOnPaste"><?php esc_html_e( 'Import pasted images/SVGs', 'bricks' ); ?></label>
 
 						<div class="description"><?php esc_html_e( 'When pasting elements from another site that contain image or SVG files, placeholders are used by default. Enable to download the image from the source site. If the current user lacks SVG upload permissions, a placeholder SVG is used.', 'bricks' ); ?></div>
-						<div class="description"><?php esc_html_e( 'Only applies to Image, Image Gallery, and SVG elements. Images will not be imported if the source is a custom URL or a dynamic data tag.', 'bricks' ); ?></div>
+					</td>
+				</tr>
+
+				<tr>
+					<th>
+						<label><?php esc_html_e( 'Disable WP REST API render', 'bricks' ); ?></label>
+					</th>
+					<td>
+						<input type="checkbox" name="builderDisableRestApi" id="builderDisableRestApi" <?php checked( isset( $settings['builderDisableRestApi'] ) ); ?>>
+						<label for="builderDisableRestApi"><?php esc_html_e( 'Disable WP REST API render', 'bricks' ); ?></label>
+						<p class="description">
+							<?php
+							echo esc_html__( 'Use AJAX instead of WP REST API calls to render elements.', 'bricks' ) . '<br>' .
+							esc_html__( 'Only set if you experience problems with the default rendering in the builder (REST API disabled, etc.)', 'bricks' );
+							?>
+						</p>
 					</td>
 				</tr>
 
@@ -1534,17 +1388,6 @@ if ( $code_review ) {
 
 				<tr>
 					<th>
-					<label><?php echo 'Cloudflare Rocket Loader'; ?></label> <span class="badge"><?php esc_html_e( 'experimental', 'bricks' ); ?></span>
-					</th>
-					<td>
-						<input type="checkbox" name="builderCloudflareRocketLoader" id="builderCloudflareRocketLoader" <?php checked( isset( $settings['builderCloudflareRocketLoader'] ) ); ?>>
-						<label for="builderCloudflareRocketLoader"><?php echo 'Cloudflare Rocket Loader'; ?></label>
-						<p class="description"><?php echo sprintf( esc_html__( 'Enable if you experience issues loading the builder in combination with Cloudflare Rocket Loader.', 'bricks' ) ); ?></p>
-					</td>
-				</tr>
-
-				<tr>
-					<th>
 						<label><?php echo esc_html__( 'Query loop', 'bricks' ); ?></label>
 					</th>
 					<td>
@@ -1552,13 +1395,6 @@ if ( $code_review ) {
 						<input type="number" name="builderQueryMaxResults" id="builderQueryMaxResults" value="<?php echo isset( $settings['builderQueryMaxResults'] ) ? esc_attr( $settings['builderQueryMaxResults'] ) : ''; ?>" min="2">
 						<p class="description"><?php esc_html_e( 'Maximum number of results to display for each query loop in the builder. Applies only to Bricks-native queries. Leave blank to use the default value.', 'bricks' ); ?></p>
 						<p class="description"><?php echo esc_html_e( 'Minimum', 'bricks' ); ?>: 2</p>
-
-						<div class="separator"></div>
-
-						<input type="checkbox" name="builderQueryObjectType" id="builderQueryObjectType" <?php checked( isset( $settings['builderQueryObjectType'] ) ); ?>>
-						<label for="builderQueryObjectType"><?php esc_html_e( 'Show query loop type', 'bricks' ); ?></label>
-						<p class="description"><?php esc_html_e( 'Display the object type (e.g. "acf_related_writers", "mb_page-to-user") in the query loop type dropdown.', 'bricks' ); ?></p>
-
 					</td>
 				</tr>
 
@@ -1625,20 +1461,6 @@ if ( $code_review ) {
 							<option value="never" <?php selected( $global_classes_import, 'never' ); ?>><?php esc_html_e( 'Never', 'bricks' ); ?></option>
 						</select>
 						<p class="description"><?php esc_html_e( 'Control when to show the global classes import manager when pasting elements, importing classes or templates.', 'bricks' ); ?></p>
-					</td>
-				</tr>
-
-				<tr>
-					<th><label><?php esc_html_e( 'Render', 'bricks' ); ?></label></th>
-					<td>
-						<input type="checkbox" name="builderDisableRestApi" id="builderDisableRestApi" <?php checked( isset( $settings['builderDisableRestApi'] ) ); ?>>
-						<label for="builderDisableRestApi"><?php esc_html_e( 'Disable WP REST API render', 'bricks' ); ?></label>
-						<p class="description">
-							<?php
-							echo esc_html__( 'Use AJAX instead of WP REST API calls to render elements.', 'bricks' ) . '<br>' .
-							esc_html__( 'Only set if you experience problems with the default rendering in the builder (REST API disabled, etc.)', 'bricks' );
-							?>
-						</p>
 					</td>
 				</tr>
 			</tbody>
@@ -1823,31 +1645,15 @@ if ( $code_review ) {
 
 				<tr>
 					<th>
-						<label for="customFontsPreload"><?php esc_html_e( 'Preload custom fonts', 'bricks' ); ?><br><?php echo Helpers::render_badge( '2.0' ); ?></label>
-					</th>
-					<td>
-						<input type="checkbox" name="customFontsPreload" id="customFontsPreload" <?php checked( isset( $settings['customFontsPreload'] ) ); ?>>
-						<label for="customFontsPreload"><?php esc_html_e( 'Preload custom fonts', 'bricks' ); ?></label>
-						<p class="description"><?php esc_html_e( 'Enable this setting to preload custom fonts to avoid FOUT (Flash of unstyled text).', 'bricks' ); ?></p>
-					</td>
-				</tr>
-
-				<tr>
-					<th>
 						<label for="bricksCascadeLayer">
 							<?php esc_html_e( 'Cascade layer', 'bricks' ); ?>
-						</label> <span class="badge"><?php esc_html_e( 'legacy', 'bricks' ); ?></span>
+						</label> <span class="badge"><?php esc_html_e( 'experimental', 'bricks' ); ?></span>
 					</th>
 					<td>
-						<input type="checkbox" name="disableBricksCascadeLayer" id="disableBricksCascadeLayer" <?php checked( isset( $settings['disableBricksCascadeLayer'] ) ); ?>>
-						<label for="disableBricksCascadeLayer"><?php esc_html_e( 'Disable Bricks cascade layer (discouraged)', 'bricks' ); ?></label>
+						<input type="checkbox" name="bricksCascadeLayer" id="bricksCascadeLayer" <?php checked( isset( $settings['bricksCascadeLayer'] ) ); ?>>
+						<label for="bricksCascadeLayer"><?php esc_html_e( 'Wrap Bricks default styles in @layer', 'bricks' ); ?></label>
 						<p class="description">
-							<?php
-							echo sprintf(
-								esc_html__( 'Disables the %s. While this may maintain compatibility with certain existing setups, we strongly recommend leaving this option OFF for optimal functionality and future compatibility.', 'bricks' ),
-								'<a href="https://academy.bricksbuilder.io/article/cascade-layer/" target="_blank">Bricks cascade layer system</a>'
-							);
-							?>
+							<?php echo esc_html__( 'Enable to wrap all Bricks default styles in a cascade layer to prevent them from taking precedence over custom styles.', 'bricks' ) . ' ' . Helpers::article_link( 'cascade-layer', esc_html__( 'Learn more', 'bricks' ) ); ?>
 						</p>
 					</td>
 				</tr>
@@ -1989,42 +1795,6 @@ if ( $code_review ) {
 								<?php } ?>
 							</ul>
 						</section>
-					</td>
-				</tr>
-
-				<tr>
-					<th>
-						<label><?php esc_html_e( 'Exclude posts/pages', 'bricks' ); ?></label>
-					</th>
-					<td>
-						<?php
-						// Get only the selected posts/pages initially
-						$excluded_posts = Database::get_setting( 'maintenanceExcludedPosts', [] );
-						$initial_posts  = [];
-
-						if ( ! empty( $excluded_posts ) ) {
-							$initial_posts = get_posts(
-								[
-									'post_type'   => 'any',
-									'post_status' => 'publish',
-									'include'     => $excluded_posts,
-								]
-							);
-						}
-						?>
-						<select name="maintenanceExcludedPosts[]" id="maintenanceExcludedPosts" multiple="multiple" class="regular-text">
-							<?php
-							foreach ( $initial_posts as $post ) {
-								$value           = esc_attr( $post->ID );
-								$selected        = 'selected';
-								$title           = esc_html( $post->post_title );
-								$post_type       = get_post_type_object( $post->post_type );
-								$post_type_label = $post_type ? esc_html( $post_type->labels->singular_name ) : '';
-								echo "<option value=\"$value\" $selected>$title ($post_type_label)</option>";
-							}
-							?>
-						</select>
-						<p class="description"><?php esc_html_e( 'Selected posts/pages will be accessible even when maintenance mode is active.', 'bricks' ); ?></p>
 					</td>
 				</tr>
 			</tbody>
@@ -2239,7 +2009,7 @@ if ( $code_review ) {
 								<option value="all"><?php esc_html_e( 'All code instances', 'bricks' ); ?></option>
 								<option value="code" <?php selected( $code_review, 'code' ); ?>><?php echo esc_html__( 'Code', 'bricks' ) . ' (' . esc_html__( 'Elements', 'bricks' ) . ')'; ?></option>
 								<option value="svg" <?php selected( $code_review, 'svg' ); ?>><?php echo 'SVG (' . esc_html__( 'Elements', 'bricks' ) . ')'; ?></option>
-								<option value="queryeditor" <?php selected( $code_review, 'queryeditor' ); ?>><?php echo esc_html__( 'Query editor', 'bricks' ) . ' (' . esc_html__( 'Elements', 'bricks' ) . ')'; ?></option>
+								<option value="queryEditor" <?php selected( $code_review, 'queryEditor' ); ?>><?php echo esc_html__( 'Query editor', 'bricks' ) . ' (' . esc_html__( 'Elements', 'bricks' ) . ')'; ?></option>
 								<option value="echo" <?php selected( $code_review, 'echo' ); ?>><?php echo 'Echo tags (DD)'; ?></option>
 							</select>
 
@@ -2295,30 +2065,25 @@ if ( $code_review ) {
 							<?php
 							if ( ! empty( $code_review_items ) ) {
 								foreach ( $code_review_items as $index => $item ) {
-									$item_class        = "item-$index";
-									$item_class       .= $index === 0 ? ' item-current' : ' item-hide';
-									$is_component_post = $item['template_type'] === 'components';
-									$post_type         = get_post_type( $item['post_id'] );
-									$post_type_obj     = get_post_type_object( $post_type );
+									$item_class  = "item-$index";
+									$item_class .= $index === 0 ? ' item-current' : ' item-hide';
+
+									$post_type     = get_post_type( $item['post_id'] );
+									$post_type_obj = get_post_type_object( $post_type );
 
 									if ( $post_type_obj ) {
 										$post_type_label = $post_type_obj->labels->singular_name ?? $post_type_obj->labels->name;
 									} else {
 										$post_type_label = $post_type === 'bricks_template' ? esc_html__( 'Template', 'bricks' ) : esc_html__( 'Page', 'bricks' );
 									}
-
 									?>
 								<li class="bricks-code-review-item <?php echo $item_class; ?>">
 									<div class="bricks-code-review-item-header">
-									<?php if ( $is_component_post ) : ?>
-										<a class="inherit" href="javascript:void(0)">
-											<div class="post-title"><?php echo esc_html( 'Components', 'bricks' ); ?></div>
-										</a>
-										<?php else : ?>
-										<a class="inherit" href="<?php echo $is_component_post ? 'javascript:void(0)' : Helpers::get_builder_edit_link( $item['post_id'] ); ?>" target="_blank">
+										<a class="inherit" href="<?php echo Helpers::get_builder_edit_link( $item['post_id'] ); ?>" target="_blank" title="<?php esc_html_e( 'Edit with Bricks', 'bricks' ); ?>">
 											<div class="post-title"><?php echo esc_html( $post_type_label ) . ': ' . get_the_title( $item['post_id'] ); ?></div>
 										</a>
-										<?php endif; ?>
+
+										<!-- <button class="button button-secondary button-small type"><?php esc_html_e( $post_type_label ); ?></button> -->
 									</div>
 
 									<div class="bricks-code-review-item-body">
@@ -2328,10 +2093,18 @@ if ( $code_review ) {
 											$type         = $element['type'] ?? false;
 											$execute_code = $element['execute_code'] ?? false;
 											$is_global    = $element['global'] ?? false;
-											$is_component = $element['is_component'] ?? false;
+
+											// Global element
+											if ( $is_global ) {
+												$global_settings = Helpers::get_global_element( $element, 'settings' );
+
+												if ( is_array( $global_settings ) ) {
+													$element['settings'] = $global_settings;
+												}
+											}
 
 											switch ( $type ) {
-												case 'queryeditor':
+												case 'queryEditor':
 													$code_settings = $element['settings']['query']['queryEditor'] ?? '';
 													break;
 
@@ -2438,16 +2211,12 @@ if ( $code_review ) {
 														echo '<button class="button button-secondary button-small type">' . esc_html( 'Execute code', 'bricks' ) . '</button>';
 													}
 
-													if ( $type === 'queryeditor' ) {
+													if ( $type === 'queryEditor' ) {
 														echo '<button class="button button-secondary button-small type">' . esc_html( 'Query', 'bricks' ) . '</button>';
 													}
 
 													if ( $is_global ) {
 														echo '<button class="button button-secondary button-small type">' . esc_html( 'Global element', 'bricks' ) . '</button>';
-													}
-
-													if ( $is_component ) {
-														echo '<button class="button button-secondary button-small type">' . esc_html( 'Component', 'bricks' ) . '</button>';
 													}
 
 													// Element ID
@@ -2728,7 +2497,7 @@ if ( $code_review ) {
 						<p class="description">
 							<?php
 							// translators: %s = <head> tag
-							printf( __( 'Inline styles (CSS) are added at the end of the %s tag.', 'bricks' ), htmlspecialchars( '<head>' ) );
+							printf( __( 'Inline styles (CSS) are added to the %s tag.', 'bricks' ), htmlspecialchars( '<head>' ) );
 							?>
 						</p>
 					</td>
@@ -2745,7 +2514,7 @@ if ( $code_review ) {
 						</p>
 					</th>
 					<td>
-						<textarea dir="ltr" class="bricks-code" name="customScriptsHeader" id="customScriptsHeader" cols="30" rows="10" spellcheck="false"><?php echo isset( $settings['customScriptsHeader'] ) ? $settings['customScriptsHeader'] : ''; ?></textarea>
+						<textarea dir="ltr" class="bricks-code" name="customScriptsHeader" id="customScriptsHeader" cols="30" rows="10" spellcheck="false"><?php echo isset( $settings['customScriptsHeader'] ) ? stripslashes_deep( $settings['customScriptsHeader'] ) : ''; ?></textarea>
 						<p class="description">
 							<?php
 							// translators: %s = <script> tag
@@ -2766,7 +2535,7 @@ if ( $code_review ) {
 						</p>
 					</th>
 					<td>
-						<textarea dir="ltr" class="bricks-code" name="customScriptsBodyHeader" id="customScriptsBodyHeader" cols="30" rows="10" spellcheck="false"><?php echo isset( $settings['customScriptsBodyHeader'] ) ? $settings['customScriptsBodyHeader'] : ''; ?></textarea>
+						<textarea dir="ltr" class="bricks-code" name="customScriptsBodyHeader" id="customScriptsBodyHeader" cols="30" rows="10" spellcheck="false"><?php echo isset( $settings['customScriptsBodyHeader'] ) ? stripslashes_deep( $settings['customScriptsBodyHeader'] ) : ''; ?></textarea>
 						<p class="description">
 							<?php
 							// translators: %s = <script> tag
@@ -2787,7 +2556,7 @@ if ( $code_review ) {
 						</p>
 					</th>
 					<td>
-						<textarea dir="ltr" class="bricks-code" name="customScriptsBodyFooter" id="customScriptsBodyFooter" cols="30" rows="10" spellcheck="false"><?php echo isset( $settings['customScriptsBodyFooter'] ) ? $settings['customScriptsBodyFooter'] : ''; ?></textarea>
+						<textarea dir="ltr" class="bricks-code" name="customScriptsBodyFooter" id="customScriptsBodyFooter" cols="30" rows="10" spellcheck="false"><?php echo isset( $settings['customScriptsBodyFooter'] ) ? stripslashes_deep( $settings['customScriptsBodyFooter'] ) : ''; ?></textarea>
 						<p class="description">
 							<?php
 							// translators: %s = <script> tag
@@ -2843,13 +2612,6 @@ if ( $code_review ) {
 								<input type="checkbox" name="woocommerceUseQtyInLoop" id="woocommerceUseQtyInLoop" <?php checked( isset( $settings['woocommerceUseQtyInLoop'] ) ); ?>>
 								<label for="woocommerceUseQtyInLoop"><?php esc_html_e( 'Show quantity input field in product loop', 'bricks' ); ?></label>
 								<p class="description"><?php esc_html_e( 'Only applicable for purchasable simple products with in stock status.', 'bricks' ); ?></p>
-							</div>
-						</section>
-						<section>
-							<div class="setting-wrapper">
-								<input type="checkbox" name="woocommerceUseVariationSwatches" id="woocommerceUseVariationSwatches" <?php checked( isset( $settings['woocommerceUseVariationSwatches'] ) ); ?>>
-								<label for="woocommerceUseVariationSwatches"><?php esc_html_e( 'Enable product variation swatches', 'bricks' ); ?></label>
-								<p class="description"><?php esc_html_e( 'Convert variation dropdowns to color/image/label swatches on the add to cart element.', 'bricks' ); ?></p>
 							</div>
 						</section>
 					</td>

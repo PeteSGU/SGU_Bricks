@@ -40,7 +40,7 @@ class Query_Results_Summary extends Element {
 		];
 
 		$this->controls['noResultsText'] = [
-			'label'       => esc_html( 'Text', 'bricks' ) . ': ' . esc_html__( 'No results', 'bricks' ),
+			'label'       => esc_html( 'Text', 'bricks' ) . ': ' . esc_html__( 'No Results', 'bricks' ),
 			'type'        => 'text',
 			'placeholder' => esc_html__( 'No posts found', 'bricks' ),
 		];
@@ -56,18 +56,6 @@ class Query_Results_Summary extends Element {
 					'title' => esc_html__( 'No query selected', 'bricks' ),
 				]
 			);
-		}
-
-		// Maybe the target query is inside a Component (@since 1.12.3)
-		$local_element = Helpers::get_element_data( $this->post_id, $query_id );
-
-		if ( ! $local_element && ! empty( $this->element['instanceId'] ) ) {
-			$local_element = Helpers::get_element_data( $this->post_id, $this->element['instanceId'] );
-
-			// Correct the query ID if it's inside a Component
-			if ( ! empty( $local_element['element']['id'] ) ) {
-				$query_id = $query_id . '-' . $local_element['element']['id'];
-			}
 		}
 
 		$html = '';

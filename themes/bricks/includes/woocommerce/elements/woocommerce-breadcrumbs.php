@@ -16,6 +16,7 @@ class Woocommerce_Breadcrumbs extends Element {
 	public function set_control_groups() {
 		$this->control_groups['separator'] = [
 			'title' => esc_html__( 'Separator', 'bricks' ),
+			'tab'   => 'content',
 		];
 	}
 
@@ -27,50 +28,26 @@ class Woocommerce_Breadcrumbs extends Element {
 			'inline' => true,
 		];
 
+		$this->controls['homeLabel'] = [
+			'tab'         => 'content',
+			'label'       => esc_html__( 'Label', 'bricks' ) . ': ' . esc_html__( 'Home', 'bricks' ),
+			'type'        => 'text',
+			'inline'      => true,
+			'placeholder' => esc_html__( 'Home', 'bricks' ),
+		];
+
 		$this->controls['homeURL'] = [
 			'tab'         => 'content',
-			'label'       => esc_html__( 'Home', 'bricks' ) . ': URL',
+			'label'       => esc_html__( 'URL', 'bricks' ) . ': ' . esc_html__( 'Home', 'bricks' ),
 			'type'        => 'text',
 			'inline'      => true,
 			'placeholder' => home_url(), // = WooCommerce default
 		];
 
-		$this->controls['homeLabel'] = [
-			'type'        => 'text',
-			'tab'         => 'content',
-			'label'       => esc_html__( 'Home', 'bricks' ) . ': ' . esc_html__( 'Label', 'bricks' ),
-			'inline'      => true,
-			'placeholder' => esc_html__( 'Home', 'bricks' ),
-		];
-
-		// homeIcon (@since 2.0.2)
-		$this->controls['homeIcon'] = [
-			'label'    => esc_html__( 'Home', 'bricks' ) . ': ' . esc_html__( 'Icon', 'bricks' ),
-			'type'     => 'icon',
-			'rerender' => true,
-		];
-
-		$this->controls['hideHomeLabel'] = [
-			'label'    => esc_html__( 'Hide label', 'bricks' ),
-			'type'     => 'checkbox',
-			'required' => [ 'homeIcon', '!=', '' ],
-		];
-
-		$this->controls['prefix'] = [
-			'label'  => esc_html__( 'Prefix', 'bricks' ),
-			'type'   => 'text',
-			'inline' => true,
-		];
-
-		$this->controls['suffix'] = [
-			'label'  => esc_html__( 'Suffix', 'bricks' ),
-			'type'   => 'text',
-			'inline' => true,
-		];
-
 		// SEPARATOR
 
 		$this->controls['separatorType'] = [
+			'tab'         => 'content',
 			'group'       => 'separator',
 			'label'       => esc_html__( 'Type', 'bricks' ),
 			'type'        => 'select',
@@ -83,6 +60,7 @@ class Woocommerce_Breadcrumbs extends Element {
 		];
 
 		$this->controls['separatorText'] = [
+			'tab'      => 'content',
 			'group'    => 'separator',
 			'label'    => esc_html__( 'Separator', 'bricks' ),
 			'type'     => 'text',
@@ -92,6 +70,7 @@ class Woocommerce_Breadcrumbs extends Element {
 		];
 
 		$this->controls['separatorIcon'] = [
+			'tab'      => 'content',
 			'group'    => 'separator',
 			'label'    => esc_html__( 'Icon', 'bricks' ),
 			'type'     => 'icon',
@@ -100,13 +79,14 @@ class Woocommerce_Breadcrumbs extends Element {
 		];
 
 		$this->controls['separatorIconTypography'] = [
+			'tab'      => 'content',
 			'group'    => 'separator',
 			'label'    => esc_html__( 'Icon typography', 'bricks' ),
 			'type'     => 'typography',
 			'css'      => [
 				[
 					'property' => 'font',
-					'selector' => 'i:not(.home)',
+					'selector' => 'i',
 				],
 			],
 			'exclude'  => [
@@ -122,26 +102,24 @@ class Woocommerce_Breadcrumbs extends Element {
 			'required' => [ 'separatorIcon.icon', '!=', '' ],
 		];
 
-		$this->controls['separatorGap'] = [
-			'group'       => 'separator',
-			'label'       => esc_html__( 'Gap', 'bricks' ),
-			'type'        => 'number',
-			'units'       => true,
-			'css'         => [
-				[
-					'property' => 'gap',
-					'selector' => '.navigation',
-				],
-			],
-			'placeholder' => [
-				'top'    => 0,
-				'right'  => 10,
-				'bottom' => 0,
-				'left'   => 10,
-			],
+		$this->controls['prefix'] = [
+			'tab'    => 'content',
+			'group'  => 'separator',
+			'label'  => esc_html__( 'Prefix', 'bricks' ),
+			'type'   => 'text',
+			'inline' => true,
+		];
+
+		$this->controls['suffix'] = [
+			'tab'    => 'content',
+			'group'  => 'separator',
+			'label'  => esc_html__( 'Suffix', 'bricks' ),
+			'type'   => 'text',
+			'inline' => true,
 		];
 
 		$this->controls['separatorMargin'] = [
+			'tab'         => 'content',
 			'group'       => 'separator',
 			'label'       => esc_html__( 'Margin', 'bricks' ),
 			'type'        => 'spacing',
@@ -161,30 +139,28 @@ class Woocommerce_Breadcrumbs extends Element {
 	}
 
 	public function render() {
+		// TODO: Render to "Home" only whenever you change a breadcrumb setting in the builder
 		$settings = $this->settings;
 
-		// Separator
 		$separator_type = ! empty( $settings['separatorType'] ) ? $settings['separatorType'] : 'text';
-		if ( $separator_type === 'icon' ) {
-			$separator = ! empty( ! empty( $settings['separatorIcon'] ) ) ? self::render_icon( $settings['separatorIcon'], [ 'separator' ] ) : '';
+
+		if ( $separator_type === 'icon' && ! empty( $settings['separatorIcon'] ) ) {
+			$separator = self::render_icon( $settings['separatorIcon'], [ 'separator' ] );
 		} elseif ( ! empty( $settings['separatorText'] ) ) {
 			$separator = '<span class="separator">' . esc_html( $settings['separatorText'] ) . '</span>';
 		} else {
 			$separator = '<span class="separator"></span>';
 		}
 
-		$before     = ! empty( $settings['beforeLabel'] ) ? '<span class="before">' . $settings['beforeLabel'] . '</span>' : '';
-		$prefix     = ! empty( $settings['prefix'] ) ? esc_html( $settings['prefix'] ) : '';
-		$suffix     = ! empty( $settings['suffix'] ) ? esc_html( $settings['suffix'] ) : '';
-		$home_label = ! empty( $settings['homeLabel'] ) ? $settings['homeLabel'] : esc_html__( 'Home', 'bricks' );
+		$before = ! empty( $settings['beforeLabel'] ) ? '<span class="before">' . $settings['beforeLabel'] . '</span>' : '';
 
 		$args = [
 			'delimiter'   => $separator,
 			'wrap_before' => '<nav>' . $before . '<span class="navigation">',
 			'wrap_after'  => '</span></nav>',
-			'before'      => $prefix,
-			'after'       => $suffix,
-			'home'        => $home_label,
+			'before'      => ! empty( $settings['prefix'] ) ? $settings['prefix'] : '',
+			'after'       => ! empty( $settings['suffix'] ) ? $settings['suffix'] : '',
+			'home'        => ! empty( $settings['homeLabel'] ) ? $settings['homeLabel'] : esc_html__( 'Home', 'bricks' ),
 		];
 
 		$this->custom_home_url = ! empty( $settings['homeURL'] ) ? $this->render_dynamic_data( $settings['homeURL'], $this->post_id ) : false;
@@ -195,23 +171,7 @@ class Woocommerce_Breadcrumbs extends Element {
 			add_action( 'woocommerce_breadcrumb_home_url', [ $this, 'custom_home_url' ] );
 		}
 
-		ob_start();
 		woocommerce_breadcrumb( $args );
-		$breadcrumbs_html = ob_get_clean();
-
-		// Replace home text with homeIcon (@since 2.0.2)
-		$home_icon = ! empty( $settings['homeIcon'] ) ? self::render_icon( $settings['homeIcon'], [ 'home' ] ) : false;
-		if ( $home_label && $home_icon ) {
-			// Replace first occurence of $args['home'] value with $settings['homeIcon']
-			$breadcrumbs_html = preg_replace(
-				'/(<a[^>]*>)([^<]+)(<\/a>)/',
-				isset( $settings['hideHomeLabel'] ) ? "$1$home_icon$3" : "$1$home_icon $home_label$3",
-				$breadcrumbs_html,
-				1
-			);
-		}
-
-		echo $breadcrumbs_html;
 
 		if ( ! empty( $this->custom_home_url ) ) {
 			remove_action( 'woocommerce_breadcrumb_home_url', [ $this, 'custom_home_url' ] );

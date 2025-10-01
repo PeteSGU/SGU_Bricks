@@ -184,9 +184,6 @@ class Provider_Acf extends Base {
 
 					// Change the label to include the parent layout name
 					$label = $field['label'] . ' (' . $parent_field['label'] . ') (' . $parent_layout_label . ')';
-
-					// Group by parent field + parent layout name, better visual in DD dropdown (@since 2.0)
-					$tag['group'] = 'ACF: ' . $parent_field['label'] . ' (' . $parent_layout_label . ')';
 				}
 			}
 
@@ -255,11 +252,10 @@ class Provider_Acf extends Base {
 	public function register_dynamic_function_tag() {
 		$dynamic_functions = [
 			'acf_get_row_layout' => [
-				'name'                   => '{acf_get_row_layout}',
-				'label'                  => esc_html__( 'ACF Get Row Layout', 'bricks' ),
-				'group'                  => 'ACF',
-				'provider'               => $this->name,
-				'queryFiltersExcludeTag' => true, // Exclude from Query Filters integration dropdown (@since 2.0.2)
+				'name'     => '{acf_get_row_layout}',
+				'label'    => esc_html__( 'ACF Get Row Layout', 'bricks' ),
+				'group'    => 'ACF',
+				'provider' => $this->name,
 			],
 		];
 
@@ -459,26 +455,22 @@ class Provider_Acf extends Base {
 						break;
 
 					case 'taxonomy':
-						if ( empty( $value ) ) {
-							$value = []; // Avoid PHP warning when using wp_list_pluck
-						} else {
-							// Support :value filter to return IDs only
-							if ( ! isset( $filters['value'] ) ) {
-								$filters['object_type'] = 'term';
-								$filters['taxonomy']    = $field['taxonomy'];
+						// Support :value filter to return IDs only
+						if ( ! isset( $filters['value'] ) ) {
+							$filters['object_type'] = 'term';
+							$filters['taxonomy']    = $field['taxonomy'];
 
-								// NOTE: Undocumented
-								$show_as_link = apply_filters( 'bricks/acf/taxonomy/show_as_link', true, $value, $field );
+							// NOTE: Undocumented
+							$show_as_link = apply_filters( 'bricks/acf/taxonomy/show_as_link', true, $value, $field );
 
-								if ( $show_as_link ) {
-									$filters['link'] = true;
-								}
+							if ( $show_as_link ) {
+								$filters['link'] = true;
 							}
-
-							$value = is_array( $value ) ? $value : [ $value ];
-
-							$value = $return_format === 'id' ? $value : wp_list_pluck( $value, 'term_id' );
 						}
+
+						$value = is_array( $value ) ? $value : [ $value ];
+
+						$value = $return_format === 'id' ? $value : wp_list_pluck( $value, 'term_id' );
 						break;
 
 					case 'image':
@@ -506,17 +498,6 @@ class Provider_Acf extends Base {
 						} else {
 							$filters['skip_sanitize'] = true;
 						}
-						break;
-
-					// @since 2.0
-					case 'icon_picker':
-						$value = $this->process_icon_picker_field( $value, $field, $context, $filters );
-
-						// If $value is SVG, return it as is
-						if ( $value && \Bricks\Helpers::is_valid_svg( $value ) ) {
-							return $value;
-						}
-
 						break;
 
 					case 'file':
@@ -623,6 +604,7 @@ class Provider_Acf extends Base {
 
 		// STEP: Apply context (text, link, image, media)
 		$value = $this->format_value_for_context( $value, $tag, $post_id, $filters, $context );
+
 		return $value;
 	}
 
@@ -903,135 +885,6 @@ class Provider_Acf extends Base {
 	}
 
 	/**
-	 * Process the icon picker field
-	 *
-	 * @since 2.0
-	 *
-	 * @param [type] $value
-	 * @param [type] $field
-	 * @param [type] $filters
-	 */
-	public function process_icon_picker_field( $value, $field, $context, $filters ) {
-
-		// If return format is not set, return $value
-		if ( empty( $field['return_format'] ) ) {
-			return $value;
-		}
-
-		// If return format is set to "String" return 'value' by default
-		if ( $field['return_format'] === 'string' ) {
-			// If $value is URL, we return <img src="$value" />
-			if ( filter_var( $value, FILTER_VALIDATE_URL ) ) {
-
-				// If the URL is svg, return the svg form the URL
-				if ( pathinfo( $value, PATHINFO_EXTENSION ) === 'svg' ) {
-					$context = stream_context_create(
-						[
-							'ssl' => [
-								'verify_peer'      => false,
-								'verify_peer_name' => false,
-							],
-						]
-					);
-					$svg     = file_get_contents( $value, false, $context );
-
-					// Only return if the svg is valid
-					if ( $svg !== false ) {
-						return $svg;
-					}
-				}
-
-				return sprintf( '<img src="%s" />', $value );
-			}
-
-			// If the value is not URL, add $value as class and return the icon eg. <i class="dashicons dashicons-amazon"></i>
-			// We also need to enqueue dashicons
-			else {
-
-				// Enqueue dashicons
-				wp_enqueue_style( 'bricks-dashicons', includes_url( '/css/dashicons.min.css' ), [], null );
-
-				return sprintf( '<i class="dashicons %s"></i>', $value );
-
-			}
-		}
-		// If return format is set to "Array" return 'label' by default
-		else {
-
-			switch ( $value['type'] ) {
-				 // If the type is Dashicon, render a <i> with the dashicon class.
-				case 'dashicons':
-					return sprintf( '<i class="dashicons %s"></i>', $value['value'] );
-				   break;
-
-				// If the type is Media, render a image from media
-				case 'media_library':
-					$attachment_id = $value['value']['id'];
-
-					// if $context is image, return the attachment id
-					if ( $context === 'image' ) {
-						return $value['value']['id'];
-					}
-
-					$size = 'full'; // (thumbnail, medium, large, full, or custom size)
-
-					// Check if attachment is SVG
-					$attachment = get_post( $attachment_id );
-					if ( $attachment && $attachment->post_mime_type === 'image/svg+xml' ) {
-						$context = stream_context_create(
-							[
-								'ssl' => [
-									'verify_peer'      => false,
-									'verify_peer_name' => false,
-								],
-							]
-						);
-						$svg     = file_get_contents( wp_get_attachment_url( $attachment_id ), false, $context );
-
-						// Only return if the svg is valid
-						if ( $svg !== false ) {
-							return $svg;
-						}
-					}
-
-					$image_html = wp_get_attachment_image( $attachment_id, $size );
-					return wp_kses_post( $image_html );
-				   break;
-
-				// If the type is URL, render a image from URL
-				case 'url':
-							// If $value is URL, we return <img src="$value" />
-					if ( filter_var( $value['value'], FILTER_VALIDATE_URL ) ) {
-
-						// If the URL is svg, return the svg form the URL
-						if ( pathinfo( $value['value'], PATHINFO_EXTENSION ) === 'svg' ) {
-							$context = stream_context_create(
-								[
-									'ssl' => [
-										'verify_peer'      => false,
-										'verify_peer_name' => false,
-									],
-								]
-							);
-							$svg     = file_get_contents( $value['value'], false, $context );
-
-							// Only return if the svg is valid
-							if ( $svg !== false ) {
-								return $svg;
-							}
-						}
-						return sprintf( '<img src="%s" />', $value['value'] );
-					}
-
-					break;
-			}
-		}
-
-		// Return empty string if no value
-		return '';
-	}
-
-	/**
 	 * Get all fields supported and their contexts
 	 *
 	 * @return array
@@ -1053,7 +906,6 @@ class Provider_Acf extends Base {
 			'file'             => [ self::CONTEXT_TEXT, self::CONTEXT_LINK, self::CONTEXT_VIDEO, self::CONTEXT_MEDIA ],
 			'wysiwyg'          => [ self::CONTEXT_TEXT ],
 			'oembed'           => [ self::CONTEXT_TEXT, self::CONTEXT_LINK, self::CONTEXT_VIDEO, self::CONTEXT_MEDIA ],
-			'icon_picker'      => [ self::CONTEXT_TEXT, self::CONTEXT_IMAGE ],
 
 			// Choice
 			'select'           => [ self::CONTEXT_TEXT ],

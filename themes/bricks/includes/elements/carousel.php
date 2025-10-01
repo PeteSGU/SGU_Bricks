@@ -403,19 +403,10 @@ class Element_Carousel extends Custom_Render_Element {
 					$query_settings['lang'] = '';
 				}
 
-				// Always disable query merge to avoid merging with any query, we just use this to retrieve the media (@since 2.0)
-				$query_settings['disable_query_merge'] = true;
-
 				// Add query_settings to element_settings under query key
 				$this->element['settings']['query'] = $query_settings;
 
-				// Use unique ID for the query (@since 2.0)
-				$this->element['id'] = $this->uid;
-
 				$carousel_query = new Query( $this->element );
-
-				// Restore the original ID
-				$this->element['id'] = $this->id;
 
 				// Set $bricks_query (@since 1.10.2)
 				$this->set_bricks_query( $carousel_query );

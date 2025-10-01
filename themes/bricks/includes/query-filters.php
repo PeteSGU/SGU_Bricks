@@ -45,10 +45,9 @@ class Query_Filters {
 			add_action( 'wp', [ $this, 'set_page_filters_from_wp_query' ], 100 );
 
 			// After dynamic tags are set (providers.php), After filed-integration init, before main query pre_get_posts. Must follow the order
-			// Use bricks/dynamic_data/tags_registered hook (#86c3xg01h; @since 2.0)
-			add_action( 'bricks/dynamic_data/tags_registered', [ $this, 'set_active_filters_from_url' ], 10022 );
-			add_action( 'bricks/dynamic_data/tags_registered', [ $this, 'add_active_filters_query_vars' ], 10023 );
-			add_action( 'bricks/dynamic_data/tags_registered', [ $this, 'set_selected_filters_from_active_filters' ], 10024 );
+			add_action( 'init', [ $this, 'set_active_filters_from_url' ], 10022 );
+			add_action( 'init', [ $this, 'add_active_filters_query_vars' ], 10023 );
+			add_action( 'init', [ $this, 'set_selected_filters_from_active_filters' ], 10024 );
 
 			// Check required tables (@since 1.10)
 			add_action( 'admin_init', [ $this, 'tables_check' ] );
@@ -70,9 +69,6 @@ class Query_Filters {
 			add_action( 'delete_post', [ $this, 'delete_post' ] );
 			add_filter( 'wp_insert_post_parent', [ $this, 'wp_insert_post_parent' ], 10, 4 );
 			add_action( 'set_object_terms', [ $this, 'set_object_terms' ], PHP_INT_MAX - 10, 6 );
-			add_action( 'updated_post_meta', [ $this, 'handle_post_meta_update' ], PHP_INT_MAX - 10, 4 ); // (#86c4uh71y @since 2.0.2)
-			add_action( 'deleted_post_meta', [ $this, 'handle_post_meta_update' ], PHP_INT_MAX - 10, 4 ); // (#86c4uh71y @since 2.0.2)
-			add_action( 'edit_attachment', [ $this, 'edit_attachment' ] ); // (#86c4uh71y @since 2.0.2)
 
 			// Term
 			add_action( 'edited_term', [ $this, 'edited_term' ], PHP_INT_MAX - 10, 3 );
@@ -450,7 +446,7 @@ class Query_Filters {
 
 		// STEP: Update filter_type column (element instance name)
 		// Get all elements from element table
-		$all_db_elements = $this->get_elements_from_element_table( [], false );
+		$all_db_elements = $this->get_elements_from_element_table();
 
 		// Loop through all elements from element table
 		foreach ( $all_db_elements as $db_element ) {
@@ -956,7 +952,7 @@ class Query_Filters {
 	}
 
 	/**
-	 * Generate query vars from active filters (via URL parameters)
+	 * Generate query vars from active filters
 	 *
 	 * @since 1.11
 	 */
@@ -1019,13 +1015,6 @@ class Query_Filters {
 					"bricks/{$object_type}s/query_vars",
 					function( $vars, $settings, $element_id ) use ( $filter_query_vars, $query_id, $object_type ) {
 						if ( $element_id !== $query_id ) {
-							return $vars;
-						}
-
-						// STEP: Do not apply URL parameters filter (@since 2.0 )
-						if ( isset( $settings['query']['disable_url_params'] ) && $settings['query']['disable_url_params'] ) {
-							// Also remove the active filters for this query
-							unset( Query_Filters::$active_filters[ $query_id ] );
 							return $vars;
 						}
 
@@ -1116,48 +1105,6 @@ class Query_Filters {
 	}
 
 	/**
-	 * If post meta updated (Not via save_post), update the index table
-	 *
-	 * @since 2.0.2
-	 */
-	public function handle_post_meta_update( $meta_id, $object_id, $meta_key, $meta_value ) {
-		// Exclude revisions and save_post action
-		if ( wp_is_post_revision( $object_id ) || self::$is_saving_post ) {
-			return;
-		}
-
-		$exclude_keys = [
-			'_encloseme',
-			'_edit_lock',
-			'_edit_last',
-			'_wp_page_template',
-			'_wp_trash_meta_status',
-			'_wp_trash_meta_time',
-			'_wp_desired_post_slug',
-			BRICKS_DB_PAGE_HEADER, // Handled in qf_update_post_metadata
-			BRICKS_DB_PAGE_CONTENT, // Handled in qf_update_post_metadata
-			BRICKS_DB_PAGE_FOOTER, // Handled in qf_update_post_metadata
-		];
-
-		if ( ! in_array( $meta_key, $exclude_keys, true ) ) {
-			$this->index_post( $object_id );
-			return;
-		}
-	}
-
-	/**
-	 * ACF update attachment via AJAX action acf/fields/gallery/update_attachment
-	 * It will trigger wp_insert_post but not save_post, so we need to handle it separately
-	 * Need to set is_saving_post to false otherwise updated_post_meta will not be triggered
-	 * Note: is_saving_post is used to prevent duplicate index job when saving post
-	 *
-	 * @since 2.0.2
-	 */
-	public function edit_attachment( $post_id ) {
-		self::$is_saving_post = false;
-	}
-
-	/**
 	 * Hook into added_post_meta, if filter element found, update the index table
 	 *
 	 * @since 1.12.2
@@ -1207,19 +1154,6 @@ class Query_Filters {
 
 			// Now we need to update the index table by using the updated_data
 			$this->update_index_table( $updated_data );
-		} else {
-
-			/**
-			 * No filter elements found, run delete_post logic to remove all elements from the element table + remove index job + remove index records
-			 * Only run this logic if the current action is save_post, update_post_metadata, added_post_meta
-			 *
-			 * @since 2.0
-			 */
-			$post_actions = [ 'save_post', 'update_post_metadata', 'added_post_meta' ];
-
-			if ( in_array( current_action(), $post_actions, true ) ) {
-				$this->delete_post( $object_id );
-			}
 		}
 	}
 
@@ -1233,8 +1167,7 @@ class Query_Filters {
 		$all_db_elements = $this->get_elements_from_element_table(
 			[
 				'post_id' => $post_id,
-			],
-			false
+			]
 		);
 
 		// Just get the filter_id
@@ -1441,11 +1374,8 @@ class Query_Filters {
 
 	/**
 	 * Get all elements from element table where post_id = $post_id
-	 *
-	 * @param array $args
-	 * @param bool  $publish_only (Default: return elements that the posts are published, use false if want to remove this condition) (@since 2.0) (#86c2d1zav)
 	 */
-	private function get_elements_from_element_table( $args = [], $publish_only = true ) {
+	private function get_elements_from_element_table( $args = [] ) {
 		global $wpdb;
 
 		$table_name  = self::get_table_name( 'element' );
@@ -1467,11 +1397,9 @@ class Query_Filters {
 			}
 		}
 
-		if ( $publish_only ) {
-			// Add condition to ensure the post is published
-			$placeholders[] = "{$posts_table}.post_status = %s";
-			$values[]       = 'publish';
-		}
+		// Add condition to ensure the post is published
+		$placeholders[] = "{$posts_table}.post_status = %s";
+		$values[]       = 'publish';
 
 		// If we have placeholders, build where clause
 		if ( ! empty( $placeholders ) ) {
@@ -1828,17 +1756,6 @@ class Query_Filters {
 				];
 			}
 		} else {
-
-			// Support filter User Query by user ID (@since 2.0)
-			if ( $user_field === 'ID' ) {
-				// Change display value: Follow provider-wp.php (name logic)
-				if ( ! empty( $user->first_name ) && ! empty( $user->last_name ) ) {
-					$display_value = trim( $user->first_name . ' ' . $user->last_name );
-				} else {
-					$display_value = trim( $user->display_name );
-				}
-			}
-
 			$rows[] = [
 				'filter_id'            => '',
 				'object_id'            => $user_id,
@@ -1849,29 +1766,6 @@ class Query_Filters {
 				'filter_value_parent'  => 0,
 			];
 		}
-
-		return $rows;
-	}
-
-	public static function generate_term_field_index_rows( $term, $term_field ) {
-		$rows = [];
-
-		if ( ! is_a( $term, 'WP_Term' ) ) {
-			return $rows;
-		}
-
-		$value         = $term->$term_field ?? false;
-		$display_value = $term->name ?? 'None';
-
-		$rows[] = [
-			'filter_id'            => '',
-			'object_id'            => $term->term_id,
-			'object_type'          => 'term',
-			'filter_value'         => $value,
-			'filter_value_display' => $display_value,
-			'filter_value_id'      => 0,
-			'filter_value_parent'  => 0,
-		];
 
 		return $rows;
 	}
@@ -1913,12 +1807,8 @@ class Query_Filters {
 			$filter_type     = $filter_element['name'] ?? '';
 
 			// Pagination element does not have filterQueryId, only queryId
-			if ( ! $target_query_id && $filter_type === 'pagination' ) {
-				$target_query_id = $filter_settings['queryId'] ?? 'main';
-
-				if ( $target_query_id === 'main' && Database::$main_query_id !== '' ) {
-					$target_query_id = Database::$main_query_id;
-				}
+			if ( ! $target_query_id && isset( $filter_settings['queryId'] ) ) {
+				$target_query_id = $filter_settings['queryId'] ?? false;
 			}
 
 			// Ensure target_query_id is set and matches the current query_id
@@ -2109,15 +1999,6 @@ class Query_Filters {
 
 				// Build sort query vars
 				$query_vars = self::build_sort_query_vars( $query_vars, $filter, $query_id, $index );
-
-				// Undocumented (WooCommerce)
-				$query_vars = apply_filters(
-					'bricks/query_filters/sort_query_vars',
-					$query_vars,
-					$filter,
-					$query_id,
-					$index
-				);
 				continue;
 			}
 
@@ -2141,22 +2022,33 @@ class Query_Filters {
 						break;
 
 					case 'filter-select':
-					case 'filter-radio':
-					case 'filter-checkbox':
-						switch ( $filter_source ) {
-							case 'taxonomy':
-								$query_vars = self::build_taxonomy_query_vars( $query_vars, $filter, $query_id, $index );
-								break;
-
-							case 'customField':
-								$query_vars = self::build_custom_field_query_vars( $query_vars, $filter, $query_id, $index );
-								break;
-
-							case 'wpField':
-								$query_vars = self::build_wp_field_query_vars( $query_vars, $filter, $query_id, $index );
-								break;
+						if ( $filter_source === 'taxonomy' ) {
+							$query_vars = self::build_taxonomy_query_vars( $query_vars, $filter, $query_id, $index );
+						} elseif ( $filter_source === 'customField' ) {
+							$query_vars = self::build_custom_field_query_vars( $query_vars, $filter, $query_id, $index );
+						} else {
+							$query_vars = self::build_wp_field_query_vars( $query_vars, $filter, $query_id, $index );
 						}
+						break;
 
+					case 'filter-radio':
+						if ( $filter_source === 'taxonomy' ) {
+							$query_vars = self::build_taxonomy_query_vars( $query_vars, $filter, $query_id, $index );
+						} elseif ( $filter_source === 'customField' ) {
+							$query_vars = self::build_custom_field_query_vars( $query_vars, $filter, $query_id, $index );
+						} else {
+							$query_vars = self::build_wp_field_query_vars( $query_vars, $filter, $query_id, $index );
+						}
+						break;
+
+					case 'filter-checkbox':
+						if ( $filter_source === 'taxonomy' ) {
+							$query_vars = self::build_taxonomy_query_vars( $query_vars, $filter, $query_id, $index );
+						} elseif ( $filter_source === 'customField' ) {
+							$query_vars = self::build_custom_field_query_vars( $query_vars, $filter, $query_id, $index );
+						} else {
+							$query_vars = self::build_wp_field_query_vars( $query_vars, $filter, $query_id, $index );
+						}
 						break;
 
 					case 'filter-range':
@@ -2171,16 +2063,6 @@ class Query_Filters {
 						$query_vars = self::build_pagination_query_vars( $query_vars, $filter, $query_id, $index );
 						break;
 				}
-
-				// Undocumented (WooCommerce)
-				$query_vars = apply_filters(
-					'bricks/query_filters/filter_query_vars',
-					$query_vars,
-					$filter,
-					$query_id,
-					$index
-				);
-
 			}
 		}
 
@@ -2278,14 +2160,47 @@ class Query_Filters {
 			return $query_vars;
 		}
 
-		$selected_option = self::get_selected_sort_option( $filter_value, $sort_options );
+		// The value is combination of the source value and the order value. Example: ID_ASC, selling_price_DESC
+		$sort_value = explode( '_', $filter_value );
+		if ( count( $sort_value ) < 2 ) {
+			// Something wrong with the value
+			return $query_vars;
+		} elseif ( count( $sort_value ) > 2 ) {
+			$order = array_pop( $sort_value );
+			$key   = implode( '_', $sort_value );
+		} else {
+			$key   = $sort_value[0];
+			$order = $sort_value[1];
+		}
+
+		if ( ! $key || ! $order ) {
+			return $query_vars;
+		}
+
+		// Find the selected option
+		$selected_option = array_filter(
+			$sort_options,
+			function( $option ) use ( $key, $order ) {
+				$db_source = $option['optionSource'] ?? '';
+
+				// If the source contains |, means it is a term or user, just remove the prefix (@since 1.12)
+				$db_source = str_replace( [ 'term|', 'user|' ], '', $db_source );
+
+				$db_order = $option['optionOrder'] ?? 'ASC';
+
+				$custom_key = isset( $option['optionMetaKey'] ) && in_array( $db_source, [ 'meta_value', 'meta_value_num' ], true ) ? $option['optionMetaKey'] : false;
+
+				// Check if the selected option matches the key and order
+				return ( $db_source === $key || $custom_key === $key ) && $db_order === $order;
+			}
+		);
+
+		$selected_option = array_shift( $selected_option );
 
 		if ( ! $selected_option ) {
 			return $query_vars;
 		}
 
-		$key         = $selected_option['key'];
-		$order       = $selected_option['order'];
 		$sort_source = $selected_option['optionSource'] ?? false;
 
 		if ( ! $sort_source ) {
@@ -2331,55 +2246,6 @@ class Query_Filters {
 		}
 
 		return $query_vars;
-	}
-
-	public static function get_selected_sort_option( $filter_value, $sort_options ) {
-
-		// The value is combination of the source value and the order value. Example: ID_ASC, selling_price_DESC
-		$sort_value = explode( '_', $filter_value );
-		if ( count( $sort_value ) < 2 ) {
-			// Something wrong with the value
-			return false;
-		} elseif ( count( $sort_value ) > 2 ) {
-			$order = array_pop( $sort_value );
-			$key   = implode( '_', $sort_value );
-		} else {
-			$key   = $sort_value[0];
-			$order = $sort_value[1];
-		}
-
-		if ( ! $key || ! $order ) {
-			return false;
-		}
-
-		// Find the selected option
-		$selected_option = array_filter(
-			$sort_options,
-			function( $option ) use ( $key, $order ) {
-				$db_source = $option['optionSource'] ?? '';
-
-				// If the source contains |, means it is a term or user, just remove the prefix (@since 1.12)
-				$db_source = str_replace( [ 'term|', 'user|' ], '', $db_source );
-
-				$db_order = $option['optionOrder'] ?? 'ASC';
-
-				$custom_key = isset( $option['optionMetaKey'] ) && in_array( $db_source, [ 'meta_value', 'meta_value_num' ], true ) ? $option['optionMetaKey'] : false;
-
-				// Check if the selected option matches the key and order
-				return ( $db_source === $key || $custom_key === $key ) && $db_order === $order;
-			}
-		);
-
-		$selected_option = array_shift( $selected_option );
-
-		if ( ! $selected_option ) {
-			return false;
-		}
-
-		$selected_option['key']   = $key;
-		$selected_option['order'] = $order;
-
-		return $selected_option;
 	}
 
 	/**
@@ -2490,11 +2356,10 @@ class Query_Filters {
 	 * @since 1.11
 	 */
 	private static function build_wp_field_query_vars( $query_vars, $filter, $query_id, $filter_index ) {
-		$settings      = $filter['settings'];
-		$filter_value  = $filter['value'];
-		$field_type    = $settings['sourceFieldType'] ?? 'post';
-		$source_field  = false;
-		$instance_name = $filter['instance_name'];
+		$settings     = $filter['settings'];
+		$filter_value = $filter['value'];
+		$field_type   = $settings['sourceFieldType'] ?? 'post';
+		$source_field = false;
 
 		switch ( $field_type ) {
 			case 'post':
@@ -2515,11 +2380,6 @@ class Query_Filters {
 				break;
 
 			case 'term':
-				$source_field = $settings['wpTermField'] ?? false;
-
-				if ( ! $source_field ) {
-					return $query_vars;
-				}
 				break;
 
 		}
@@ -2540,7 +2400,7 @@ class Query_Filters {
 				break;
 
 			case 'post_author':
-				$key = $instance_name === 'filter-checkbox' ? 'author__in' : 'author'; // For checkbox, use author__in (@since 2.0)
+				$key = 'author';
 				break;
 
 			case 'post_id':
@@ -2555,15 +2415,6 @@ class Query_Filters {
 
 			case 'user_role':
 				$key = 'role__in';
-				break;
-
-			case 'user_id':
-				$key = 'include'; // For user, use include to filter by user ID
-				break;
-
-			// TERM
-			case 'term_id':
-				$key = 'include'; // For term, use include to filter by term ID
 				break;
 
 			default:
@@ -2749,11 +2600,11 @@ class Query_Filters {
 		$provider     = $settings['fieldProvider'] ?? 'none';
 
 		if ( ! $range_key || $field_source !== 'customField' || ! is_array( $filter_value ) || count( $filter_value ) !== 2 ) {
-			return $query_vars;
+			return;
 		}
 
-		// Ensure values are float
-		$filter_value = array_map( 'floatval', $filter_value );
+		// Ensure values are integers
+		$filter_value = array_map( 'intval', $filter_value );
 
 		// Ensure smallest value is first
 		sort( $filter_value );
@@ -3274,7 +3125,6 @@ class Query_Filters {
 
 	/**
 	 * Remove index when a post is deleted
-	 * - Also used in maybe_update_element() when no more elements are found in the post (@since 2.0)
 	 */
 	public function delete_post( $post_id ) {
 		// Remove rows related to this post_id
@@ -3293,7 +3143,7 @@ class Query_Filters {
 		 * @since 1.9.8
 		 */
 		// STEP: Get all filter elements from this post_id
-		$all_db_elements = $this->get_elements_from_element_table( [ 'post_id' => $post_id ], false );
+		$all_db_elements = $this->get_elements_from_element_table( [ 'post_id' => $post_id ] );
 
 		// Just get the filter_id
 		$all_db_elements_ids = array_column( $all_db_elements, 'filter_id' );
@@ -3396,11 +3246,8 @@ class Query_Filters {
 		foreach ( $grouped_elements as $source => $elements ) {
 			$rows_to_insert = [];
 
-			// If contains |, it means taxonomy (@since 2.0)
-			$group_type = strpos( $source, '|' ) !== false ? 'taxonomy' : $source;
-
 			// Build $rows
-			switch ( $group_type ) {
+			switch ( $source ) {
 				case 'wpField':
 					$post_fields = [];
 					foreach ( $elements as $element ) {
@@ -3552,7 +3399,8 @@ class Query_Filters {
 
 					break;
 
-				case 'taxonomy':
+				default:
+				case 'taxonomy|xxx':
 					// explode the key
 					$keys            = explode( '|', $source );
 					$filter_source   = $keys[0] ?? false;
@@ -3595,44 +3443,6 @@ class Query_Filters {
 						);
 					}
 
-					break;
-
-				default:
-				case 'unknown':
-					$rows_to_insert = apply_filters(
-						'bricks/query_filters/index_post/' . $source,
-						[],
-						$post_id,
-						$elements
-					);
-
-					if ( ! empty( $rows_to_insert ) ) {
-						// Ensure filter_id is set for each row, otherwise empty the entire array for safety
-						$error = false;
-						foreach ( $rows_to_insert as $key => $row ) {
-							if ( ! isset( $row['filter_id'] ) ) {
-								$error = true;
-								break;
-							}
-						}
-
-						if ( $error ) {
-							$rows_to_insert = [];
-						} else {
-							$filter_ids = array_unique( array_column( $elements, 'filter_id' ) );
-
-							// Remove rows related to this filter_id and post_id
-							foreach ( $filter_ids as $filter_id ) {
-								self::remove_index_rows(
-									[
-										'filter_id' => $filter_id,
-										'object_id' => $post_id,
-									]
-								);
-							}
-						}
-
-					}
 					break;
 			}
 
@@ -4042,59 +3852,5 @@ class Query_Filters {
 		$element_duplicates = $wpdb->get_results( $element_query, ARRAY_A );
 
 		return ! empty( $element_duplicates );
-	}
-
-	/**
-	 * Get all active filters count for a query_id
-	 *
-	 * Exclude: pagination, empty instance_name, exclude_filters.
-	 *
-	 * @since 2.0
-	 */
-	public static function get_active_filters_count( $query_id = '', $additional_params = [] ) {
-		if ( empty( $query_id ) || empty( self::$active_filters ) ) {
-			return 0;
-		}
-
-		if ( ! isset( self::$active_filters[ $query_id ] ) ) {
-			return 0;
-		}
-
-		$active_filters       = self::$active_filters[ $query_id ];
-		$url_params           = []; // Hold the nicename that collected from the filter settings, avoid duplicate
-		$clean_active_filters = [];
-		$exclude_filters      = $additional_params['exclude_filters'] ?? [];
-
-		foreach ( $active_filters as $filter_info ) {
-			$filter_id       = $filter_info['filter_id'] ?? false;
-			$instance_name   = $filter_info['instance_name'] ?? '';
-			$filter_settings = $filter_info['settings'] ?? [];
-			$url_param       = $filter_settings['filterNiceName'] ?? '';
-
-			// Skip if no filter_id
-			if ( ! $filter_id ) {
-				continue;
-			}
-
-			// Skip if instance_name is empty or pagination
-			if ( empty( $instance_name ) || $instance_name === 'pagination' ) {
-				continue;
-			}
-
-			// Skip if filter_id is in exclude_filters
-			if ( in_array( $filter_id, $exclude_filters ) ) {
-				continue;
-			}
-
-			// Skip if url_param is empty or already exists in $url_params
-			if ( ! empty( $url_param ) && in_array( $url_param, $url_params ) ) {
-				continue;
-			}
-
-			$url_params[]           = $url_param; // Flag this url_param as already exists
-			$clean_active_filters[] = $filter_info;
-		}
-
-		return count( $clean_active_filters );
 	}
 }

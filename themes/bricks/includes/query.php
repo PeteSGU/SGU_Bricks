@@ -10,9 +10,6 @@ class Query {
 	// Component ID (@since 1.12.2)
 	public $component_id = '';
 
-	// Instance ID (@since 2.0)
-	public $instance_id = '';
-
 	// Element ID
 	public $element_id = '';
 
@@ -75,12 +72,6 @@ class Query {
 		$this->element_id   = $element['id'] ?? '';
 		$this->element_name = $element['name'] ?? '';
 		$this->component_id = $element['cid'] ?? '';
-		$this->instance_id  = $element['instanceId'] ?? '';
-
-		// Adjust the element ID to include the instance ID if available. Avoid incorrect history ID generation. (@since 2.0)
-		if ( ! empty( $element['instanceId'] ) && ! empty( $element['parentComponent'] ) && strpos( $element['id'], '-' ) === false ) {
-			$this->element_id .= '-' . $element['instanceId'];
-		}
 
 		// Check for stored query in query history
 		$query_instance = self::get_query_by_element_id( $this->element_id );
@@ -295,7 +286,7 @@ class Query {
 	 *
 	 * @since 1.8
 	 */
-	public static function prepare_query_vars_from_settings( $settings = [], $fallback_element_id = '', $element_name = '', $skip_main_query = false ) {
+	public static function prepare_query_vars_from_settings( $settings = [], $fallback_element_id = '', $element_name = '' ) {
 		$object_type = self::get_query_object_type();
 		$element_id  = self::get_query_element_id();
 
@@ -447,11 +438,6 @@ class Query {
 			 */
 			$query_vars = apply_filters( "bricks/{$object_type}s/query_vars", $query_vars, $settings, $element_id, $element_name );
 
-			// @since 2.0
-			if ( $object_type === 'post' ) {
-				$query_vars = self::post_in_correction( $query_vars );
-			}
-
 			return $query_vars;
 		}
 
@@ -551,13 +537,11 @@ class Query {
 				 *
 				 * @since 1.7: Merge query only if 'disable_query_merge' control is not set!
 				 * @since 1.9.9: Merge query only if 'woo_disable_query_merge' control is not set! (Products element)
-				 * @since 2.0: Do not merge if skip_main_query is true (#86c42z22c; #86c3zyd4z; @see database.php)
 				 */
 				if ( $merge_query &&
 					( is_archive() || is_author() || is_search() || is_home() ) &&
 					empty( $query_vars['disable_query_merge'] ) &&
-					empty( $query_vars['woo_disable_query_merge'] ) &&
-					! $skip_main_query
+					empty( $query_vars['woo_disable_query_merge'] )
 				) {
 					global $wp_query;
 
@@ -583,8 +567,6 @@ class Query {
 					$query_vars['post_type'] = 'post';
 				}
 
-				// (@since 2.0)
-				$query_vars = self::post_in_correction( $query_vars );
 				break;
 
 			case 'term':
@@ -1226,17 +1208,8 @@ class Query {
 			// Always unset order if orderby is an array
 			unset( $query_vars['order'] );
 		} else {
-			$use_wp_default = $orderby === '_default';
+			$use_wp_default = $new_orderby === '_default';
 			$new_orderby    = $orderby;
-
-			// Correction if order is an array but new_orderby is not an array (#86c4j20h9)
-			if ( is_array( $order ) && ! empty( $order ) && is_string( $new_orderby ) ) {
-				$new_orderby = [
-					$new_orderby => strtoupper( $order[0] ?? 'DESC' ),
-				];
-
-				unset( $query_vars['order'] );
-			}
 		}
 
 		if ( $use_wp_default ) {
@@ -1429,48 +1402,6 @@ class Query {
 
 		// Update the query vars
 		$query_vars['post__in'] = $new_post_in;
-
-		return $query_vars;
-	}
-
-	/**
-	 * If post__in and post__not_in are set, correct the query
-	 *
-	 * @since 2.0
-	 */
-	public static function post_in_correction( $query_vars ) {
-		if ( ! isset( $query_vars['post__in'] ) || ! isset( $query_vars['post__not_in'] ) ) {
-			return $query_vars;
-		}
-
-		$post__in     = $query_vars['post__in'];
-		$post__not_in = $query_vars['post__not_in'];
-
-		// If both are empty, return
-		if ( empty( $post__in ) && empty( $post__not_in ) ) {
-			return $query_vars;
-		}
-
-		// If post__in is empty, return
-		if ( empty( $post__in ) ) {
-			return $query_vars;
-		}
-
-		// If post__not_in is empty, return
-		if ( empty( $post__not_in ) ) {
-			return $query_vars;
-		}
-
-		// If both are set, remove the post__not_in from post__in
-		$query_vars['post__in'] = array_diff( $post__in, $post__not_in );
-
-		// If post__in is empty, force to show empty results
-		if ( empty( $query_vars['post__in'] ) ) {
-			$query_vars['post__in'] = [ 0 ];
-		}
-
-		// Remove post__not_in
-		unset( $query_vars['post__not_in'] );
 
 		return $query_vars;
 	}
@@ -1776,15 +1707,8 @@ class Query {
 			}
 		}
 
-		/**
-		 * Custom Marker to avoid HTML comment removal by plugins
-		 * - will be converted to HTML comment in the frontend
-		 *
-		 * @since 1.12.3
-		 */
-		if ( is_array( $content ) && isset( $content[0] ) ) {
-			$content[0] = $this->maybe_add_loop_marker( $content[0] );
-		}
+		// Insert <!--brx-loop-start-$this->element_id--> for the first loop item even if no results (@since 1.12.2)
+		array_unshift( $content, "<!--brx-loop-start-$this->element_id-->" );
 
 		// @see https://academy.bricksbuilder.io/article/action-bricks-query-after_loop (@since 1.7.2)
 		do_action( 'bricks/query/after_loop', $this, $args );
@@ -1994,19 +1918,12 @@ class Query {
 			// Top level loop
 			if ( self::get_looping_level() < 1 ) {
 				$component_id = self::get_query_element_component_id( $looping_query_id );
-				$instance_id  = self::get_query_element_instance_id( $looping_query_id );
 
 				if ( $component_id ) {
 					// Add query element ID if component ID exists (@since 1.12.2)
 					// Format: query_element_id:loop_index
 					$unique_loop_id = [
 						self::get_query_element_id( $looping_query_id ),
-						self::get_loop_index( $looping_query_id ),
-					];
-				} elseif ( $instance_id ) {
-					// Format: instance_id:loop_index (#86c511c31 @since 2.0.2)
-					$unique_loop_id = [
-						$instance_id,
 						self::get_loop_index( $looping_query_id ),
 					];
 				} else {
@@ -2157,17 +2074,6 @@ class Query {
 	}
 
 	/**
-	 * Get instance ID of query loop element
-	 *
-	 * @since 2.0.2
-	 */
-	public static function get_query_element_instance_id( $query = '' ) {
-		$query = self::get_query_object( $query );
-
-		return ! empty( $query->instance_id ) ? $query->instance_id : false;
-	}
-
-	/**
 	 * Get the current looping level
 	 *
 	 * @return int
@@ -2300,17 +2206,14 @@ class Query {
 		if ( $template_id || $text ) {
 			// Use template if set
 			if ( $template_id ) {
-				// Check if the template is published to avoid unncessary queries especially when generate global classes (@since 2.0)
-				if ( get_post_status( $template_id ) === 'publish' ) {
-					$content = do_shortcode( '[bricks_template id="' . $template_id . '"]' );
-					// Generate global classes and insert inline to compatible with third-party plugin, will be removed on next AJAX call together with .bricks-posts-nothing-found (@since 1.12)
-					$global_class_key = 'global_classes_' . $template_id;
-					Assets::generate_global_classes( $global_class_key );
-					$content .= '<style>';
-					$content .= Assets::$inline_css[ "$global_class_key" ] ?? '';
-					$content .= Assets::$inline_css[ "template_$template_id" ] ?? '';
-					$content .= '</style>';
-				}
+				$content = do_shortcode( '[bricks_template id="' . $template_id . '"]' );
+				// Generate global classes and insert inline to compatible with third-party plugin, will be removed on next AJAX call together with .bricks-posts-nothing-found (@since 1.12)
+				$global_class_key = 'global_classes_' . $template_id;
+				Assets::generate_global_classes( $global_class_key );
+				$content .= '<style>';
+				$content .= Assets::$inline_css[ "$global_class_key" ];
+				$content .= Assets::$inline_css[ "template_$template_id" ];
+				$content .= '</style>';
 			} else {
 				$content = bricks_render_dynamic_data( $text );
 				$content = do_shortcode( $content );
@@ -2351,30 +2254,6 @@ class Query {
 		$content = apply_filters( 'bricks/query/no_results_content', $content, $this->settings, $this->element_id );
 
 		return $content;
-	}
-
-	/**
-	 * Insert data-brx-loop-start="$this->element_id" for the first HTML node
-	 *
-	 * @param string $content
-	 * @return string
-	 * @since 2.0
-	 */
-	public function maybe_add_loop_marker( $html ) {
-		// Do not generate if AJAX or REST request
-		if ( defined( 'DOING_AJAX' ) && DOING_AJAX || defined( 'REST_REQUEST' ) && REST_REQUEST ) {
-			return $html;
-		}
-
-		// Check if it's a valid data type
-		if ( ! is_string( $html ) || trim( $html ) === '' ) {
-			return $html;
-		}
-
-		// Insert data-brx-loop-start="$this->element_id" to the HTML string
-		$html = preg_replace( '/^<([a-z0-9]+)([^>]*)>/i', '<$1$2 data-brx-loop-start="' . $this->element_id . '">', $html );
-
-		return $html;
 	}
 
 	/**
@@ -2577,11 +2456,6 @@ class Query {
 	 * @since 1.9.4
 	 */
 	public static function merge_query_vars( $original_query_vars = [], $merging_query_vars = [], $meta_query_logic = false ) {
-		// Avoid null values
-		if ( is_null( $merging_query_vars ) ) {
-			return $original_query_vars;
-		}
-
 		foreach ( $merging_query_vars as $key => $value ) {
 			// If the key already exists in the $original_query_vars, and the value is an array, merge the two arrays
 			if ( isset( $original_query_vars[ $key ] ) && is_array( $original_query_vars[ $key ] ) && is_array( $value ) ) {
@@ -2622,15 +2496,9 @@ class Query {
 					$original_query_vars[ $key ] = $value;
 				}
 
-				elseif ( $key === 'posts_per_page' || $key === 'number' || $key === 'post_type' ) {
+				elseif ( $key === 'posts_per_page' || $key === 'number' ) {
 					// Used in WP_Query, WP_Term_Query & WP_User_Query, should use merging query vars
 					$original_query_vars[ $key ] = $value;
-				}
-
-				elseif ( $key === 'post__in' || $key === 'post__not_in' ) {
-					$intersect_ids = array_intersect( $original_query_vars[ $key ], $value );
-
-					$original_query_vars[ $key ] = empty( $intersect_ids ) ? [ 0 ] : $intersect_ids;
 				}
 
 				else {
@@ -2641,9 +2509,6 @@ class Query {
 				$original_query_vars[ $key ] = $value;
 			}
 		}
-
-		// Correct the merged query vars to avoid post__in and post__not_in occurs at the same time (@since 2.0)
-		$original_query_vars = self::post_in_correction( $original_query_vars );
 
 		return $original_query_vars;
 	}

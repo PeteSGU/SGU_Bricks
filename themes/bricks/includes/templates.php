@@ -12,16 +12,11 @@ class Templates {
 	// All generated inline CSS identifiers (@since 1.9.1)
 	public static $generated_inline_identifier = [];
 
-	// Flag to avoid assigning templates to hooks multiple times (@since 2.0.2)
-	private static $assigned_templates_to_hooks = false;
-
 	public function __construct() {
 		add_filter( 'init', [ $this, 'register_post_type' ] );
 
 		// Run on 'wp' and priority 20 to ensure set_active_templates && set_page_data in database.php ran first (@since 1.9.2)
 		add_action( 'wp', [ $this, 'assign_templates_to_hooks' ], 20 );
-		// 'wp' is not run in custom API endpoints, follow database.php 'rest_api_init' as well (@since 2.0)
-		add_action( 'rest_api_init', [ $this, 'assign_templates_to_hooks' ], 20 );
 
 		add_shortcode( 'bricks_template', [ $this, 'render_shortcode' ] );
 
@@ -148,11 +143,6 @@ class Templates {
 			return;
 		}
 
-		// Ensure template post_status is 'publish' (@since 2.0)
-		if ( get_post_status( $template_id ) !== 'publish' ) {
-			return;
-		}
-
 		$original_post_id = ! empty( Database::$page_data['original_post_id'] ) ? Database::$page_data['original_post_id'] : '';
 
 		// post_id at this stage could be template preview post ID (populated content)
@@ -232,17 +222,6 @@ class Templates {
 
 		// STEP: Builder (append template CSS as inline <style> to element HTML)
 		if ( bricks_is_builder() || bricks_is_builder_call() ) {
-			// Collect css and elements related to this template for component rendering builder call (@since 2.0)
-			if ( ! isset( Builder::$templates_data[ $template_id ] ) ) {
-				Builder::$templates_data[ $template_id ] = [
-					'css'      => '',
-					'elements' => []
-				];
-			}
-
-			Builder::$templates_data[ $template_id ]['css']      = $template_inline_css;
-			Builder::$templates_data[ $template_id ]['elements'] = $elements;
-
 			// Use 'data-template-id' to get template ID in builder to generate global classes CSS of Template element (@since 1.8.2)
 			$template_inline_css .= Assets::$inline_css_dynamic_data;
 			$html                .= "<style data-template-id=\"{$template_id}\" id=\"bricks-inline-css-template-{$template_id}\">{$template_inline_css}</style>";
@@ -641,107 +620,9 @@ class Templates {
 			'fields'     => 'ids',
 		];
 
-		// Infobox query arguments
-		$q_infobox = [
-			[
-				'key'     => BRICKS_DB_TEMPLATE_TYPE,
-				'value'   => 'popup',
-				'compare' => '=',
-			],
-			[
-				'key'     => BRICKS_DB_TEMPLATE_SETTINGS,
-				'value'   => 's:14:"popupIsInfoBox";b:1;',
-				'compare' => 'LIKE',
-			],
-		];
-
-		// Popup query arguments
-		$q_popup = [
-			[
-				'key'     => BRICKS_DB_TEMPLATE_TYPE,
-				'value'   => 'popup',
-				'compare' => '=',
-			],
-			[
-				'relation' => 'OR',
-				[
-					'key'     => BRICKS_DB_TEMPLATE_SETTINGS,
-					'value'   => 's:14:"popupIsInfoBox";b:1;',
-					'compare' => 'NOT LIKE',
-				],
-				[
-					'key'     => BRICKS_DB_TEMPLATE_SETTINGS,
-					'compare' => 'NOT EXISTS',
-				],
-			],
-		];
-
-		// Handle specific template types infobox and popup (string)
-		if ( is_string( $template_type ) ) {
-			if ( $template_type === 'infobox' ) {
-				$query_args = [
-					'meta_query'    => $q_infobox,
-					'fields'        => 'ids',
-					'no_found_rows' => true,
-				];
-			} elseif ( $template_type === 'popup' ) {
-				$query_args = [
-					'meta_query'    => $q_popup,
-					'fields'        => 'ids',
-					'no_found_rows' => true,
-				];
-			}
-		}
-
-		// Handle array of template types (includes/elements/template.php)
-		if ( is_array( $template_type ) ) {
-			$contains_infobox = in_array( 'infobox', $template_type );
-			$contains_popup   = in_array( 'popup', $template_type );
-
-			// Amend meta query if 'infobox' or 'popup' is in the array, but not both
-			if ( ( $contains_infobox || $contains_popup ) && ! ( $contains_infobox && $contains_popup ) ) {
-				// Remove 'infobox' and 'popup' from array
-				$template_type = array_diff( $template_type, [ 'popup', 'infobox' ] );
-
-				$query_args = [
-					'meta_query'    => [
-						'relation' => 'OR',
-					],
-					'fields'        => 'ids',
-					'no_found_rows' => true,
-				];
-
-				// Add remaining template types to the query
-				if ( count( $template_type ) > 0 ) {
-					$query_args['meta_query'][] = [
-						'key'     => BRICKS_DB_TEMPLATE_TYPE,
-						'value'   => $template_type,
-						'compare' => 'IN',
-					];
-				}
-
-				// Add popup query if 'popup' is in the array
-				if ( $contains_popup ) {
-					$query_args['meta_query'][] = $q_popup;
-				}
-
-				// Add infobox query if 'infobox' is in the array
-				if ( $contains_infobox ) {
-					$query_args['meta_query'][] = $q_infobox;
-				}
-			}
-		}
-
-		// Execute the query
 		$query = self::get_templates_query( $query_args );
 
-		// Return results for normal queries
-		if ( empty( $query_args['no_found_rows'] ) ) {
-			return ! empty( $query->found_posts ) ? $query->posts : [];
-		}
-
-		// Return results based on 'no_found_rows' flag
-		return $query->posts;
+		return ! empty( $query->found_posts ) ? $query->posts : [];
 	}
 
 	/**
@@ -1069,7 +950,7 @@ class Templates {
 	public function create_template() {
 		Ajax::verify_request( 'bricks-nonce-builder' );
 
-		if ( ! Builder_Permissions::user_has_permission( 'create_templates' ) ) {
+		if ( ! Capabilities::current_user_has_full_access() ) {
 			wp_send_json_error( 'verify_request: Sorry, you are not allowed to perform this action.' );
 		}
 
@@ -1105,7 +986,7 @@ class Templates {
 			);
 
 			// STEP: Handle password protection template population
-			if ( $template_data['templateType'] === 'password_protection' ) {
+			if ( $template_data['templateType'] === 'password_protection' && Capabilities::current_user_has_full_access() ) {
 				Password_Protection::populate_template( $template_id );
 			}
 		}
@@ -1199,7 +1080,7 @@ class Templates {
 	public function delete_template() {
 		Ajax::verify_request( 'bricks-nonce-builder' );
 
-		if ( ! Builder_Permissions::user_has_permission( 'delete_templates' ) ) {
+		if ( ! Capabilities::current_user_has_full_access() ) {
 			wp_send_json_error( 'verify_request: Sorry, you are not allowed to perform this action.' );
 		}
 
@@ -1237,7 +1118,7 @@ class Templates {
 			Ajax::verify_nonce( 'bricks-nonce-admin' );
 		}
 
-		if ( ! Builder_Permissions::user_has_permission( 'import_export_templates' ) ) {
+		if ( ! Capabilities::current_user_has_full_access() ) {
 			wp_send_json_error( 'verify_request: Sorry, you are not allowed to perform this action.' );
 		}
 
@@ -1655,7 +1536,7 @@ class Templates {
 			$template_id = isset( $_GET['templateId'] ) ? intval( $_GET['templateId'] ) : 0;
 		}
 
-		if ( isset( $_GET['builder'] ) && ! Builder_Permissions::user_has_permission( 'import_export_templates' ) ) {
+		if ( ! Capabilities::current_user_has_full_access() ) {
 			wp_send_json_error( 'verify_request: Sorry, you are not allowed to perform this action.' );
 		}
 
@@ -1750,7 +1631,7 @@ class Templates {
 		// Final file name
 		$file_name = 'template-' . $file_name . '-' . date( 'Y-m-d' ) . '.json';
 
-		if ( bricks_is_ajax_call() ) {
+		if ( bricks_is_builder_call() ) {
 			// Download individual template
 			header( 'Content-Type:application/json; charset=utf-8' );
 			header( "Content-Disposition: attachment; filename=$file_name" );
@@ -1956,7 +1837,7 @@ class Templates {
 	public function convert_template() {
 		Ajax::verify_nonce( 'bricks-nonce-builder' );
 
-		if ( ! Builder_Permissions::user_has_permission( 'edit_templates' ) && ! Builder_Permissions::user_has_permission( 'insert_templates' ) ) {
+		if ( ! Capabilities::current_user_has_full_access() ) {
 			wp_send_json_error( 'verify_request: Sorry, you are not allowed to perform this action.' );
 		}
 
@@ -2118,25 +1999,27 @@ class Templates {
 			return;
 		}
 
-		// Avoid assigning template to hooks multiple times (@since 2.0.2)
-		if ( ! self::$assigned_templates_to_hooks ) {
-			self::$assigned_templates_to_hooks = true;
-		} else {
-			return; // Already assigned templates to hooks
-		}
-
-		// Get all available templates once in case Database::set_active_templates not triggered (#86c417v88)
-		$all_templates = Database::get_all_templates_by_type();
-		// STEP: Get all section templates - improve performance (@since 2.0)
-		$section_templates = $all_templates['section'] ?? [];
+		// STEP: Get all section templates
+		$section_templates = self::get_templates_query(
+			[
+				'meta_query' => [
+					[
+						'key'     => BRICKS_DB_TEMPLATE_TYPE,
+						'value'   => 'section',
+						'compare' => '=',
+					],
+				],
+			]
+		);
 
 		// Return: No section templates found
-		if ( empty( $section_templates ) ) {
+		if ( ! $section_templates->have_posts() ) {
 			return;
 		}
 
 		// STEP: Loop over all section templates with 'Assign to hook' setting
-		foreach ( $section_templates as $template_id ) {
+		foreach ( $section_templates->posts as $section_template ) {
+			$template_id       = $section_template->ID;
 			$template_settings = Helpers::get_template_settings( $template_id );
 
 			// Skip: Previewing the template itself

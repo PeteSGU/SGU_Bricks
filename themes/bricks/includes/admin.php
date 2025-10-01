@@ -7,6 +7,8 @@ class Admin {
 	const EDITING_CAP = 'edit_posts';
 
 	public function __construct() {
+		// add_action( 'wp_dashboard_setup', [ $this, 'wp_dashboard_setup' ] );
+
 		add_action( 'after_switch_theme', [ $this, 'set_default_settings' ] );
 		add_action( 'admin_enqueue_scripts', [ $this, 'admin_enqueue_scripts' ] );
 		add_action( 'enqueue_block_assets', [ $this, 'gutenberg_scripts' ] );
@@ -28,8 +30,6 @@ class Admin {
 		add_action( 'wp_ajax_bricks_export_global_settings', [ $this, 'export_global_settings' ] );
 		add_action( 'wp_ajax_bricks_save_settings', [ $this, 'save_settings' ] );
 		add_action( 'wp_ajax_bricks_reset_settings', [ $this, 'reset_settings' ] );
-		add_action( 'wp_ajax_bricks_save_element_manager', [ $this, 'save_element_manager' ] );
-		add_action( 'wp_ajax_bricks_get_element_usage_count', [ $this, 'get_element_usage_count' ] ); // Updated AJAX action
 
 		add_action( 'edit_form_after_title', [ $this, 'builder_tab_html' ], 10, 2 );
 		add_filter( 'page_row_actions', [ $this, 'row_actions' ], 10, 2 );
@@ -122,7 +122,7 @@ class Admin {
 
 		$template_types_options = Setup::$control_options['templateTypes'];
 		?>
-		<p><label for="bricks_template_type"><?php esc_html_e( 'Select template type', 'bricks' ); ?>:</label></p>
+		<p><label for="bricks_template_type"><?php esc_html_e( 'Select template type:', 'bricks' ); ?></label></p>
 		<select name="bricks_template_type" id="bricks_template_type" style="width: 100%">
 			<option value=""><?php esc_html_e( 'Select', 'bricks' ); ?></option>
 		<?php
@@ -176,6 +176,30 @@ class Admin {
 	}
 
 	/**
+	 * Register dashboard widget
+	 *
+	 * NOTE: Not in use, yet.
+	 *
+	 * @since 1.0
+	 */
+	public function wp_dashboard_setup() {
+		wp_add_dashboard_widget(
+			'bricks_dashboard_widget',
+			esc_html__( 'Bricks News', 'bricks' ),
+			[ $this, 'dashboard_widget' ]
+		);
+
+		// Move Bricks dashboard widget to the top
+		// https://codex.wordpress.org/Dashboard_Widgets_API#Advanced:_Forcing_your_widget_to_the_top
+		global $wp_meta_boxes;
+
+		$normal_dashboard = $wp_meta_boxes['dashboard']['normal']['core'];
+		$sorted_dashboard = array_merge( [ 'bricks_dashboard_widget' => $normal_dashboard['bricks_dashboard_widget'] ], $normal_dashboard );
+
+		$wp_meta_boxes['dashboard']['normal']['core'] = $sorted_dashboard;
+	}
+
+	/**
 	 * Render dashboard widget
 	 *
 	 * @since 1.0
@@ -206,7 +230,6 @@ class Admin {
 	public function posts_custom_column( $column, $post_id ) {
 		if ( $column === 'template' ) {
 			$post_template_id = 0;
-			$post_template    = get_post( $post_id );
 
 			if ( $post_template_id ) {
 				echo '<a href="' . Helpers::get_builder_edit_link( $post_id ) . '" target="_blank">' . $post_template['title'] . '</a>';
@@ -392,8 +415,8 @@ class Admin {
 		$post_type     = ! empty( $_GET['post_type'] ) ? sanitize_text_field( $_GET['post_type'] ) : 'post';
 		$template_type = ! empty( $_GET['template_type'] ) ? sanitize_text_field( $_GET['template_type'] ) : '';
 
-		// Perform filter action only for Bricks template post type and main query (@since 2.0)
-		if ( $query->is_main_query() && is_admin() && $template_type && $post_type === BRICKS_DB_TEMPLATE_SLUG && $pagenow == 'edit.php' ) {
+		// Perform filter action only for Bricks template post type
+		if ( is_admin() && $template_type && $post_type === BRICKS_DB_TEMPLATE_SLUG && $pagenow == 'edit.php' ) {
 			$query->query_vars['meta_key']   = BRICKS_DB_TEMPLATE_TYPE;
 			$query->query_vars['meta_value'] = $template_type;
 		}
@@ -407,7 +430,7 @@ class Admin {
 	public function import_global_settings() {
 		Ajax::verify_nonce( 'bricks-nonce-admin' );
 
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! Capabilities::current_user_has_full_access() ) {
 			wp_send_json_error( 'verify_request: Sorry, you are not allowed to perform this action.' );
 		}
 
@@ -448,7 +471,7 @@ class Admin {
 	public static function export_global_settings() {
 		Ajax::verify_nonce( 'bricks-nonce-admin' );
 
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! Capabilities::current_user_has_full_access() ) {
 			wp_send_json_error( 'verify_request: Sorry, you are not allowed to perform this action.' );
 		}
 
@@ -493,19 +516,6 @@ class Admin {
 		foreach ( $settings as $key => $value ) {
 			// Skip empty values
 			if ( $value == '' ) {
-				continue;
-			}
-
-			// Handle custom capabilities
-			if ( $key === 'customCapabilities' ) {
-				// Decode the JSON string from the hidden input
-				$capabilities = json_decode( stripslashes( $value ), true );
-
-				// Save the capabilities if valid
-				if ( is_array( $capabilities ) ) {
-					Builder_Permissions::save_custom_capabilities( $capabilities );
-				}
-
 				continue;
 			}
 
@@ -653,9 +663,9 @@ class Admin {
 			\Bricks\Query_Filters::get_instance()->maybe_create_tables();
 		}
 
-		// STEP: Regenerate CSS files if 'disableBricksCascadeLayer' setting changed (@since 2.0)
-		$cascade_layer_old      = isset( $old_settings['disableBricksCascadeLayer'] );
-		$cascade_layer_new      = isset( $settings['disableBricksCascadeLayer'] );
+		// STEP: Regenerate CSS files if 'bricksCascadeLayer' setting changed (@since 1.12)
+		$cascade_layer_old      = isset( $old_settings['bricksCascadeLayer'] );
+		$cascade_layer_new      = isset( $settings['bricksCascadeLayer'] );
 		$css_loading_method_old = $old_settings['cssLoading'] ?? false;
 		$css_loading_method_new = $settings['cssLoading'] ?? false;
 
@@ -699,140 +709,6 @@ class Admin {
 		Capabilities::set_defaults();
 
 		wp_send_json_success();
-	}
-
-	/**
-	 * Save element manager
-	 *
-	 * @since 2.0
-	 */
-	public function save_element_manager() {
-		Ajax::verify_nonce( 'bricks-nonce-admin' );
-
-		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( [ 'message' => esc_html__( 'Not allowed', 'bricks' ) ] );
-		}
-
-		$elements = $_POST['elements'] ?? [];
-
-		// Check: Reset element manager
-		if ( $_POST['reset'] == 'true' ) {
-			delete_option( BRICKS_DB_ELEMENT_MANAGER );
-
-			wp_send_json_success( $elements );
-		}
-
-		foreach ( $elements as $name => $element ) {
-			// No permission or all permissions: Remove permission
-			if ( empty( $element['permission'] ) || in_array( 'all', $element['permission'] ) ) {
-				unset( $element['permission'] );
-			}
-
-			// No status or active status: Remove status
-			if ( empty( $element['status'] ) || $element['status'] === 'active' ) {
-				unset( $element['status'] );
-			}
-
-			// Remove element if no status and no permission
-			if ( empty( $element['status'] ) && empty( $element['permission'] ) ) {
-				unset( $elements[ $name ] );
-			} else {
-				$elements[ $name ] = $element;
-			}
-		}
-
-		foreach ( Elements::mandatory_elements() as $element_name ) {
-			// Unset mandatory elements
-			unset( $elements[ $element_name ] );
-		}
-
-		// STEP: Update or delete element manger in options table
-		if ( count( $elements ) ) {
-			update_option( BRICKS_DB_ELEMENT_MANAGER, $elements );
-		} else {
-			delete_option( BRICKS_DB_ELEMENT_MANAGER );
-		}
-
-		wp_send_json_success( $elements );
-	}
-
-	/**
-	 * Get element usage count via AJAX for multiple elements
-	 *
-	 * @since 2.0
-	 */
-	public function get_element_usage_count() {
-		Ajax::verify_nonce( 'bricks-nonce-admin' );
-
-		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( [ 'message' => esc_html__( 'Not allowed', 'bricks' ) ] );
-		}
-
-		$element_names = isset( $_POST['elementNames'] ) ? $_POST['elementNames'] : [];
-
-		// Ensure element names are an array and not more than 25 elements (admin.js BATCH_SIZE)
-		if ( ! is_array( $element_names ) || count( $element_names ) > 25 ) {
-			wp_send_json_error( [ 'message' => esc_html__( 'Invalid element names', 'bricks' ) ] );
-		}
-
-		// Get site-wide element usage count for multiple elements
-		global $wpdb;
-
-		$results = [];
-
-		foreach ( $element_names as $element_name ) {
-			// Sanitize element name
-			if ( ! is_string( $element_name ) ) {
-				continue; // Skip if element name is not a string
-			}
-
-			// Sanitize and prepare element name
-			$element_name = sanitize_text_field( trim( $element_name ) );
-			$length       = absint( strlen( $element_name ) );
-
-			// Skip if element name is empty
-			if ( $length < 1 ) {
-				continue;
-			}
-
-			// Prepare the LIKE pattern for serialized data
-			$like_pattern = '%' . $wpdb->esc_like( 's:4:"name";s:' . $length . ':"' . $wpdb->esc_like( $element_name ) . '";' ) . '%';
-
-			// Prepare and execute the query to count rows
-			$posts_with_element = $wpdb->get_results(
-				$wpdb->prepare(
-					"SELECT pm.meta_value
-						FROM {$wpdb->postmeta} pm
-						LEFT JOIN {$wpdb->posts} p ON pm.post_id = p.ID
-						WHERE pm.meta_key IN (%s, %s, %s)
-							AND pm.meta_value LIKE %s
-							AND p.post_type NOT IN ('revision', 'nav_menu_item', 'attachment')
-							AND p.post_status NOT IN ('auto-draft', 'trash' )",
-					BRICKS_DB_PAGE_HEADER,
-					BRICKS_DB_PAGE_CONTENT,
-					BRICKS_DB_PAGE_FOOTER,
-					$like_pattern
-				)
-			);
-
-			$total_count = 0;
-
-			// Use regex to find the serialized string for the element name to check how many times it appears
-			foreach ( $posts_with_element as $row ) {
-				$serialized_string = (string) $row->meta_value ?? '';
-				// Count occurrences of the element name in the serialized string, s:4:"name";s:{length}:"{element_name}"
-				$pattern = '/s:4:"name";s:' . $length . ':"' . preg_quote( $element_name, '/' ) . '";/';
-				preg_match_all( $pattern, $serialized_string, $matches );
-				$count        = count( $matches[0] );
-				$total_count += $count;
-			}
-
-			$results[ $element_name ] = [
-				'count' => $total_count,
-			];
-		}
-
-		wp_send_json_success( [ 'results' => $results ] );
 	}
 
 	/**
@@ -1276,19 +1152,11 @@ class Admin {
 	 *
 	 * @since 1.0
 	 */
-	public function admin_enqueue_scripts( $hook ) {
+	public function admin_enqueue_scripts() {
 		wp_enqueue_style( 'bricks-admin', BRICKS_URL_ASSETS . 'css/admin.min.css', [], filemtime( BRICKS_PATH_ASSETS . 'css/admin.min.css' ) );
 
 		if ( is_rtl() ) {
 			wp_enqueue_style( 'bricks-admin-rtl', BRICKS_URL_ASSETS . 'css/admin-rtl.min.css', [ 'bricks-admin' ], filemtime( BRICKS_PATH_ASSETS . 'css/admin-rtl.min.css' ) );
-		}
-
-		// Is admin page="bricks-elements" (@since 2.0)
-		if ( isset( $_GET['page'] ) && $_GET['page'] === 'bricks-elements' ) {
-			wp_enqueue_style( 'bricks-font-awesome-6', BRICKS_URL_ASSETS . 'css/libs/font-awesome-6.min.css', [ 'bricks-admin' ], filemtime( BRICKS_PATH_ASSETS . 'css/libs/font-awesome-6.min.css' ) );
-			wp_enqueue_style( 'bricks-font-awesome-6-brands', BRICKS_URL_ASSETS . 'css/libs/font-awesome-6-brands.min.css', [ 'bricks-admin' ], filemtime( BRICKS_PATH_ASSETS . 'css/libs/font-awesome-6-brands.min.css' ) );
-			wp_enqueue_style( 'bricks-ionicons', BRICKS_URL_ASSETS . 'css/libs/ionicons.min.css', [ 'bricks-admin' ], filemtime( BRICKS_PATH_ASSETS . 'css/libs/ionicons.min.css' ) );
-			wp_enqueue_style( 'bricks-themify-icons', BRICKS_URL_ASSETS . 'css/libs/themify-icons.min.css', [ 'bricks-admin' ], filemtime( BRICKS_PATH_ASSETS . 'css/libs/themify-icons.min.css' ) );
 		}
 
 		wp_enqueue_script( 'bricks-admin', BRICKS_URL_ASSETS . 'js/admin.min.js', [ 'jquery' ], filemtime( BRICKS_PATH_ASSETS . 'js/admin.min.js' ), true );
@@ -1318,68 +1186,16 @@ class Admin {
 			}
 		}
 
-		/**
-		 * STEP: Add script to modify Bricks theme data in the themes.php page
-		 *
-		 * @since 2.0.2
-		 */
-		if ( $hook === 'themes.php' ) {
-			add_action(
-				'admin_footer',
-				function() {
-					?>
-			<script>
-				jQuery(document).ready(function($) {
-					// Modify Bricks theme data
-					if (Array.isArray(wp.themes.data.themes)) {
-						// Find the Bricks theme and modify its update string
-						wp.themes.data.themes.forEach(theme => {
-							if (theme.id === 'bricks') {
-								// Get first URL in theme.update string
-								const urlMatch = theme.update.match(/https?:\/\/[^\s]+/)
-								if (urlMatch) {
-									const url = urlMatch[0];
-									// Add target="_blank" to the URL in theme.update string
-									theme.update = theme.update.replace(url, url + '/" target="_blank" ')
-
-									// Remove any URL parameters
-									theme.update = theme.update.replace(/(\?|\&)[^"]+/, '')
-								}
-
-								// Remove 'thickbox' from theme.update string
-								theme.update = theme.update.replace(/thickbox/g, '')
-							}
-						})
-					}
-				})
-			</script>
-					<?php
-				}
-			);
-		}
-
-		// Add filterByUnused parameter to the data if it exists
-		$filter_by_unused = isset( $_GET['unused'] ) && $_GET['unused'] ? 'true' : 'false';
-
 		wp_localize_script(
 			'bricks-admin',
 			'bricksData',
 			[
-				'title'                        => BRICKS_NAME,
-				'ajaxUrl'                      => admin_url( 'admin-ajax.php' ),
-				'builderParam'                 => BRICKS_BUILDER_PARAM,
-				'postId'                       => get_the_ID(),
-				'nonce'                        => wp_create_nonce( 'bricks-nonce-admin' ),
-				'i18n'                         => I18n::get_admin_i18n(),
-				'renderWithBricks'             => $render_with_bricks,
-				'builderAccessPermissions'     => Builder_Permissions::get_sections( true ), // @since 2.0
-				'defaultCapabilities'          => Builder_Permissions::DEFAULT_CAPABILITIES, // @since 2.0
-				'defaultCapabilityPermissions' => [
-					Capabilities::FULL_ACCESS  => Builder_Permissions::get_default_capability_permissions( Capabilities::FULL_ACCESS ),
-					Capabilities::EDIT_CONTENT => Builder_Permissions::get_default_capability_permissions( Capabilities::EDIT_CONTENT ),
-					Capabilities::NO_ACCESS    => Builder_Permissions::get_default_capability_permissions( Capabilities::NO_ACCESS ),
-				], // @since 2.0
-				'filterByUnused'               => $filter_by_unused, // @since 2.0
+				'title'            => BRICKS_NAME,
+				'ajaxUrl'          => admin_url( 'admin-ajax.php' ),
+				'postId'           => get_the_ID(),
+				'nonce'            => wp_create_nonce( 'bricks-nonce-admin' ),
+				'i18n'             => I18n::get_admin_i18n(),
+				'renderWithBricks' => $render_with_bricks,
 			]
 		);
 	}
@@ -1407,7 +1223,7 @@ class Admin {
 		if (
 			isset( Database::$global_settings['saveFormSubmissions'] ) &&
 			Capabilities::$form_submission_access &&
-			! current_user_can( 'manage_options' )
+			Capabilities::current_user_has_no_access()
 		) {
 			// Handle bulk actions
 			Integrations\Form\Submission_Table::handle_custom_actions();
@@ -1426,8 +1242,8 @@ class Admin {
 			$this->setup_submissions_page( $submissions_page );
 		}
 
-		// Return: Current user has no access to Bricks admin settings
-		if ( ! current_user_can( 'manage_options' ) ) {
+		// Return: Current user has no access to Bricks
+		if ( Capabilities::current_user_has_no_access() ) {
 			return;
 		}
 
@@ -1464,25 +1280,16 @@ class Admin {
 			'bricks',
 			esc_html__( 'Settings', 'bricks' ),
 			esc_html__( 'Settings', 'bricks' ),
-			self::EDITING_CAP,
+			'manage_options',
 			'bricks-settings',
 			[ $this, 'admin_screen_settings' ]
 		);
 
 		add_submenu_page(
 			'bricks',
-			esc_html__( 'Elements', 'bricks' ),
-			esc_html__( 'Elements', 'bricks' ),
+			esc_html__( 'Custom Fonts', 'bricks' ),
+			esc_html__( 'Custom Fonts', 'bricks' ),
 			'manage_options',
-			'bricks-elements',
-			[ $this, 'admin_screen_elements' ]
-		);
-
-		add_submenu_page(
-			'bricks',
-			esc_html__( 'Custom Fonts', 'bricks' ),
-			esc_html__( 'Custom Fonts', 'bricks' ),
-			self::EDITING_CAP,
 			'edit.php?post_type=' . BRICKS_DB_CUSTOM_FONTS
 		);
 
@@ -1507,7 +1314,7 @@ class Admin {
 			'bricks',
 			esc_html__( 'Sidebars', 'bricks' ),
 			esc_html__( 'Sidebars', 'bricks' ),
-			self::EDITING_CAP,
+			'manage_options',
 			'bricks-sidebars',
 			[ $this, 'admin_screen_sidebars' ]
 		);
@@ -1516,7 +1323,7 @@ class Admin {
 			'bricks',
 			esc_html__( 'System Information', 'bricks' ),
 			esc_html__( 'System Information', 'bricks' ),
-			self::EDITING_CAP,
+			'manage_options',
 			'bricks-system-information',
 			[ $this, 'admin_screen_system_information' ]
 		);
@@ -1525,7 +1332,7 @@ class Admin {
 			'bricks',
 			esc_html__( 'License', 'bricks' ),
 			esc_html__( 'License', 'bricks' ),
-			self::EDITING_CAP,
+			'manage_options',
 			'bricks-license',
 			[ $this, 'admin_screen_license' ]
 		);
@@ -1554,10 +1361,6 @@ class Admin {
 
 	public function admin_screen_settings() {
 		require_once 'admin/admin-screen-settings.php';
-	}
-
-	public function admin_screen_elements() {
-		require_once 'admin/admin-screen-elements.php';
 	}
 
 	public function admin_screen_sidebars() {
@@ -1589,10 +1392,10 @@ class Admin {
 	public static function admin_notice_regenerate_css_files() {
 		// Show update & CSS files regeneration admin notice ONCE after theme update
 		if ( get_option( BRICKS_CSS_FILES_ADMIN_NOTICE ) ) {
-			$text  = '<p>' . esc_html__( 'You are now running the latest version', 'bricks' ) . ': ' . BRICKS_VERSION . ' 🥳</p>';
-			$text .= '<p>' . esc_html__( 'Your CSS files were automatically generated in the background.', 'bricks' ) . '</p>';
+			$text  = '<p>' . esc_html__( 'You are now running the latest version of Bricks', 'bricks' ) . ': ' . BRICKS_VERSION . ' 🥳</p>';
+			$text .= '<p>' . esc_html__( 'Your Bricks CSS files were automatically generated in the background.', 'bricks' ) . '</p>';
 			$text .= '<a class="button button-primary" href="' . admin_url( 'admin.php?page=bricks-settings#tab-performance' ) . '">' . esc_html__( 'Manually regenerate CSS files', 'bricks' ) . '</a>';
-			$text .= '<a class="button" href="https://bricksbuilder.io/release/bricks-' . BRICKS_VERSION . '/" target="_blank" style="margin: 4px">' . esc_html__( 'View changelog', 'bricks' ) . '</a>';
+			$text .= '<a class="button" href="https://bricksbuilder.io/changelog/#v' . BRICKS_VERSION . '" target="_blank" style="margin: 4px">' . esc_html__( 'View changelog', 'bricks' ) . '</a>';
 
 			echo wp_kses_post( sprintf( '<div class="notice notice-info is-dismissible">%s</div>', wpautop( $text ) ) );
 
@@ -1638,16 +1441,16 @@ class Admin {
 		$text .= '<h3>BRICKS: BREAKING CHANGES 🚨</h3>';
 
 		$text .= '<p><strong>1. ' . esc_html__( 'Code execution: Disabled by default', 'bricks' ) . ' 🔌</strong></p>';
-
-		$text .= '<p>' . esc_html__( 'Code execution, if needed, must be explicitly enabled.', 'bricks' );
+		$text .= '<p>' . esc_html__( 'Code execution, if needed, must be explicitly enabled under Bricks > Settings > Custom code.', 'bricks' );
 		$text .= ' (<a href="https://bricksbuilder.io/release/bricks-1-9-7/" target="_blank">' . esc_html__( 'Learn more', 'bricks' ) . '</a>)';
 		$text .= '</p>';
 		$text .= '<p>' . esc_html__( 'Enable code execution if your site uses Code elements, SVG elements (source: code), Query editors, or "echo" tags.', 'bricks' );
 
 		$text .= '<p><strong>2. ' . esc_html__( 'New feature', 'bricks' ) . ': ' . esc_html__( 'Code signatures', 'bricks' ) . ' 🔑</strong></p>';
 		$text .= '<p>' . esc_html__( 'All Code elements, SVG elements (source: code), and Query editor instances now require code signatures.', 'bricks' ) . '</p>';
-
-		$text .= '<p>' . esc_html__( 'Please review your code and generate code signatures.', 'bricks' ) . '</p>';
+		$text .= '<p>' . esc_html__( 'Please review your code and generate code signatures under Bricks > Settings > Custom code.', 'bricks' );
+		$text .= ' (' . Helpers::article_link( 'code-signatures', esc_html__( 'Learn more', 'bricks' ) ) . ')';
+		$text .= '</p>';
 
 		$text .= '<p><strong>3. ' . esc_html__( 'Echo tags: Allow functions via filter', 'bricks' ) . ' 👀</strong></p>';
 		$text .= '<p>' . sprintf( esc_html__( 'Function names called through the "echo" tag must be whitelisted via the new %s filter.', 'bricks' ), '<code>bricks/code/echo_function_names</code>' );
@@ -1712,30 +1515,20 @@ class Admin {
 				// User role not allowed to use builder
 				$user = wp_get_current_user();
 				$role = isset( $user->roles[0] ) ? $user->roles[0] : '';
-				// translators: %s: user role, %s: theme name
-				$text = sprintf(
-					esc_html__( 'Your user role "%1$s" is not allowed to edit this post type with %2$s. Please get in touch with the site admin to change it.', 'bricks' ),
-					$role,
-					'Bricks'
-				);
+				// translators: %s: user role
+				$text = sprintf( esc_html__( 'Your user role "%s" is not allowed to edit with Bricks. Please get in touch with the site admin to change it.', 'bricks' ), $role );
 				break;
 
 			case 'error_post_type':
 				// Post type is not enabled for Bricks
 				$post_type = isset( $_GET['post_type'] ) ? sanitize_text_field( $_GET['post_type'] ) : '';
-				// translators: %s: post type, %s: theme name, %s: settings page
-				$text = sprintf(
-					esc_html__( '%1$s is not enabled for post type "%2$s". Go to "%3$s > %4$s" to enable this post type.', 'bricks' ),
-					'Bricks',
-					$post_type,
-					'Bricks',
-					esc_html__( 'Settings', 'bricks' )
-				);
+				// translators: %s: post type
+				$text = sprintf( esc_html__( 'Bricks is not enabled for post type "%s". Go to "Bricks > Settings" to enable this post type.', 'bricks' ), $post_type );
 				break;
 
 			case 'post_meta_deleted':
 				// translators: %s: post title
-				$text = sprintf( esc_html__( '%1$s data for "%2$s" deleted.', 'bricks' ), 'Bricks', get_the_title() );
+				$text = sprintf( esc_html__( 'Bricks data for "%s" deleted.', 'bricks' ), get_the_title() );
 				$type = 'success';
 				break;
 		}
@@ -1912,7 +1705,7 @@ class Admin {
 		$post_id = ! empty( $_GET['bricks_delete_post_meta'] ) ? intval( $_GET['bricks_delete_post_meta'] ) : 0;
 
 		// Delete post meta: content and editor mode
-		if ( $post_id && Capabilities::current_user_can_use_builder( $post_id ) && current_user_can( 'manage_options' ) ) {
+		if ( $post_id && Capabilities::current_user_can_use_builder( $post_id ) && Capabilities::current_user_has_full_access() ) {
 			delete_post_meta( $post_id, BRICKS_DB_PAGE_HEADER );
 			delete_post_meta( $post_id, BRICKS_DB_PAGE_CONTENT );
 			delete_post_meta( $post_id, BRICKS_DB_PAGE_FOOTER );
@@ -1942,14 +1735,9 @@ class Admin {
 				<?php } ?>
 
 				<div class="wp-editor-container">
-					<p>
-						<a href="<?php echo Helpers::get_builder_edit_link(); ?>" class="button button-primary button-hero">
-						<?php
-						// translators: %s: "Bricks" (theme name)
-						echo sprintf( esc_html__( 'Edit with %s', 'bricks' ), 'Bricks' );
-						?>
-						</a>
-					</p>
+					<p><a href="<?php echo Helpers::get_builder_edit_link(); ?>" class="button button-primary button-hero">
+					<?php esc_html_e( 'Edit with Bricks', 'bricks' ); ?>
+					</a></p>
 
 				<?php if ( Database::get_setting( 'deleteBricksData', false ) ) { ?>
 						<?php // translators: %s: post type ?>
@@ -2013,8 +1801,7 @@ class Admin {
 			$actions['edit_with_bricks'] = sprintf(
 				'<a href="%s">%s</a>',
 				Helpers::get_builder_edit_link( $post_id ),
-				// translators: %s: "Bricks" (theme name)
-				sprintf( esc_html__( 'Edit with %s', 'bricks' ), 'Bricks' )
+				esc_html__( 'Edit with Bricks', 'bricks' )
 			);
 		}
 
@@ -2045,7 +1832,7 @@ class Admin {
 	public function form_submissions_drop_table() {
 		Ajax::verify_nonce( 'bricks-nonce-admin' );
 
-		if ( ! current_user_can( 'manage_options' ) || ! Capabilities::current_user_can_form_submission_access() ) {
+		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( [ 'message' => esc_html__( 'Not allowed', 'bricks' ) ] );
 		}
 
@@ -2072,7 +1859,7 @@ class Admin {
 	public function form_submissions_reset_table() {
 		Ajax::verify_nonce( 'bricks-nonce-admin' );
 
-		if ( ! current_user_can( 'manage_options' ) || ! Capabilities::current_user_can_form_submission_access() ) {
+		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( [ 'message' => esc_html__( 'Not allowed', 'bricks' ) ] );
 		}
 
@@ -2094,7 +1881,7 @@ class Admin {
 	public function form_submissions_delete_form_id() {
 		Ajax::verify_nonce( 'bricks-nonce-admin' );
 
-		if ( ! current_user_can( 'manage_options' ) || ! Capabilities::current_user_can_form_submission_access() ) {
+		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( [ 'message' => esc_html__( 'Not allowed', 'bricks' ) ] );
 		}
 
@@ -2188,7 +1975,7 @@ class Admin {
 			wp_send_json_error( [ 'message' => esc_html__( 'Code signatures are locked.', 'bricks' ) ] );
 		}
 
-		if ( ! current_user_can( 'manage_options' ) || ! Capabilities::current_user_can_execute_code() ) {
+		if ( ! Capabilities::current_user_has_full_access() || ! Capabilities::current_user_can_execute_code() ) {
 			wp_send_json_error( [ 'message' => 'Sorry, you are not allowed to perform this action (no code execution capability).' ] );
 		}
 
@@ -2347,26 +2134,6 @@ class Admin {
 			}
 		}
 
-		// STEP: Elements in Component instances
-		$components        = get_option( BRICKS_DB_COMPONENTS, [] );
-		$component_updated = false;
-		foreach ( $components as $index => $component ) {
-			$component_elements = $component['elements'] ?? [];
-
-			if ( ! empty( $component_elements ) ) {
-				$updated_component_elements = self::process_elements_for_signature( $component_elements, $only_regenerate_if_missing, false );
-
-				if ( $updated_component_elements !== $component_elements ) {
-					$components[ $index ]['elements'] = $updated_component_elements;
-					$component_updated                = true;
-				}
-			}
-		}
-
-		if ( ! empty( $components ) && $component_updated ) {
-			$success = update_option( BRICKS_DB_COMPONENTS, $components );
-		}
-
 		return $success;
 	}
 
@@ -2379,49 +2146,27 @@ class Admin {
 	 * @param bool  $only_regenerate_if_missing If true, only regenerate the signature if it's missing.
 	 */
 	public static function process_elements_for_signature( $elements = [], $only_regenerate_if_missing = false, $strip_slashes = false ) {
-		if ( is_array( $elements ) && Helpers::code_execution_enabled() && current_user_can( 'manage_options' ) && Capabilities::current_user_can_execute_code() ) {
+		if ( is_array( $elements ) && Helpers::code_execution_enabled() && Capabilities::current_user_has_full_access() && Capabilities::current_user_can_execute_code() ) {
 			foreach ( $elements as $index => $element ) {
-				$element_settings = $element['settings'] ?? [];
-				$element_name     = $element['name'] ?? '';
-
-				// Check: Component root (@since 2.0)
-				$component_instance_settings = ! empty( $element['cid'] ) && isset( $element['properties'] ) ? Helpers::get_component_instance( $element, 'settings' ) : false;
-
-				// Handle root component element settings (@since 2.0)
-				if ( $component_instance_settings ) {
-					// Handle 'queryEditor' property settings, No 'code' type property yet
-					foreach ( $element['properties'] as $property_id => $property ) {
-						if ( ! $only_regenerate_if_missing && ! empty( $property['queryEditor'] ) ) {
-								$code = $strip_slashes ? stripslashes( $property['queryEditor'] ) : $property['queryEditor'];
-								$elements[ $index ]['properties'][ $property_id ]['signature'] = wp_hash( $code );
-								$elements[ $index ]['properties'][ $property_id ]['user_id']   = get_current_user_id();
-								$elements[ $index ]['properties'][ $property_id ]['time']      = time();
-						}
+				// Handle 'code' setting in Code & SVG element
+				if ( ! empty( $element['name'] ) && in_array( $element['name'], [ 'code', 'svg' ] ) && ! empty( $element['settings']['code'] ) ) {
+					if ( ! $only_regenerate_if_missing || empty( $element['settings']['signature'] ) ) {
+						$code                                        = $strip_slashes ? stripslashes( $element['settings']['code'] ) : $element['settings']['code'];
+						$elements[ $index ]['settings']['signature'] = wp_hash( $code );
+						$elements[ $index ]['settings']['user_id']   = get_current_user_id();
+						$elements[ $index ]['settings']['time']      = time();
 					}
 				}
 
-				else {
-					// Handle 'code' setting in Code & SVG element
-					if ( ! empty( $element_name ) && in_array( $element_name, [ 'code', 'svg' ] ) && ! empty( $element_settings['code'] ) ) {
-						if ( ! $only_regenerate_if_missing || empty( $element_settings['signature'] ) ) {
-							$code                                        = $strip_slashes ? stripslashes( $element_settings['code'] ) : $element_settings['code'];
-							$elements[ $index ]['settings']['signature'] = wp_hash( $code );
-							$elements[ $index ]['settings']['user_id']   = get_current_user_id();
-							$elements[ $index ]['settings']['time']      = time();
-						}
-					}
-
-					// Handle 'queryEditor' setting when query loop is enabled
-					elseif ( ! empty( $element_settings['query']['queryEditor'] ) ) {
-						if ( ! $only_regenerate_if_missing || empty( $element_settings['signature'] ) ) {
-							$code = $strip_slashes ? stripslashes( $element_settings['query']['queryEditor'] ) : $element_settings['query']['queryEditor'];
-							$elements[ $index ]['settings']['query']['signature'] = wp_hash( $code );
-							$elements[ $index ]['settings']['query']['user_id']   = get_current_user_id();
-							$elements[ $index ]['settings']['query']['time']      = time();
-						}
+				// Handle 'queryEditor' setting when query loop is enabled
+				elseif ( ! empty( $element['settings']['query']['queryEditor'] ) ) {
+					if ( ! $only_regenerate_if_missing || empty( $element['settings']['signature'] ) ) {
+						$code = $strip_slashes ? stripslashes( $element['settings']['query']['queryEditor'] ) : $element['settings']['query']['queryEditor'];
+						$elements[ $index ]['settings']['query']['signature'] = wp_hash( $code );
+						$elements[ $index ]['settings']['query']['user_id']   = get_current_user_id();
+						$elements[ $index ]['settings']['query']['time']      = time();
 					}
 				}
-
 			}
 		}
 
@@ -2741,192 +2486,9 @@ class Admin {
 		$fixed = Query_Filters::get_instance()->fix_filter_element_db();
 
 		if ( $fixed ) {
-			wp_send_json_success( [ 'message' => esc_html__( 'Corrupted filter element database has been fixed', 'bricks' ) ] );
+			wp_send_json_success( [ 'message' => esc_html__( 'Corrupted filter element db fixed', 'bricks' ) ] );
 		}
 
-		wp_send_json_error( [ 'message' => esc_html__( 'Unable to fix corrupted filter element database', 'bricks' ) ] );
-	}
-
-	/**
-	 * Return elements that need code review
-	 *
-	 * @since 2.0
-	 */
-	public static function code_review_items( $bricks_data, $code_review, &$code_signature_results ) {
-		$code_review_elements = [];
-
-		if ( is_array( $bricks_data ) && ! empty( $bricks_data ) ) {
-			foreach ( $bricks_data as $element ) {
-				$element_settings = $element['settings'] ?? [];
-				$element_name     = $element['name'] ?? '';
-
-				$global_settings = Helpers::get_global_element( $element, 'settings' );
-
-				if ( $global_settings ) {
-					$element['settings'] = $element_settings = $global_settings;
-				}
-
-				// Check: Component root (@since 2.0)
-				$component_instance_settings = ! empty( $element['cid'] ) ? Helpers::get_component_instance( $element, 'settings' ) : false;
-
-				if ( $component_instance_settings ) {
-					$element['settings']     = $element_settings = $component_instance_settings;
-					$element['is_component'] = true;
-				}
-
-				if ( empty( $element_settings ) ) {
-					continue;
-				}
-
-				// STEP: Code element
-				if ( $element_name === 'code' && array_key_exists( 'code', $element_settings ) && in_array( $code_review, [ 'code', 'all' ] ) ) {
-					$element['execute_code'] = isset( $element_settings['executeCode'] );
-
-					// Code signature
-					if ( $element['execute_code'] ) {
-						$element['signature'] = [
-							'label' => esc_html__( 'No signature', 'bricks' ),
-							'type'  => 'missing',
-						];
-
-						if ( ! empty( $element_settings['signature'] ) ) {
-							// Valid signature
-							$element_settings_code = isset( $element_settings['code'] ) ? $element_settings['code'] : '';
-							if ( Helpers::verify_code_signature( $element_settings['signature'], $element_settings_code ) ) {
-								$element['signature']['label'] = esc_html__( 'Valid signature', 'bricks' );
-								$element['signature']['type']  = 'valid';
-							}
-
-							// Invalid signature
-							else {
-								$element['signature']['label'] = esc_html__( 'Invalid signature', 'bricks' );
-								$element['signature']['type']  = 'invalid';
-							}
-						}
-
-						// User who signed the code + timestamp
-						$element['signature']['meta'] = '';
-						if ( isset( $element['settings']['user_id'] ) ) {
-							$user = get_userdata( $element['settings']['user_id'] );
-
-							if ( $user ) {
-								$element['signature']['meta'] = $user->display_name ?? $user->user_login;
-							}
-						}
-
-						if ( isset( $element['settings']['time'] ) ) {
-							// Timestamp to datetime
-							$element['signature']['meta'] .= ' (' . wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $element['settings']['time'] ) . ')';
-						}
-					}
-
-					$element['type']        = 'code';
-					$code_review_elements[] = $element;
-				}
-
-				// STEP: Query editor element
-				elseif ( isset( $element_settings['query']['queryEditor'] ) && in_array( $code_review, [ 'queryeditor', 'all' ] ) ) {
-					$element['execute_code'] = isset( $element_settings['query']['useQueryEditor'] );
-
-					// Code signature
-					$element['signature'] = [
-						'label' => esc_html__( 'No signature', 'bricks' ),
-						'type'  => 'missing',
-					];
-
-					if ( ! empty( $element_settings['query']['signature'] ) ) {
-						// Valid signature
-						if ( Helpers::verify_code_signature( $element_settings['query']['signature'], $element_settings['query']['queryEditor'] ) ) {
-							$element['signature']['label'] = esc_html__( 'Valid signature', 'bricks' );
-							$element['signature']['type']  = 'valid';
-						}
-
-						// Invalid signature
-						else {
-							$element['signature']['label'] = esc_html__( 'Invalid signature', 'bricks' );
-							$element['signature']['type']  = 'invalid';
-						}
-					}
-
-					// User who signed the code + timestamp
-					$element['signature']['meta'] = '';
-					if ( isset( $element['settings']['query']['user_id'] ) ) {
-						$user = get_userdata( $element['settings']['query']['user_id'] );
-
-						if ( $user ) {
-							$element['signature']['meta'] = $user->display_name ?? $user->user_login;
-						}
-					}
-
-					if ( isset( $element['settings']['query']['time'] ) ) {
-						// Timestamp to datetime
-						$element['signature']['meta'] .= ' (' . wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $element['settings']['query']['time'] ) . ')';
-					}
-
-					$element['type']        = 'queryeditor';
-					$code_review_elements[] = $element;
-				}
-
-				// STEP: SVG element
-				elseif ( $element_name === 'svg' && array_key_exists( 'code', $element_settings ) && in_array( $code_review, [ 'svg', 'all' ] ) ) {
-					$element['execute_code'] = true;
-
-					// Code signature
-					$element['signature'] = [
-						'label' => esc_html__( 'No signature', 'bricks' ),
-						'type'  => 'missing',
-					];
-
-					if ( ! empty( $element_settings['signature'] ) ) {
-						// Valid signature
-						if ( Helpers::verify_code_signature( $element_settings['signature'], $element_settings['code'] ) ) {
-							$element['signature']['label'] = esc_html__( 'Valid signature', 'bricks' );
-							$element['signature']['type']  = 'valid';
-						}
-
-						// Invalid signature
-						else {
-							$element['signature']['label'] = esc_html__( 'Invalid signature', 'bricks' );
-							$element['signature']['type']  = 'invalid';
-						}
-					}
-
-					// User who signed the code + timestamp
-					$element['signature']['meta'] = '';
-					if ( isset( $element['settings']['user_id'] ) ) {
-						$user = get_userdata( $element['settings']['user_id'] );
-
-						if ( $user ) {
-							$element['signature']['meta'] = $user->display_name ?? $user->user_login;
-						}
-					}
-
-					if ( isset( $element['settings']['time'] ) ) {
-						// Timestamp to datetime
-						$element['signature']['meta'] .= ' (' . wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $element['settings']['time'] ) . ')';
-					}
-
-					$element['type']        = 'code';
-					$code_review_elements[] = $element;
-				}
-
-				// Add element code 'signature' results to $code_signature_results
-				$signature_type = $element['signature']['type'] ?? '';
-				if ( $signature_type ) {
-					$code_signature_results[ $signature_type ] += 1;
-					$code_signature_results['total']           += 1;
-				}
-
-				// STEP: Echo tag instances
-				$settings_string = wp_json_encode( $element_settings );
-				if ( strpos( $settings_string, '{echo:' ) !== false && in_array( $code_review, [ 'echo', 'all' ] ) ) {
-					$element['execute_code'] = true;
-					$element['type']         = 'echo';
-					$code_review_elements[]  = $element;
-				}
-			}
-		}
-
-		return $code_review_elements;
+		wp_send_json_error( [ 'message' => esc_html__( 'Unable to fix corrupted filter element db', 'bricks' ) ] );
 	}
 }

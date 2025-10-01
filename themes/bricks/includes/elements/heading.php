@@ -14,10 +14,6 @@ class Element_Heading extends Element {
 		return esc_html__( 'Heading', 'bricks' );
 	}
 
-	public function get_keywords() {
-		return [ 'h1', 'h2', 'h3', 'h4', 'h5', 'h6' ];
-	}
-
 	public function set_control_groups() {
 		$this->control_groups['separator'] = [
 			'title'      => esc_html__( 'Separator', 'bricks' ),
@@ -31,7 +27,7 @@ class Element_Heading extends Element {
 			'tab'         => 'content',
 			'type'        => 'text',
 			'default'     => esc_html__( 'I am a heading', 'bricks' ),
-			'placeholder' => esc_html__( 'Text', 'bricks' ) . ' ...',
+			'placeholder' => esc_html__( 'Here goes my heading ..', 'bricks' ),
 		];
 
 		$default_tag = $this->theme_styles['tag'] ?? 'h3';

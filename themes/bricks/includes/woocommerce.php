@@ -18,9 +18,6 @@ class Woocommerce {
 			return;
 		}
 
-		// Init WooCommerce Query Filters integrations
-		Integrations\Query_Filters\WooCommerce::get_instance();
-
 		// Remove Woo Asset Controller hook in the builder (@since 1.12)
 		if ( bricks_is_builder() ) {
 			add_action( 'init', [ $this, 'remove_woo_resource_hints' ], 15 );
@@ -63,18 +60,13 @@ class Woocommerce {
 		add_filter( 'bricks/database/content_type', [ $this, 'set_content_type' ], 10, 2 );
 
 		// Remove default WooCommerce styles
-		add_filter( 'woocommerce_enqueue_styles', '__return_empty_array' );
+		add_filter( 'woocommerce_enqueue_styles', '__return_false' );
 
 		// Add WooCommerce specific link selectors to allow Theme Styles link styles to apply to WooCommerce elements (@since 1.5.7)
 		add_filter( 'bricks/link_css_selectors', [ $this, 'link_css_selectors' ], 10, 1 );
 
 		// Enqueue Bricks WooCommerce custom styles
 		add_action( 'wp_enqueue_scripts', [ $this, 'wp_enqueue_scripts' ], 10 );
-
-		// Is RTL: enqueue RTL CSS file after main CSS file (@since 2.0)
-		if ( is_rtl() ) {
-			add_action( 'wp_enqueue_scripts', [ $this, 'wp_enqueue_scripts_rtl' ], 15 );
-		}
 
 		// add_action( 'wp_enqueue_scripts', [ $this, 'unload_photoswipe5_lightbox_assets' ] );
 
@@ -166,9 +158,6 @@ class Woocommerce {
 		add_filter( 'bricks/builder/dynamic_wrapper', [ $this, 'builder_dynamic_wrapper' ] );
 
 		add_action( 'template_redirect', [ $this, 'template_redirect' ] );
-
-		// Initialize variation swatches (@since 2.0)
-		new \Bricks\Woocommerce\Product_Variation_Swatches();
 	}
 
 	/**
@@ -867,36 +856,6 @@ class Woocommerce {
 	}
 
 	/**
-	 * Determine if currently landed on WC api endpoint
-	 *
-	 * @see woocommerce/includes/class-woocommerce.php api_request_url()
-	 * @since 2.0
-	 */
-	public static function is_wc_api_endpoint() {
-		// For better performance, cache it as the request wouldn't change for every single load
-		static $is_wc_api = null;
-
-		if ( null !== $is_wc_api ) {
-			return $is_wc_api;
-		}
-
-		if ( ! empty( $_GET['wc-api'] ) ) {
-			$is_wc_api = true;
-			return true;
-		}
-
-		$request_uri = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
-
-		if ( strpos( $request_uri, '/wc-api/' ) !== false ) {
-			$is_wc_api = true;
-			return true;
-		}
-
-		$is_wc_api = false;
-		return false;
-	}
-
-	/**
 	 * Init WooCommerce theme styles
 	 */
 	public function init_theme_styles() {
@@ -927,6 +886,9 @@ class Woocommerce {
 		}
 
 		$woo_elements = [
+			'woocommerce-breadcrumbs',
+			'woocommerce-mini-cart',
+
 			'product-title',
 			'product-gallery',
 			'product-short-description',
@@ -941,9 +903,6 @@ class Woocommerce {
 			'product-additional-information',
 			'product-tabs',
 			'product-upsells',
-
-			'woocommerce-breadcrumbs',
-			'woocommerce-mini-cart',
 
 			'woocommerce-cart-collaterals',
 			'woocommerce-cart-coupon',
@@ -1009,9 +968,6 @@ class Woocommerce {
 
 			if ( is_readable( $woo_element_file ) ) {
 				Elements::register_element( $woo_element_file, $element_name, $class_name );
-
-				// Add element name to self::$native element names array (@since 2.0)
-				Elements::$native[] = $element_name;
 			}
 		}
 	}
@@ -1161,8 +1117,7 @@ class Woocommerce {
 	public function default_page_title( $post_title, $post_id ) {
 		// Only amend the title for these pages
 		if ( is_cart() || is_checkout() || is_account_page() ) {
-			// Improvement: Check active templates for current WC endpoint and decide the default page title. (#86c3gdaz2) (@since 2.0)
-			$wc_templates = self::get_active_templates_for_current_endpoint();
+			$wc_templates = self::get_active_templates_for_current_page();
 
 			// As long as there is a active Bricks template, return no title
 			if ( ! empty( $wc_templates ) ) {
@@ -1376,11 +1331,11 @@ class Woocommerce {
 
 		if ( ! bricks_is_builder_main() ) {
 			wp_enqueue_script( 'bricks-woocommerce', BRICKS_URL_ASSETS . 'js/integrations/woocommerce.min.js', [ 'bricks-scripts' ], filemtime( BRICKS_PATH_ASSETS . 'js/integrations/woocommerce.min.js' ), true );
-			if ( ! Database::get_setting( 'disableBricksCascadeLayer' ) ) {
-				wp_enqueue_style( 'bricks-woocommerce', BRICKS_URL_ASSETS . 'css/integrations/woocommerce-layer.min.css', [ 'bricks-frontend' ], filemtime( BRICKS_PATH_ASSETS . 'css/integrations/woocommerce-layer.min.css' ) );
-			} else {
-				wp_enqueue_style( 'bricks-woocommerce', BRICKS_URL_ASSETS . 'css/integrations/woocommerce.min.css', [ 'bricks-frontend' ], filemtime( BRICKS_PATH_ASSETS . 'css/integrations/woocommerce.min.css' ) );
-			}
+			wp_enqueue_style( 'bricks-woocommerce', BRICKS_URL_ASSETS . 'css/integrations/woocommerce.min.css', [ 'bricks-frontend' ], filemtime( BRICKS_PATH_ASSETS . 'css/integrations/woocommerce.min.css' ) );
+		}
+
+		if ( is_rtl() ) {
+			wp_enqueue_style( 'bricks-woocommerce-rtl', BRICKS_URL_ASSETS . 'css/integrations/woocommerce-rtl.min.css', [ 'bricks-frontend' ], filemtime( BRICKS_PATH_ASSETS . 'css/integrations/woocommerce-rtl.min.css' ) );
 		}
 
 		// Bricks WooCommerce settings for frontend
@@ -1398,26 +1353,9 @@ class Woocommerce {
 				'useQtyInLoop'         => self::use_quantity_in_loop(),
 				'errorAction'          => self::global_ajax_error_action(),
 				'errorScrollToNotice'  => self::global_ajax_error_scroll_to_notice(),
-				'useVariationSwatches' => Database::get_setting( 'woocommerceUseVariationSwatches' ),
 			]
 		);
 	}
-
-	/**
-	 * Enqueue WooCommerce scripts and styles for LTR pages
-	 *
-	 * It will be enqueued after the Bricks WooCommerce assets.
-	 *
-	 * @since 2.0
-	 */
-	public function wp_enqueue_scripts_rtl() {
-		if ( ! Database::get_setting( 'disableBricksCascadeLayer' ) ) {
-			wp_enqueue_style( 'bricks-woocommerce-rtl', BRICKS_URL_ASSETS . 'css/integrations/woocommerce-rtl-layer.min.css', [ 'bricks-frontend' ], filemtime( BRICKS_PATH_ASSETS . 'css/integrations/woocommerce-rtl-layer.min.css' ) );
-		} else {
-			wp_enqueue_style( 'bricks-woocommerce-rtl', BRICKS_URL_ASSETS . 'css/integrations/woocommerce-rtl.min.css', [ 'bricks-frontend' ], filemtime( BRICKS_PATH_ASSETS . 'css/integrations/woocommerce-rtl.min.css' ) );
-		}
-	}
-
 
 	/**
 	 * Before Bricks searchs for the right template, set the content_type if needed
@@ -1843,24 +1781,12 @@ class Woocommerce {
 			return $results;
 		}
 
-		// Avoid Uncaught Error: Call to a member function get_cart() on null
+		// Avoid Uncaught Error: Call to a member function get_cart() on null (@since 1.8.1)
 		if ( is_null( WC()->cart ) ) {
 			return [];
 		}
 
-		$cart_items       = WC()->cart->get_cart();
-		$final_cart_items = [];
-
-		// Support woocommerce_cart_item_visible hook (@since 2.0; @see woocommerce/templates/cart/cart.php)
-		foreach ( $cart_items as $cart_item_key => $cart_item ) {
-			$_product = apply_filters( 'woocommerce_cart_item_product', $cart_item['data'], $cart_item, $cart_item_key );
-
-			if ( $_product && $_product->exists() && $cart_item['quantity'] > 0 && apply_filters( 'woocommerce_cart_item_visible', true, $cart_item, $cart_item_key ) ) {
-				$final_cart_items[ $cart_item_key ] = $cart_item;
-			}
-		}
-
-		return $final_cart_items;
+		return WC()->cart->get_cart();
 	}
 
 	/**

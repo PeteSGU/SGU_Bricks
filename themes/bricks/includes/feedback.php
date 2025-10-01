@@ -47,7 +47,7 @@ class Feedback {
 						'text'  => sprintf(
 							// translators: %1$s: Bricks Academy link, %2$s: email link
 							esc_html__( 'Did you explore the %1$s? Or get in touch with me via %2$s?', 'bricks' ),
-							'<a href="https://academy.bricksbuilder.io" target="_blank" rel="noopener">Bricks Academy</a>',
+							'<a href="https://academy.bricksbuilder.io" target="_blank" rel="noopener">' . esc_html__( 'Bricks Academy', 'bricks' ) . '</a>',
 							'<a href="https://bricksbuilder.io/contact/" target="_blank" rel="noopener">' . esc_html__( 'email', 'bricks' ) . '</a>'
 						),
 					],

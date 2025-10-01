@@ -91,7 +91,20 @@ class Filter_Radio extends Filter_Element {
 			}
 
 			$this->prepare_sources();
-			$this->set_data_source();
+
+			// User wish to use what options as filter options
+			switch ( $settings['filterSource'] ) {
+				case 'taxonomy':
+					$this->set_data_source_from_taxonomy();
+					break;
+				case 'wpField':
+					$this->set_data_source_from_wp_field();
+					break;
+				case 'customField':
+					$this->set_data_source_from_custom_field();
+					break;
+			}
+
 			$this->set_options_with_count();
 		}
 
@@ -161,7 +174,7 @@ class Filter_Radio extends Filter_Element {
 
 		echo "<ul {$this->render_attributes('_root')}>";
 
-		foreach ( $this->get_populated_options() as $index => $option ) {
+		foreach ( $this->populated_options as $index => $option ) {
 			// Skip the "All" option is set (@since 1.11)
 			if ( $hide_all_option && isset( $option['is_all'] ) && $option['is_all'] ) {
 				continue;
@@ -195,11 +208,6 @@ class Filter_Radio extends Filter_Element {
 
 			$this->set_attribute( $span_key, 'class', 'brx-option-text' );
 			$this->set_attribute( $label_key, 'class', $option_class );
-
-			// Set brx-option-all class for the "All" option (Easier identify for Filter-empty interaction) (@since 2.0)
-			if ( isset( $option['is_all'] ) && $option['is_all'] ) {
-				$this->set_attribute( $li_key, 'class', 'brx-option-all' );
-			}
 
 			if ( $option_checked ) {
 				// Set checked attribute

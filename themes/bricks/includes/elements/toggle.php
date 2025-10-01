@@ -109,12 +109,13 @@ class Element_Toggle extends Element {
 
 		// BAR
 		$this->controls['barSeparator'] = [
+			'required' => [ 'icon', '=', '' ],
 			'label'    => esc_html__( 'Bar', 'bricks' ),
 			'type'     => 'separator',
-			'required' => [ 'icon', '=', '' ],
 		];
 
 		$this->controls['barScale'] = [
+			'required'    => [ 'icon', '=', '' ],
 			'label'       => esc_html__( 'Scale', 'bricks' ),
 			'type'        => 'number',
 			'step'        => '0.1',
@@ -125,10 +126,10 @@ class Element_Toggle extends Element {
 					'selector' => '',
 				],
 			],
-			'required'    => [ 'icon', '=', '' ],
 		];
 
 		$this->controls['barHeight'] = [
+			'required'    => [ 'icon', '=', '' ],
 			'label'       => esc_html__( 'Height', 'bricks' ),
 			'type'        => 'number',
 			'units'       => true,
@@ -139,10 +140,10 @@ class Element_Toggle extends Element {
 					'selector' => '.brxa-inner',
 				],
 			],
-			'required'    => [ 'icon', '=', '' ],
 		];
 
 		$this->controls['barRadius'] = [
+			'required'    => [ 'icon', '=', '' ],
 			'label'       => esc_html__( 'Radius', 'bricks' ),
 			'type'        => 'number',
 			'units'       => true,
@@ -153,10 +154,10 @@ class Element_Toggle extends Element {
 					'selector' => '.brxa-inner',
 				],
 			],
-			'required'    => [ 'icon', '=', '' ],
 		];
 
 		$this->controls['barColor'] = [
+			'required' => [ 'icon', '=', '' ],
 			'label'    => esc_html__( 'Color', 'bricks' ),
 			'type'     => 'color',
 			'css'      => [
@@ -165,7 +166,6 @@ class Element_Toggle extends Element {
 					'selector' => '.brxa-wrap',
 				],
 			],
-			'required' => [ 'icon', '=', '' ],
 		];
 	}
 

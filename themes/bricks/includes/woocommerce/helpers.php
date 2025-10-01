@@ -309,6 +309,10 @@ class Woocommerce_Helpers {
 					}
 				}
 			}
+			// Note: We don't need to run the check against the CPT archive preview, the products query will always return products
+			// elseif ( $preview_type == 'archive-cpt' ) {
+			// $template_preview_post_type = Helpers::get_template_setting( 'templatePreviewPostType', $post_id );
+			// }
 		}
 
 		// Appends meta queries from filter 'woocommerce_product_query_meta_query'
@@ -457,8 +461,6 @@ class Woocommerce_Helpers {
 			// Get the current product
 			$product_id = Database::$page_data['preview_or_post_id'] ?? get_the_ID();
 			$product    = wc_get_product( $product_id );
-			// Default to an array with 0 to return no product (@since 2.0)
-			$product_cross_sell_post_ids = [ 0 ];
 
 			// Ensure it's a product
 			if ( is_a( $product, 'WC_Product' ) ) {
@@ -467,10 +469,8 @@ class Woocommerce_Helpers {
 
 				// Only use the cross-sell products if there are any
 				if ( ! empty( $cross_sell_ids ) ) {
-					$product_cross_sell_post_ids = $cross_sell_ids;
+					$product_args['post__in'] = $cross_sell_ids;
 				}
-
-				$product_args['post__in'] = $product_cross_sell_post_ids;
 			}
 		}
 
@@ -483,7 +483,7 @@ class Woocommerce_Helpers {
 			// Ensure it's a product
 			if ( is_a( $product, 'WC_Product' ) ) {
 				// Get related products
-				$limit       = isset( $settings['posts_per_page'] ) ? intval( $settings['posts_per_page'] ) : 5;
+				$limit       = $settings['posts_per_page'] ?? 5;
 				$related_ids = wc_get_related_products( $product_id, $limit, $product->get_upsell_ids() );
 
 				// Only use the related products if there are any
@@ -878,11 +878,6 @@ class Woocommerce_Helpers {
 	 * @return void
 	 */
 	public static function maybe_populate_cart_contents() {
-		// Avoid Fatal error if WC()->cart is not defined (@since 2.0)
-		if ( ! function_exists( 'WC' ) || ! WC()->cart ) {
-			return;
-		}
-
 		if ( WC()->cart->is_empty() && ( bricks_is_builder() || bricks_is_builder_call() ) ) {
 			$products = wc_get_products( [ 'limit' => 5 ] );
 

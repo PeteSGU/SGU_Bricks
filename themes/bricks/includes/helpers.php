@@ -72,8 +72,7 @@ class Helpers {
 		// Always limit to 100 terms for performance reasons (@since 1.12)
 		$term_args = [
 			'hide_empty' => false,
-			'number'     => 100,
-			'lang'       => '', // Get all terms in builder for Polylang (@since 2.0)
+			'number'     => 100
 		];
 
 		if ( isset( $taxonomy ) ) {
@@ -111,26 +110,6 @@ class Helpers {
 			$all_taxonomies
 		);
 
-		// Allow exlucde taxonomies from the list (@since 2.0)
-		$excluded_taxonomies = (array) apply_filters(
-			'bricks/get_terms_options/excluded_taxonomies',
-			[
-				'nav_menu',
-				'link_category',
-				'post_format',
-			// BRICKS_DB_TEMPLATE_TAX_TAG
-			]
-		);
-
-		// Filter out excluded taxonomies
-		$all_taxonomies = array_filter(
-			$all_taxonomies,
-			static function( $tax ) use ( $excluded_taxonomies ) {
-				return ! in_array( $tax['name'], $excluded_taxonomies, true );
-			}
-		);
-
-		// Extract valid taxonomy slugs
 		$valid_tax_slugs = array_column( $all_taxonomies, 'name' );
 
 		if ( ! isset( $taxonomy ) ) {
@@ -171,6 +150,15 @@ class Helpers {
 		$all_terms = [];
 
 		foreach ( $terms as $term ) {
+			if (
+				$term->taxonomy === 'nav_menu' ||
+				$term->taxonomy === 'link_category' ||
+				$term->taxonomy === 'post_format'
+				// $term->taxonomy === BRICKS_DB_TEMPLATE_TAX_TAG
+			) {
+				continue;
+			}
+
 			// Skip term if term taxonomy is not a taxonomy of requested post type
 			if ( isset( $post_type ) && $post_type !== 'any' ) {
 				$post_type_taxonomies = get_object_taxonomies( $post_type );
@@ -187,9 +175,8 @@ class Helpers {
 
 			// Store taxonomy name and term ID as WP_Query tax_query needs both (name and term ID)
 			$taxonomy_label = self::generate_taxonomy_label( $term->taxonomy );
-			$taxonomy_label = ! empty( $taxonomy_label ) ? "($taxonomy_label)" : '';
 
-			$response[ $term->taxonomy . '::' . $term->term_id ] = "{$term->name} {$taxonomy_label}";
+			$response[ $term->taxonomy . '::' . $term->term_id ] = "{$term->name} ({$taxonomy_label})";
 		}
 
 		if ( $include_all ) {
@@ -314,7 +301,7 @@ class Helpers {
 		$post_types = [];
 
 		foreach ( $registered_post_types as $key => $object ) {
-			$post_types[ $key ] = $object->labels->singular_name ?? $object->label;
+			$post_types[ $key ] = $object->label;
 		}
 
 		return $post_types;
@@ -584,6 +571,8 @@ class Helpers {
 
 		// No excerpt, generate one
 		if ( $text == '' ) {
+			$post = get_post( $post );
+
 			$text = get_the_content( '', false, $post );
 			$text = strip_shortcodes( $text );
 			$text = function_exists( 'excerpt_remove_blocks' ) ? excerpt_remove_blocks( $text ) : $text; // Run function_exists for ClassicPress
@@ -737,31 +726,6 @@ class Helpers {
 		return $pagination_html;
 	}
 
-	/** Get global class data by ID
-	 *
-	 * @param string $class_id
-	 * @return array|null
-	 *
-	 * @since 2.0.2
-	 */
-	public static function get_global_class_by_id( $class_id, $key ) {
-		// Get global classes by ID
-		if ( empty( Database::$global_data['globalClassesById'] ) ) {
-			$global_classes                             = Database::$global_data['globalClasses'] ?? [];
-			Database::$global_data['globalClassesById'] = [];
-
-			foreach ( $global_classes as $class ) {
-				if ( isset( $class['id'] ) ) {
-					Database::$global_data['globalClassesById'][ $class['id'] ] = $class;
-				}
-			}
-		}
-
-		$global_class = Database::$global_data['globalClassesById'][ $class_id ] ?? null;
-
-		return $key ? $global_class[ $key ] ?? null : $global_class;
-	}
-
 	/**
 	 * Element placeholder HTML
 	 *
@@ -847,57 +811,6 @@ class Helpers {
 		// Get page_data via passed post_id
 		if ( bricks_is_ajax_call() || bricks_is_rest_call() ) {
 			Database::set_active_templates( $post_id );
-		}
-
-		/**
-		 * If element_id contains dashes, MAYBE it is an element inside a component instance.
-		 * - User might pass in unkown element ID with dashes (eg: brxe-h6j7k8) via {query_results_count:brxe-h6j7k8} (#86c4y35pt)
-		 *
-		 * @since 2.0
-		 */
-		if ( strpos( $element_id, '-' ) !== false ) {
-			/**
-			 * Extract the string, treat first part as element ID and second part as instance ID
-			 * Example: q1w2e3r4-h6j7k8 => element ID: element, instance ID:
-			 */
-			$temp_parts       = explode( '-', $element_id );
-			$temp_element_id  = $temp_parts[0] ?? '';
-			$temp_instance_id = $temp_parts[1] ?? '';
-			$instance_element = self::get_element_data( $post_id, $temp_instance_id );
-
-			// STEP: Verify if instance ID is valid
-			if ( $instance_element && isset( $instance_element['element'] ) && is_array( $instance_element['element'] ) ) {
-				$component_instance = self::get_component_instance( $instance_element['element'] );
-
-				// STEP: Verify if component instance is valid
-				if ( $component_instance && isset( $component_instance['elements'] ) && is_array( $component_instance['elements'] ) ) {
-					/**
-					 * Confirmed the $element_id is an element inside a component instance
-					 * Find the query element from the component instance
-					 */
-					$query_element = array_filter(
-						$component_instance['elements'],
-						function( $element ) use ( $temp_element_id ) {
-							return $element['id'] === $temp_element_id;
-						}
-					);
-
-					$query_element = reset( $query_element );
-
-					// Return: Query element not found
-					if ( ! $query_element ) {
-						return false;
-					}
-
-					// Set the element ID to include the instance ID
-					$query_element['id'] = "{$temp_element_id}-{$temp_instance_id}";
-					$output['element']   = $query_element;
-					$output['elements']  = $component_instance['elements'] ?? [];
-					$output['source_id'] = 'component';
-
-					return $output;
-				}
-			}
 		}
 
 		$templates = [];
@@ -1170,150 +1083,22 @@ class Helpers {
 
 		// Loop over connected properties to populate component element settings with custom or default values
 		foreach ( $component_props as $prop ) {
-			$instance_value            = isset( $instance_props[ $prop['id'] ] ) ? $instance_props[ $prop['id'] ] : '';
-			$default_value             = isset( $prop['default'] ) ? $prop['default'] : '';
+			$instance_value            = $instance_props[ $prop['id'] ] ?? false;
+			$default_value             = $prop['default'] ?? false;
 			$connections_by_element_id = $prop['connections'] ?? [];
 
 			foreach ( $connections_by_element_id as $element_id => $setting_keys ) {
 				// Update component element settings
 				foreach ( $component['elements'] as &$component_child ) {
 					if ( $component_child['id'] == $element_id ) { // Use "==" instead of "===" as $element_id could be an integer
-
 						foreach ( $setting_keys as $setting_key ) {
-							// Handle connected controls inside query control (i.e. ignore_sticky_posts; @since 2.0)
-							$setting_parts   = explode( ':', $setting_key );
-							$setting_key     = count( $setting_parts ) > 1 ? $setting_parts[0] : $setting_key;
-							$sub_setting_key = $setting_parts[1] ?? null;
-
-							// Is element condition setting (@since 2.0)
-							if ( strpos( $setting_key, '_conditions' ) === 0 ) {
-								$parts = explode( '|', $setting_key );
-								if ( count( $parts ) !== 3 ) {
-									continue;
-								}
-
-								if ( ! isset( $component_child['settings']['_conditions'] ) || ! is_array( $component_child['settings']['_conditions'] ) ) {
-									continue;
-								}
-
-								$condition_id  = $parts[1];
-								$condition_key = $parts[2];
-
-								// Find target condition
-								foreach ( $component_child['settings']['_conditions'] as $conditions_idx => $conditions ) {
-									foreach ( $conditions as $cidx => $condition ) {
-										// Cannot check if $condition_key is set as it could be empty but connected
-										if (
-											isset( $condition['id'] ) && $condition['id'] === $condition_id && isset( $condition['key'] )
-										) {
-											// Use instance value if set > use default value > unset the setting
-											if ( $instance_value !== '' ) {
-												$component_child['settings']['_conditions'][ $conditions_idx ][ $cidx ][ $condition_key ] = $instance_value;
-											} elseif ( $default_value !== '' ) {
-
-												$component_child['settings']['_conditions'][ $conditions_idx ][ $cidx ][ $condition_key ] = $default_value;
-											} else {
-												// If no value is set, we set it to null, so we know that it's empty (@since 2.0)
-												$component_child['settings']['_conditions'][ $conditions_idx ][ $cidx ][ $condition_key ] = null;
-											}
-											break 2;
-										}
-									}
-								}
-
-								continue;
-							}
-
-							// STEP: Handle settings property mapping
-
-							// Subsetting key is set: Set it to the component child settings (@since 2.0)
-							elseif ( $sub_setting_key ) {
-								if ( $instance_value !== '' ) {
-									if ( ! isset( $component_child['settings'][ $setting_key ] ) ) {
-										$component_child['settings'][ $setting_key ] = [];
-									}
-
-									$component_child['settings'][ $setting_key ][ $sub_setting_key ] = $instance_value;
-								} else {
-									unset( $component_child['settings'][ $setting_key ][ $sub_setting_key ] );
-								}
-
-								continue;
-							}
-
-							// Property type "toggle" set to 'off': Clear the setting (@since 2.0)
-							elseif ( $prop['type'] === 'toggle' && $instance_value === 'off' ) {
-								unset( $component_child['settings'][ $setting_key ] );
-
-								continue;
-							}
-
-							/**
-							 * STEP: Property type "class": Merge with or replace element classes
-							 *
-							 * Check: Not in builder to avoid adding classes on all instances (see: loadData.htmlAttributes)
-							 *
-							 * @since 2.0
-							 */
-							elseif ( $prop['type'] === 'class' && ! bricks_is_builder() ) {
-								$property_global_class_ids = ! empty( $instance_value ) ? $instance_value : $default_value;
-
-								if ( $property_global_class_ids ) {
-									if ( ! is_array( $property_global_class_ids ) ) {
-										// Move single global class ID into an array
-										$property_global_class_ids = [ $property_global_class_ids ];
-									}
-
-									// Custom options: Get global class IDs from the property option.value
-									if ( ! empty( $prop['options'] ) ) {
-										$property_option_ids = $property_global_class_ids;
-
-										foreach ( $property_option_ids as $property_option_id ) {
-											$option_index     = array_search( $property_option_id, array_column( $prop['options'], 'id' ) );
-											$option_class_ids = $prop['options'][ $option_index ]['value'] ?? false;
-
-											if ( is_array( $option_class_ids ) && ! empty( $option_class_ids ) ) {
-												$property_global_class_ids = array_merge( $property_global_class_ids, $option_class_ids );
-											}
-										}
-									}
-
-									// Add property instance class IDs to self::$global_classes_elements[ $css_class_id ][] = $element['name'];
-
-									/**
-									 * NOTE: Outcomment this as it's creating unrelated style
-									 *
-									 * The global class ids is not connected to this $element
-									 *
-									 * @see #86c4957mc
-									 */
-									// foreach ( $property_global_class_ids as $property_global_class_id ) {
-									// Assets::$global_classes_elements[ $property_global_class_id ][] = $element['name'];
-									// }
-
-									// Check: Replace global classes set on the element
-									if ( isset( $prop['replace'] ) ) {
-										$component_child['settings']['_cssGlobalClassesPropsReplace'] = true;
-									}
-
-									// Merge global classes of this property with existing property global classes
-									$component_child['settings']['_cssGlobalClassesProps'] = array_merge( $component_child['settings']['_cssGlobalClassesProps'] ?? [], $property_global_class_ids );
-								}
-							}
-
-							// Use instance value if set
-							elseif ( $instance_value !== '' ) {
+							// Use instance value if set > use default value > unset the setting
+							if ( $instance_value ) {
 								$component_child['settings'][ $setting_key ] = $instance_value;
-							}
-
-							// Use default value
-							elseif ( $default_value !== '' ) {
+							} elseif ( $default_value ) {
 								$component_child['settings'][ $setting_key ] = $default_value;
-							}
-
-							// No value set on the instance, nor as a property default: Set it to null, so we know that it's empty (@since 2.0)
-							else {
-								$component_child['settings'][ $setting_key ] = null;
+							} else {
+								unset( $component_child['settings'][ $setting_key ] );
 							}
 						}
 					}
@@ -1326,33 +1111,6 @@ class Helpers {
 					) {
 						$element[ $key ] = $component_child[ $key ];
 					}
-				}
-			}
-		}
-
-		// Loop over all component elements to merge or replace global classes (@since 2.0)
-		if ( isset( $component['elements'] ) && is_array( $component['elements'] ) ) {
-			foreach ( $component['elements'] as &$component_child ) {
-				$global_class_ids = $component_child['settings']['_cssGlobalClassesProps'] ?? [];
-
-				// Without "Multiple options" enabled, global class ID is stored as a string
-				if ( is_string( $global_class_ids ) ) {
-					$global_class_ids = explode( ' ', $global_class_ids );
-				}
-
-				if ( is_array( $global_class_ids ) && ! empty( $global_class_ids ) ) {
-					// Replace global classes set on the element
-					if ( isset( $component_child['settings']['_cssGlobalClassesPropsReplace'] ) ) {
-						$component_child['settings']['_cssGlobalClasses'] = $global_class_ids;
-					}
-
-					// Merge global classes of this property with existing element global classes
-					else {
-						$component_child['settings']['_cssGlobalClasses'] = array_merge( $component_child['settings']['_cssGlobalClasses'] ?? [], $global_class_ids );
-					}
-
-					unset( $component_child['settings']['_cssGlobalClassesProps'] );
-					unset( $component_child['settings']['_cssGlobalClassesPropsReplace'] );
 				}
 			}
 		}
@@ -1468,13 +1226,13 @@ class Helpers {
 	 */
 	public static function get_supported_content_types() {
 		$types = [
-			'archive-recent-posts' => esc_html__( 'Archive', 'bricks' ) . ' (' . esc_html__( 'Recent posts', 'bricks' ) . ')',
-			'archive-author'       => esc_html__( 'Archive', 'bricks' ) . ' (' . esc_html__( 'Author', 'bricks' ) . ')',
-			'archive-date'         => esc_html__( 'Archive', 'bricks' ) . ' (' . esc_html__( 'Date', 'bricks' ) . ')',
-			'archive-cpt'          => esc_html__( 'Archive', 'bricks' ) . ' (' . esc_html__( 'Posts', 'bricks' ) . ')',
-			'archive-term'         => esc_html__( 'Archive', 'bricks' ) . ' (' . esc_html__( 'Term', 'bricks' ) . ')',
-			'single'               => esc_html__( 'Single', 'bricks' ) . ' (' . esc_html__( 'Post', 'bricks' ) . '/' . esc_html__( 'Page', 'bricks' ) . '/' . 'CPT' . ')',
+			'archive-recent-posts' => esc_html__( 'Archive (recent posts)', 'bricks' ),
+			'archive-author'       => esc_html__( 'Archive (author)', 'bricks' ),
+			'archive-date'         => esc_html__( 'Archive (date)', 'bricks' ),
+			'archive-cpt'          => esc_html__( 'Archive (posts)', 'bricks' ),
+			'archive-term'         => esc_html__( 'Archive (term)', 'bricks' ),
 			'search'               => esc_html__( 'Search results', 'bricks' ),
+			'single'               => esc_html__( 'Single post/page', 'bricks' ),
 		];
 
 		// NOTE: Undocumented
@@ -1584,7 +1342,11 @@ class Helpers {
 
 		$bricks_data = Database::get_template_data( $type, $force_post_data );
 
-		if ( empty( $bricks_data ) || ! is_array( $bricks_data ) ) {
+		if ( ! is_array( $bricks_data ) ) {
+			return false;
+		}
+
+		if ( ! count( $bricks_data ) ) {
 			return false;
 		}
 
@@ -1733,15 +1495,6 @@ class Helpers {
 	}
 
 	/**
-	 * Return WP dashboard Bricks elements manager url
-	 *
-	 * @since 2.0
-	 */
-	public static function elements_manager_url( $params = '' ) {
-		return admin_url( "/admin.php?page=bricks-elements$params" );
-	}
-
-	/**
 	 * Return Bricks Academy link
 	 *
 	 * @since 1.0
@@ -1797,7 +1550,7 @@ class Helpers {
 	public static function maybe_log( $message ) {
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 			if ( defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ) {
-				error_log( print_r( $message, true ) ); // phpcs:ignore
+				error_log( $message ); // phpcs:ignore
 			}
 		}
 	}
@@ -2260,10 +2013,11 @@ class Helpers {
 	 * @return array Array of elements
 	 */
 	public static function security_check_elements_before_save( $new_elements, $post_id, $area ) {
+		$user_has_full_access  = Capabilities::current_user_has_full_access();
 		$user_can_execute_code = Capabilities::current_user_can_execute_code();
 
-		// Return elements (user can add/remove elements & execute code permission)
-		if ( Builder_Permissions::user_can_modify_element_count() && $user_can_execute_code ) {
+		// Return elements (user has full access & execute code permission)
+		if ( $user_has_full_access && $user_can_execute_code ) {
 			return $new_elements;
 		}
 
@@ -2280,12 +2034,12 @@ class Helpers {
 			}
 		}
 
-		// Initial orphaned elements scan
+		// Initial data integrity check
 		$new_elements = is_array( $new_elements ) ? $new_elements : [];
 		$old_elements = is_array( $old_elements ) ? $old_elements : [];
 
 		// STEP: Return old elements: User is not allowed to edit the structure, but the number of new elements differs from old structure
-		if ( ! Builder_Permissions::user_can_modify_element_count() && count( $new_elements ) !== count( $old_elements ) ) {
+		if ( ! $user_has_full_access && count( $new_elements ) !== count( $old_elements ) ) {
 			return $old_elements;
 		}
 
@@ -2317,8 +2071,8 @@ class Helpers {
 		}
 
 		foreach ( $new_elements as $index => $element ) {
-			// STEP: Orphaned elements scan: New elements found despite the user can only edit existing content: Remove element
-			if ( ! Builder_Permissions::user_can_modify_element_count() && ! isset( $old_elements_indexed[ $element['id'] ] ) ) {
+			// STEP: Data integrity check: New elements found despite the user can only edit existing content: Remove element
+			if ( ! $user_has_full_access && ! isset( $old_elements_indexed[ $element['id'] ] ) ) {
 				unset( $new_elements[ $index ] );
 
 				continue;
@@ -2403,9 +2157,6 @@ class Helpers {
 
 		// Reindex array
 		$new_elements = array_values( $new_elements );
-
-		// Apply filter to new elements (@since 1.12.3)
-		$new_elements = apply_filters( 'bricks/security_check_before_save/new_elements', $new_elements, $old_elements_indexed );
 
 		return $new_elements;
 	}
@@ -2549,7 +2300,6 @@ class Helpers {
 
 		// Passes any unlinked URLs that are on their own line to WP_Embed::shortcode() for potential embedding (audio, video)
 		if ( $GLOBALS['wp_embed'] instanceof \WP_Embed ) {
-			$content = $GLOBALS['wp_embed']->run_shortcode( $content ); // (#86c2v39x2)
 			$content = $GLOBALS['wp_embed']->autoembed( $content );
 		}
 
@@ -2652,9 +2402,6 @@ class Helpers {
 
 	/**
 	 * Check if the provided url string is the current landed page
-	 * Logic improvement for performance (@since 2.0)
-	 * - Should not set ancestor page/post as current page. The active state handled by frontend JS.
-	 * - Not used in the builder.
 	 *
 	 * @since 1.8
 	 *
@@ -2662,35 +2409,24 @@ class Helpers {
 	 * @return bool
 	 */
 	public static function maybe_set_aria_current_page( $url = '' ) {
-		if ( empty( $url ) || self::is_bricks_preview() ) {
+		if ( empty( $url ) ) {
 			return false;
 		}
 
-		global $wp;
-
-		// Normalize the provided URL
-		$url = trailingslashit( rawurldecode( $url ) );
-
-		// Get the current page URL
-		$current_page_url = trailingslashit( rawurldecode( home_url( $wp->request ) ) );
-
 		$set_aria_current = false;
 
-		// Check if the provided URL matches the current page URL
-		if ( $url === $current_page_url ) {
-			$set_aria_current = true;
-		}
+		// Try to get post ID from URL
+		$post_id_of_link = url_to_postid( $url );
 
-		else {
-
-			// Legacy logic to compare URLs
+		if ( ! $post_id_of_link ) {
+			// Not a post or page
 			if ( is_front_page() ) {
 				// Front page
 				$front_page_id = absint( get_option( 'page_on_front' ) );
 
 				// Static page as front page
 				if ( $front_page_id > 0 ) {
-					$set_aria_current = '/' === $url;
+					$set_aria_current = $front_page_id === url_to_postid( $url ) || '/' === $url;
 				}
 
 				// Latest posts as front page ($front_page_id === 0)
@@ -2702,6 +2438,9 @@ class Helpers {
 
 			// Posts page(is_home()), Category, tag, archive etc.
 			else {
+				global $wp;
+				$requested_url = trailingslashit( home_url( $wp->request ) );
+
 				// URL starts with a slash (e.g. /category/business/): Add home URL
 				if ( substr( $url, 0, 1 ) === '/' && substr( $url, 0, 2 ) !== '/' ) {
 					$url = home_url( $url );
@@ -2709,12 +2448,68 @@ class Helpers {
 
 				$url = trailingslashit( $url );
 
-				$set_aria_current = strcmp( rtrim( $url ), rtrim( $current_page_url ) ) === 0;
+				$set_aria_current = strcmp( rtrim( $url ), rtrim( $requested_url ) ) === 0;
+			}
+		}
+
+		// Post or page
+		else {
+			// Use current page ID if not a singular post or page (@since 1.9)
+			$current_page_id = is_singular() ? get_the_ID() : get_queried_object_id();
+
+			// Inside query loop
+			if ( Query::is_any_looping() ) {
+				$set_aria_current = $post_id_of_link && $post_id_of_link == get_queried_object_id() && is_singular();
+			}
+
+			// Single post or page
+			elseif ( $post_id_of_link == $current_page_id ) {
+				$set_aria_current = true;
+			}
+
+			// Check: Is anchestor of current page (check recursively on all parent levels)
+			else {
+				$set_aria_current = self::is_post_ancestor( get_queried_object_id(), $post_id_of_link );
 			}
 		}
 
 		// Undocumented: Currently used in includes/woocommerce.php
 		return apply_filters( 'bricks/element/maybe_set_aria_current_page', $set_aria_current, $url );
+	}
+
+	/**
+	 * Check recursively if a post is an ancestor of another post.
+	 *
+	 * @since 1.8
+	 *
+	 * @param int $post_id
+	 * @param int $ancestor_id
+	 * @return bool
+	 */
+	public static function is_post_ancestor( $post_id, $ancestor_id ) {
+		// Return: Not the same post type (@since 1.8.2)
+		if ( get_post_type( $post_id ) !== get_post_type( $ancestor_id ) ) {
+			return false;
+		}
+
+		// Return: Ancestor is 0
+		if ( $ancestor_id == 0 ) {
+			return false;
+		}
+
+		$parent_id = wp_get_post_parent_id( $post_id );
+
+		if ( $parent_id == $ancestor_id ) {
+			return true;
+		}
+
+		// Return: Top-level has no parent
+		if ( $parent_id == 0 ) {
+			return false;
+		}
+
+		// Recursively check parent's parent
+		return self::is_post_ancestor( $parent_id, $ancestor_id );
 	}
 
 	/**
@@ -2737,7 +2532,7 @@ class Helpers {
 		// @pre 1.9.2 we used strip_tags, but we don't want to remove all HTML tags.
 		$options = preg_replace( '~</?(p|br)[^>]*>~', '', $options );
 
-		// At this point the parsed value might contain a trailing line break – remove it
+		// At this point the parsed value might contain a trailing line break – remove it
 		$options = rtrim( $options );
 
 		// Finally return an array of options
@@ -2991,14 +2786,14 @@ class Helpers {
 			// Only populate query vars if type is 'media'
 			if ( $type === 'media' ) {
 				// STEP: Media type carousel might use dynamic data, so we need to normalize the settings (logic originally inside carousel element)
-				$carousel_class_name = Elements::$elements['carousel']['class'] ?? false;
+				$gallery_class_name = Elements::$elements['image-gallery']['class'] ?? false;
 
-				if ( $carousel_class_name && ! empty( $settings['items']['useDynamicData'] ) ) {
-					$carousel = new $carousel_class_name();
+				if ( $gallery_class_name && ! empty( $settings['items']['useDynamicData'] ) ) {
+					$gallery = new $gallery_class_name();
 
-					$carousel->set_post_id( $post_id );
+					$gallery->set_post_id( $post_id );
 
-					$settings = self::get_normalized_image_settings( $carousel, $settings );
+					$settings = $gallery->get_normalized_image_settings( $settings );
 				}
 
 				// STEP: Populate query vars based on the 'items' settings, if no items are set, no query vars are populated
@@ -3704,734 +3499,5 @@ class Helpers {
 		$run = self::enabled_query_filters();
 
 		return apply_filters( 'bricks/handle_no_results_children_elements', $run );
-	}
-
-	/**
-	 * Get normalized image settings
-	 *
-	 * @since 2.0
-	 */
-	public static function get_normalized_image_settings( $instance, $settings ) {
-		$items = $settings['items'] ?? [];
-		$size  = $items['size'] ?? BRICKS_DEFAULT_IMAGE_SIZE;
-
-		// Dynamic data
-		if ( ! empty( $items['useDynamicData'] ) ) {
-			$items['images'] = [];
-			$images          = $instance->render_dynamic_data_tag( $items['useDynamicData'], 'image' );
-
-			if ( is_array( $images ) ) {
-				foreach ( $images as $image_id ) {
-					$items['images'][] = [
-						'id'   => $image_id,
-						'full' => wp_get_attachment_image_url( $image_id, 'full' ),
-						'url'  => wp_get_attachment_image_url( $image_id, $size )
-					];
-				}
-			}
-		}
-
-		// Old data structure (images were saved as one array directly on $items)
-		if ( ! isset( $items['images'] ) ) {
-			$images = ! empty( $items ) ? $items : [];
-
-			unset( $items );
-
-			$items['images'] = $images;
-		}
-
-		// Get 'size' from first image if not set
-		$first_image_size = ! empty( $items['images'][0]['size'] ) ? $items['images'][0]['size'] : false;
-		$size             = empty( $items['size'] ) && $first_image_size ? $first_image_size : $size;
-
-		// Get image 'url' for requested $size
-		foreach ( $items['images'] as $key => $image ) {
-			if ( ! empty( $image['id'] ) ) {
-				$items['images'][ $key ]['url'] = wp_get_attachment_image_url( $image['id'], $size );
-			}
-		}
-
-		$settings['items']         = $items;
-		$settings['items']['size'] = $size;
-
-		return $settings;
-	}
-
-	/**
-	 * Check if file is valid SVG
-	 *
-	 * @param string $file SVG content
-	 *
-	 * @since 2.0
-	 */
-	public static function is_valid_svg( $file ) {
-		// Check if $file is a string
-		if ( ! is_string( $file ) ) {
-			return false;
-		}
-
-		// Check if SVG is valid
-		$file = trim( $file );
-
-		// Check if SVG is empty
-		if ( empty( $file ) ) {
-			return false;
-		}
-
-		// Check if SVG starts with <svg or <xml, and contains </svg>
-		return ( strpos( $file, '<svg' ) === 0 || strpos( $file, '<?xml' ) === 0 ) && strpos( $file, '</svg>' ) !== false;
-	}
-
-	/**
-	 * Process settings to update variable references
-	 *
-	 * @since 2.0
-	 *
-	 * @param array  $settings Settings to process.
-	 * @param string $old_name Old variable name.
-	 * @param string $new_name New variable name.
-	 *
-	 * @return array Updated settings.
-	 */
-	public static function process_settings_for_variable_rename( $settings, $old_name, $new_name ) {
-		if ( ! is_array( $settings ) ) {
-			return $settings;
-		}
-
-		// Create regex pattern to match var(--name) with any whitespace variations
-		$var_pattern     = '/var\(\s*--\s*' . preg_quote( $old_name, '/' ) . '\s*\)/';
-		$var_replacement = 'var(--' . $new_name . ')';
-
-		foreach ( $settings as $key => $value ) {
-			// Process nested arrays recursively
-			if ( is_array( $value ) ) {
-				$settings[ $key ] = self::process_settings_for_variable_rename( $value, $old_name, $new_name );
-			}
-			// Process string values that might contain CSS variable references
-			elseif ( is_string( $value ) ) {
-				$updated_value = preg_replace( $var_pattern, $var_replacement, $value );
-				if ( $updated_value !== $value ) {
-					$settings[ $key ] = $updated_value;
-				}
-			}
-		}
-
-		return $settings;
-	}
-
-	/**
-	 * Process elements to update variable references
-	 *
-	 * @since 2.0
-	 *
-	 * @param array  $elements Array of elements.
-	 * @param string $old_name Old variable name.
-	 * @param string $new_name New variable name.
-	 *
-	 * @return array Updated elements
-	 */
-	public static function process_elements_for_variable_rename( $elements, $old_name, $new_name ) {
-		if ( ! is_array( $elements ) ) {
-			return $elements;
-		}
-
-		// Process each element's settings
-		foreach ( $elements as $key => $element ) {
-			// Process element settings
-			if ( isset( $element['settings'] ) && is_array( $element['settings'] ) ) {
-				$elements[ $key ]['settings'] = self::process_settings_for_variable_rename( $element['settings'], $old_name, $new_name );
-			}
-		}
-
-		return $elements;
-	}
-
-	/**
-	 * Update all references to a renamed global CSS variable across the site
-	 *
-	 * @since 2.0
-	 *
-	 * @param string $old_name Old variable name (without the -- prefix).
-	 * @param string $new_name New variable name (without the -- prefix).
-	 *
-	 * @return array Results with counts of updated items.
-	 */
-	public static function update_global_variable_references( $old_name, $new_name ) {
-		// Initialize results array to track updates
-		$results = [
-			'posts_updated'             => 0,
-			'elements_updated'          => 0,
-			'classes_updated'           => 0,
-			'components_updated'        => 0,
-			'settings_updated'          => false,
-			'palette_updated'           => false,
-			'styles_updated'            => false,
-			'template_settings_updated' => false,
-			'page_settings_updated'     => 0,
-		];
-
-		// Skip if old and new names are the same
-		if ( $old_name === $new_name ) {
-			return $results;
-		}
-
-		// Create regex pattern to match var(--name) with any whitespace variations
-		$var_pattern     = '/var\(\s*--\s*' . preg_quote( $old_name, '/' ) . '\s*\)/';
-		$var_replacement = 'var(--' . $new_name . ')';
-
-		// STEP 1: Process posts with Bricks data (header, content, footer)
-		// Get all posts/templates that use Bricks
-		$post_types = array_merge(
-			array_keys( self::get_supported_post_types() ),
-			[ BRICKS_DB_TEMPLATE_SLUG ]
-		);
-
-		$query    = new \WP_Query(
-			[
-				'post_type'      => $post_types,
-				'posts_per_page' => -1,
-				'fields'         => 'ids',
-				'post_status'    => 'any',
-				'meta_query'     => [
-					'relation' => 'OR',
-					[
-						'key'     => BRICKS_DB_PAGE_HEADER,
-						'compare' => 'EXISTS',
-					],
-					[
-						'key'     => BRICKS_DB_PAGE_CONTENT,
-						'compare' => 'EXISTS',
-					],
-					[
-						'key'     => BRICKS_DB_PAGE_FOOTER,
-						'compare' => 'EXISTS',
-					],
-				],
-			]
-		);
-		$post_ids = $query->posts;
-
-		foreach ( $post_ids as $post_id ) {
-			$post_updated = false;
-
-			// Check header, content, footer
-			foreach ( [ 'header', 'content', 'footer' ] as $area ) {
-				$elements = get_post_meta( $post_id, Database::get_bricks_data_key( $area ), true );
-
-				if ( ! empty( $elements ) && is_array( $elements ) ) {
-					$updated_elements = self::process_elements_for_variable_rename( $elements, $old_name, $new_name );
-
-					if ( $updated_elements !== $elements ) {
-						update_post_meta( $post_id, Database::get_bricks_data_key( $area ), $updated_elements );
-						$post_updated = true;
-						$results['elements_updated']++;
-					}
-				}
-			}
-
-			// Check page settings
-			$page_settings = get_post_meta( $post_id, BRICKS_DB_PAGE_SETTINGS, true );
-			if ( ! empty( $page_settings ) && is_array( $page_settings ) ) {
-				$updated_settings = self::process_settings_for_variable_rename( $page_settings, $old_name, $new_name );
-				if ( $updated_settings !== $page_settings ) {
-					update_post_meta( $post_id, BRICKS_DB_PAGE_SETTINGS, $updated_settings );
-					$post_updated = true;
-					$results['page_settings_updated']++;
-				}
-			}
-
-			// Check template settings (if this is a template)
-			if ( get_post_type( $post_id ) === BRICKS_DB_TEMPLATE_SLUG ) {
-				$template_settings = get_post_meta( $post_id, BRICKS_DB_TEMPLATE_SETTINGS, true );
-				if ( ! empty( $template_settings ) && is_array( $template_settings ) ) {
-					$updated_settings = self::process_settings_for_variable_rename( $template_settings, $old_name, $new_name );
-					if ( $updated_settings !== $template_settings ) {
-						update_post_meta( $post_id, BRICKS_DB_TEMPLATE_SETTINGS, $updated_settings );
-						$post_updated                         = true;
-						$results['template_settings_updated'] = true;
-					}
-				}
-			}
-
-			if ( $post_updated ) {
-				$results['posts_updated']++;
-			}
-		}
-
-		// STEP 2: Process global elements
-		$global_elements = get_option( BRICKS_DB_GLOBAL_ELEMENTS, [] );
-		if ( is_array( $global_elements ) && ! empty( $global_elements ) ) {
-			$elements_updated = false;
-
-			foreach ( $global_elements as $key => $element ) {
-				$updated_element = self::process_settings_for_variable_rename( $element, $old_name, $new_name );
-				if ( $updated_element !== $element ) {
-					$global_elements[ $key ] = $updated_element;
-					$elements_updated        = true;
-					$results['elements_updated']++;
-				}
-			}
-
-			if ( $elements_updated ) {
-				update_option( BRICKS_DB_GLOBAL_ELEMENTS, $global_elements );
-			}
-		}
-
-		// STEP 3: Process global classes
-		$global_classes = get_option( BRICKS_DB_GLOBAL_CLASSES, [] );
-		if ( is_array( $global_classes ) && ! empty( $global_classes ) ) {
-			$classes_updated = false;
-
-			foreach ( $global_classes as $key => $class ) {
-				if ( isset( $class['settings'] ) && is_array( $class['settings'] ) ) {
-					$updated_settings = self::process_settings_for_variable_rename( $class['settings'], $old_name, $new_name );
-					if ( $updated_settings !== $class['settings'] ) {
-						$global_classes[ $key ]['settings'] = $updated_settings;
-						$classes_updated                    = true;
-						$results['classes_updated']++;
-					}
-				}
-			}
-
-			if ( $classes_updated ) {
-				update_option( BRICKS_DB_GLOBAL_CLASSES, $global_classes );
-			}
-		}
-
-		// STEP 4: Process global settings (custom CSS)
-		$global_settings = get_option( BRICKS_DB_GLOBAL_SETTINGS, [] );
-		if ( is_array( $global_settings ) && ! empty( $global_settings ) ) {
-			$settings_updated = false;
-
-			// Check custom CSS
-			if ( isset( $global_settings['customCss'] ) ) {
-				$custom_css  = $global_settings['customCss'];
-				$updated_css = preg_replace( $var_pattern, $var_replacement, $custom_css );
-
-				if ( $updated_css !== $custom_css ) {
-					$global_settings['customCss'] = $updated_css;
-					$settings_updated             = true;
-				}
-			}
-
-			// Check other settings that might contain CSS variables
-			foreach ( $global_settings as $key => $value ) {
-				if ( is_array( $value ) ) {
-					$updated_value = self::process_settings_for_variable_rename( $value, $old_name, $new_name );
-					if ( $updated_value !== $value ) {
-						$global_settings[ $key ] = $updated_value;
-						$settings_updated        = true;
-					}
-				} elseif ( is_string( $value ) ) {
-					$updated_value = preg_replace( $var_pattern, $var_replacement, $value );
-					if ( $updated_value !== $value ) {
-						$global_settings[ $key ] = $updated_value;
-						$settings_updated        = true;
-					}
-				}
-			}
-
-			if ( $settings_updated ) {
-				update_option( BRICKS_DB_GLOBAL_SETTINGS, $global_settings );
-				$results['settings_updated'] = true;
-			}
-		}
-
-		// STEP 5: Process color palette (check for CSS variable references in color values)
-		$color_palette = get_option( BRICKS_DB_COLOR_PALETTE, [] );
-		if ( is_array( $color_palette ) && ! empty( $color_palette ) ) {
-			$palette_updated = false;
-
-			foreach ( $color_palette as $palette_key => $palette ) {
-				// Check if this palette has a colors array
-				if ( isset( $palette['colors'] ) && is_array( $palette['colors'] ) ) {
-					foreach ( $palette['colors'] as $color_key => $color ) {
-						// Check for CSS variable references in 'raw' property
-						if ( isset( $color['raw'] ) && is_string( $color['raw'] ) ) {
-							$updated_value = preg_replace( $var_pattern, $var_replacement, $color['raw'] );
-							if ( $updated_value !== $color['raw'] ) {
-								$color_palette[ $palette_key ]['colors'][ $color_key ]['raw'] = $updated_value;
-								$palette_updated = true;
-							}
-						}
-					}
-				}
-			}
-
-			if ( $palette_updated ) {
-				update_option( BRICKS_DB_COLOR_PALETTE, $color_palette );
-				$results['palette_updated'] = true;
-			}
-		}
-
-		// STEP 6: Process theme styles
-		$theme_styles = get_option( BRICKS_DB_THEME_STYLES, [] );
-		if ( is_array( $theme_styles ) && ! empty( $theme_styles ) ) {
-			$styles_updated = false;
-
-			foreach ( $theme_styles as $key => $style ) {
-				if ( isset( $style['settings'] ) && is_array( $style['settings'] ) ) {
-					$updated_settings = self::process_settings_for_variable_rename( $style['settings'], $old_name, $new_name );
-					if ( $updated_settings !== $style['settings'] ) {
-						$theme_styles[ $key ]['settings'] = $updated_settings;
-						$styles_updated                   = true;
-					}
-				}
-			}
-
-			if ( $styles_updated ) {
-				update_option( BRICKS_DB_THEME_STYLES, $theme_styles );
-				$results['styles_updated'] = true;
-			}
-		}
-
-		// STEP 7: Process components
-		$components = get_option( BRICKS_DB_COMPONENTS, [] );
-		if ( is_array( $components ) && ! empty( $components ) ) {
-			$components_updated = false;
-
-			foreach ( $components as $key => $component ) {
-				if ( isset( $component['elements'] ) && is_array( $component['elements'] ) ) {
-					$updated_elements = self::process_elements_for_variable_rename( $component['elements'], $old_name, $new_name );
-					if ( $updated_elements !== $component['elements'] ) {
-						$components[ $key ]['elements'] = $updated_elements;
-						$components_updated             = true;
-						$results['components_updated']++;
-					}
-				}
-			}
-
-			if ( $components_updated ) {
-				update_option( BRICKS_DB_COMPONENTS, $components );
-			}
-		}
-
-		return $results;
-	}
-
-	/**
-	 * Render a "NEW" badge if BRICKS_VERSION is not larger than the next minor $version
-	 *
-	 * Example: BRICKS_VERSION = 2.1, $version_added = 2.0 => "New" badge is no longer rendered as its the next minor version.
-	 *
-	 * @since 2.0
-	 */
-	public static function render_badge( $version_added ) {
-		// Split version2, fall back to 0 for missing parts
-		$parts = array_map( 'intval', explode( '.', $version_added ) );
-		$major = $parts[0] ?? 0;
-		$minor = $parts[1] ?? 0;
-
-		// Build the next-minor version string, patch resets to 0
-		$next_minor = sprintf( '%d.%d.0', $major, $minor + 1 );
-
-		// version_compare understands SemVer, pre-release tags, etc.
-		if ( ! version_compare( $next_minor, BRICKS_VERSION, '<=' ) ) {
-			return '<span class="badge">' . esc_html__( 'New', 'bricks' ) . '</span>';
-		}
-	}
-
-	/**
-	 * Find orphaned elements across all Bricks posts and templates
-	 *
-	 * @since 2.0
-	 *
-	 * @return array {
-	 *     @type array $orphaned_by_post_id Array of post IDs with orphaned elements
-	 *     @type int   $total_orphans       Total number of orphaned elements found
-	 *     @type int   $total_posts         Total number of posts with orphaned elements
-	 * }
-	 */
-	public static function find_orphaned_elements_across_site() {
-		$result = [
-			'orphaned_by_post_id' => [],
-			'total_orphans'       => 0,
-			'total_posts'         => 0,
-		];
-
-		// Get all Bricks post IDs (templates and content)
-		$template_ids = Templates::get_all_template_ids();
-		$content_ids  = self::get_all_bricks_post_ids();
-		$all_post_ids = array_merge( $template_ids, $content_ids );
-
-		foreach ( $all_post_ids as $post_id ) {
-			$post_orphans = self::find_orphaned_elements_in_post( $post_id );
-
-			if ( ! empty( $post_orphans['orphaned_elements'] ) && $post_orphans['total_orphans'] > 0 ) {
-				$result['orphaned_by_post_id'][ $post_id ] = array_merge(
-					$post_orphans,
-					[
-						'post_title' => get_the_title( $post_id ),
-						'permalink'  => get_permalink( $post_id ),
-					]
-				);
-				$result['total_orphans']                  += $post_orphans['total_orphans'];
-				$result['total_posts']++;
-			}
-		}
-
-		return $result;
-	}
-
-	/**
-	 * Find orphaned elements in a specific post
-	 *
-	 * @since 2.0
-	 *
-	 * @param int $post_id The post ID to check
-	 *
-	 * @return array {
-	 *     @type array $orphaned_elements Array of orphaned elements by area
-	 *     @type int   $total_orphans     Total number of orphaned elements in this post
-	 * }
-	 */
-	public static function find_orphaned_elements_in_post( $post_id ) {
-		$result = [
-			'orphaned_elements' => [],
-			'total_orphans'     => 0,
-		];
-
-		$areas_to_check = [ 'content', 'header', 'footer' ];
-
-		foreach ( $areas_to_check as $area ) {
-			$elements = Database::get_data( $post_id, $area );
-
-			if ( ! is_array( $elements ) || empty( $elements ) ) {
-				continue;
-			}
-
-			$orphaned_data = self::find_orphaned_elements( $elements );
-
-			if ( ! empty( $orphaned_data['orphaned_by_area'] ) ) {
-				$result['orphaned_elements'][ $area ] = $orphaned_data['orphaned_by_area'];
-				$result['total_orphans']             += $orphaned_data['total_orphans'];
-			}
-		}
-
-		return $result;
-	}
-
-	/**
-	 * Find orphaned elements within an array of elements
-	 *
-	 * @since 2.0
-	 *
-	 * @param array $elements Array of Bricks elements
-	 *
-	 * @return array {
-	 *     @type array $orphaned_by_area Array of orphaned elements
-	 *     @type int   $total_orphans    Total number of orphaned elements
-	 * }
-	 */
-	public static function find_orphaned_elements( $elements ) {
-		if ( ! is_array( $elements ) || empty( $elements ) ) {
-			return [
-				'orphaned_by_area' => [],
-				'total_orphans'    => 0,
-			];
-		}
-
-		// Create a map of all element IDs for quick lookup
-		$element_ids = [];
-		foreach ( $elements as $element ) {
-			if ( isset( $element['id'] ) ) {
-				$element_ids[ $element['id'] ] = true;
-			}
-		}
-
-		$orphaned_elements = [];
-
-		// Check each element for orphaned status
-		foreach ( $elements as $element ) {
-			if ( ! isset( $element['id'] ) || ! isset( $element['parent'] ) ) {
-				continue;
-			}
-
-			$parent_id = $element['parent'];
-
-			// Root-level elements have no parent or parent === 0 / '0'
-			if ( ! $parent_id || $parent_id === 0 || $parent_id === '0' ) {
-				continue;
-			}
-
-			// Check if parent exists
-			if ( ! isset( $element_ids[ $parent_id ] ) ) {
-				$orphaned_elements[] = $element['id'];
-			}
-		}
-
-		return [
-			'orphaned_by_area' => $orphaned_elements,
-			'total_orphans'    => count( $orphaned_elements ),
-		];
-	}
-
-	/**
-	 * Clean up orphaned elements across all posts with orphaned elements
-	 *
-	 * @since 2.0
-	 *
-	 * @param array $orphaned_data Data from find_orphaned_elements_across_site()
-	 *
-	 * @return array {
-	 *     @type bool $success True if cleanup was successful
-	 *     @type int  $total_cleaned Total number of elements cleaned up
-	 *     @type int  $posts_cleaned Number of posts that were cleaned up
-	 * }
-	 */
-	public static function cleanup_orphaned_elements_across_site( $orphaned_data ) {
-		$total_cleaned = 0;
-		$posts_cleaned = 0;
-
-		if ( empty( $orphaned_data['orphaned_by_post_id'] ) ) {
-			return [
-				'success'       => true,
-				'total_cleaned' => 0,
-				'posts_cleaned' => 0,
-			];
-		}
-
-		foreach ( $orphaned_data['orphaned_by_post_id'] as $post_id => $post_orphaned_data ) {
-			$cleanup_result = self::cleanup_orphaned_elements_in_post( $post_id, $post_orphaned_data );
-
-			if ( $cleanup_result['success'] && $cleanup_result['cleaned_count'] > 0 ) {
-				$total_cleaned += $cleanup_result['cleaned_count'];
-				$posts_cleaned++;
-			}
-		}
-
-		return [
-			'success'       => true,
-			'total_cleaned' => $total_cleaned,
-			'posts_cleaned' => $posts_cleaned,
-		];
-	}
-
-	/**
-	 * Clean up orphaned elements from a specific post
-	 *
-	 * @since 2.0
-	 *
-	 * @param int   $post_id The post ID to clean up
-	 * @param array $orphaned_data Orphaned elements data from find_orphaned_elements_in_post()
-	 *
-	 * @return array {
-	 *     @type bool $success True if cleanup was successful
-	 *     @type int  $cleaned_count Number of elements cleaned up
-	 * }
-	 */
-	public static function cleanup_orphaned_elements_in_post( $post_id, $orphaned_data ) {
-		$cleaned_count = 0;
-
-		if ( empty( $orphaned_data['orphaned_elements'] ) ) {
-			return [
-				'success'       => true,
-				'cleaned_count' => 0,
-			];
-		}
-
-		$areas_to_check = [ 'content', 'header', 'footer' ];
-
-		foreach ( $areas_to_check as $area ) {
-			if ( ! isset( $orphaned_data['orphaned_elements'][ $area ] ) ) {
-				continue;
-			}
-
-			$elements = Database::get_data( $post_id, $area );
-
-			if ( empty( $elements ) ) {
-				continue;
-			}
-
-			$orphaned_ids     = $orphaned_data['orphaned_elements'][ $area ];
-			$cleaned_elements = self::cleanup_orphaned_elements( $elements, $orphaned_ids );
-
-			// Save cleaned elements back to the post
-			$area_key = Database::get_bricks_data_key( $area );
-			update_post_meta( $post_id, $area_key, $cleaned_elements );
-
-			$cleaned_count += count( $orphaned_ids );
-		}
-
-		return [
-			'success'       => true,
-			'cleaned_count' => $cleaned_count,
-		];
-	}
-
-	/**
-	 * Clean up orphaned elements from an array of elements
-	 *
-	 * @since 2.0
-	 *
-	 * @param array $elements Array of Bricks elements
-	 * @param array $orphaned_ids Array of orphaned element IDs to remove
-	 *
-	 * @return array Cleaned array of elements
-	 */
-	public static function cleanup_orphaned_elements( $elements, $orphaned_ids ) {
-		if ( ! is_array( $elements ) || empty( $elements ) || empty( $orphaned_ids ) ) {
-			return $elements;
-		}
-
-		// Create element ID map for quick lookup
-		$element_map = [];
-		foreach ( $elements as $element ) {
-			if ( isset( $element['id'] ) ) {
-				$element_map[ $element['id'] ] = $element;
-			}
-		}
-
-		// Collect all IDs to remove (orphaned elements and their descendants)
-		$ids_to_remove = [];
-		foreach ( $orphaned_ids as $orphaned_id ) {
-			self::collect_descendants( $orphaned_id, $element_map, $ids_to_remove );
-		}
-
-		// Filter out orphaned elements and their descendants
-		$cleaned_elements = array_filter(
-			$elements,
-			function( $element ) use ( $ids_to_remove ) {
-				return ! isset( $element['id'] ) || ! in_array( $element['id'], $ids_to_remove );
-			}
-		);
-
-		// Clean up children arrays (remove references to deleted elements)
-		foreach ( $cleaned_elements as $key => $element ) {
-			if ( isset( $element['children'] ) && is_array( $element['children'] ) ) {
-				$cleaned_elements[ $key ]['children'] = array_filter(
-					$element['children'],
-					function( $child_id ) use ( $ids_to_remove ) {
-						return ! in_array( $child_id, $ids_to_remove );
-					}
-				);
-			}
-		}
-
-		// Re-index array to avoid gaps
-		return array_values( $cleaned_elements );
-	}
-
-	/**
-	 * Recursively collect an element and all its descendants
-	 *
-	 * @since 2.0
-	 *
-	 * @param string $element_id The element ID to collect
-	 * @param array  $element_map Map of element ID to element data
-	 * @param array  &$ids_to_remove Reference to array of IDs to remove
-	 */
-	private static function collect_descendants( $element_id, $element_map, &$ids_to_remove ) {
-		if ( in_array( $element_id, $ids_to_remove ) ) {
-			return;
-		}
-
-		$ids_to_remove[] = $element_id;
-
-		if ( isset( $element_map[ $element_id ]['children'] ) && is_array( $element_map[ $element_id ]['children'] ) ) {
-			foreach ( $element_map[ $element_id ]['children'] as $child_id ) {
-				self::collect_descendants( $child_id, $element_map, $ids_to_remove );
-			}
-		}
 	}
 }

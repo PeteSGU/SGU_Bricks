@@ -113,25 +113,20 @@ class Element_Image_Gallery extends Element {
 			'required'    => [ 'layout', '!=', [ 'masonry', 'metro' ] ],
 		];
 
+		$this->control_options['imageRatio']['custom'] = esc_html__( 'Custom', 'bricks' );
+
 		$this->controls['imageRatio'] = [
-			'tab'      => 'content',
-			'label'    => esc_html__( 'Image ratio', 'bricks' ),
-			'desc'     => esc_html__( 'Example', 'bricks' ) . ': 4/3, 16/9, 1/1 (square)',
-			'type'     => 'text',
-			'css'      => [
-				[
-					'selector' => '.image',
-					'property' => 'aspect-ratio',
-				],
-			],
-			'inline'   => true,
-			'required' => [ 'layout', '!=', [ 'masonry', 'metro' ] ],
+			'tab'         => 'content',
+			'label'       => esc_html__( 'Image ratio', 'bricks' ),
+			'type'        => 'select',
+			'options'     => $this->control_options['imageRatio'],
+			'inline'      => true,
+			'placeholder' => esc_html__( 'Square', 'bricks' ),
+			'required'    => [ 'layout', '!=', [ 'masonry', 'metro' ] ],
 		];
 
 		/**
 		 * Custom aspect ratio (remove control from style tab)
-		 *
-		 * NOTE: No longer in use @since 2.0.2 as 'imageRatio' is a "text" instead of a "select" control
 		 *
 		 * @since 1.9.7
 		 */
@@ -285,35 +280,57 @@ class Element_Image_Gallery extends Element {
 			'required'    => [ 'link', '=', 'lightbox' ],
 			'description' => esc_html__( 'Images of the same lightbox ID are grouped together.', 'bricks' ),
 		];
+	}
 
-		// Attribute: fetchpriority (@since 2.0)
-		$this->controls['fetchpriorityAttribute'] = [
-			'tab'     => 'content',
-			'label'   => esc_html__( 'Fetch priority', 'bricks' ),
-			'inline'  => true,
-			'type'    => 'select',
-			'options' => [
-				'high' => esc_html__( 'High', 'bricks' ),
-				'low'  => esc_html__( 'Low', 'bricks' ),
-				'auto' => esc_html__( 'Auto', 'bricks' ),
-			],
-		];
+	public function get_normalized_image_settings( $settings ) {
+		$items = $settings['items'] ?? [];
+		$size  = $items['size'] ?? BRICKS_DEFAULT_IMAGE_SIZE;
 
-		// Attribute: loading (@since 2.0)
-		$this->controls['loadingAttribute'] = [
-			'tab'     => 'content',
-			'label'   => esc_html__( 'Loading', 'bricks' ),
-			'inline'  => true,
-			'type'    => 'select',
-			'options' => [
-				'lazy'  => esc_html__( 'Lazy', 'bricks' ),
-				'eager' => esc_html__( 'Eager', 'bricks' ),
-			],
-		];
+		// Dynamic data
+		if ( ! empty( $items['useDynamicData'] ) ) {
+			$items['images'] = [];
+
+			$images = $this->render_dynamic_data_tag( $items['useDynamicData'], 'image' );
+
+			if ( is_array( $images ) ) {
+				foreach ( $images as $image_id ) {
+					$items['images'][] = [
+						'id'   => $image_id,
+						'full' => wp_get_attachment_image_url( $image_id, 'full' ),
+						'url'  => wp_get_attachment_image_url( $image_id, $size )
+					];
+				}
+			}
+		}
+
+		// Old data structure (images were saved as one array directly on $items)
+		if ( ! isset( $items['images'] ) ) {
+			$images = ! empty( $items ) ? $items : [];
+
+			unset( $items );
+
+			$items['images'] = $images;
+		}
+
+		// Get 'size' from first image if not set
+		$first_image_size = ! empty( $items['images'][0]['size'] ) ? $items['images'][0]['size'] : false;
+		$size             = empty( $items['size'] ) && $first_image_size ? $first_image_size : $size;
+
+		// Get image 'url' for requested $size
+		foreach ( $items['images'] as $key => $image ) {
+			if ( ! empty( $image['id'] ) ) {
+				$items['images'][ $key ]['url'] = wp_get_attachment_image_url( $image['id'], $size );
+			}
+		}
+
+		$settings['items']         = $items;
+		$settings['items']['size'] = $size;
+
+		return $settings;
 	}
 
 	public function render() {
-		$settings = Helpers::get_normalized_image_settings( $this, $this->settings );
+		$settings = $this->get_normalized_image_settings( $this->settings );
 		$images   = $settings['items']['images'] ?? false;
 		$size     = $settings['items']['size'] ?? BRICKS_DEFAULT_IMAGE_SIZE;
 		$layout   = $settings['layout'] ?? 'grid';
@@ -402,6 +419,11 @@ class Element_Image_Gallery extends Element {
 				$image_classes[] = 'bricks-layout-inner';
 			}
 
+			// Grid: Image ratio
+			if ( $layout === 'grid' && ! empty( $settings['imageRatio'] ) ) {
+				$image_classes[] = "bricks-aspect-{$settings['imageRatio']}";
+			}
+
 			// CSS filters
 			$image_classes[] = 'css-filter';
 
@@ -470,28 +492,13 @@ class Element_Image_Gallery extends Element {
 			}
 
 			// STEP: Render image
-			$image_atts        = [ 'class' => implode( ' ', $image_classes ) ];
-			$image_atts_string = '';
-
-			// Set fetchpriority attribute (@since 2.0)
-			$attribute_fetchpriority = ! empty( $settings['fetchpriorityAttribute'] ) ? esc_attr( $settings['fetchpriorityAttribute'] ) : '';
-			if ( ! empty( $attribute_fetchpriority ) ) {
-				$image_atts['fetchpriority'] = $attribute_fetchpriority;
-				$image_atts_string          .= ' fetchpriority="' . $attribute_fetchpriority . '"';
-			}
-
-			// Set loading attribute (@since 2.0)
-			$attribute_loading = ! empty( $settings['loadingAttribute'] ) ? esc_attr( $settings['loadingAttribute'] ) : '';
-			if ( ! empty( $attribute_loading ) ) {
-				$image_atts['loading'] = $attribute_loading;
-				$image_atts_string    .= ' loading="' . $attribute_loading . '"';
-			}
+			$image_atts = [ 'class' => implode( ' ', $image_classes ) ];
 
 			if ( $image_id ) {
 				echo wp_get_attachment_image( $image_id, $size, false, $image_atts );
 			} elseif ( ! empty( $item['url'] ) && isset( $item['isPlaceholder'] ) && $item['isPlaceholder'] ) {
 				// Maybe is a temporary placeholder image in Bricks (@since 1.12.2)
-				echo '<img src="' . esc_url( $item['url'] ) . '" alt="" width="800" height="600"' . $image_atts_string . ' />';
+				echo '<img src="' . esc_url( $item['url'] ) . '" alt="" width="800" height="600" />';
 			}
 
 			if ( $close_a_tag ) {
@@ -521,7 +528,8 @@ class Element_Image_Gallery extends Element {
 	}
 
 	public function convert_element_settings_to_block( $settings ) {
-		$settings   = Helpers::get_normalized_image_settings( $this, $settings );
+		$settings = $this->get_normalized_image_settings( $settings );
+
 		$images     = ! empty( $settings['items']['images'] ) ? $settings['items']['images'] : false;
 		$image_size = $settings['items']['size'];
 

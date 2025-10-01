@@ -38,8 +38,7 @@ class Woocommerce_Account_Orders extends Woo_Element {
 			'label' => esc_html__( 'Head', 'bricks' ),
 		];
 
-		// Targeting tbody th (@since 2.0)
-		$thead_controls = $this->generate_standard_controls( 'thead', '.woocommerce-orders-table thead th, .woocommerce-orders-table tbody td::before, .woocommerce-orders-table tbody th::before' );
+		$thead_controls = $this->generate_standard_controls( 'thead', '.woocommerce-orders-table thead th, .woocommerce-orders-table tbody td::before' );
 		unset( $thead_controls['theadMargin'] );
 		unset( $thead_controls['theadBoxShadow'] );
 
@@ -59,20 +58,6 @@ class Woocommerce_Account_Orders extends Woo_Element {
 
 		$tbody_controls = $this->controls_grouping( $tbody_controls, 'table' );
 		$this->controls = array_merge( $this->controls, $tbody_controls );
-
-		// BODY - HEADING (@since 2.0)
-		$this->controls['tbodyHeadingSep'] = [
-			'group' => 'table',
-			'type'  => 'separator',
-			'label' => esc_html__( 'Body - Heading', 'bricks' ),
-		];
-
-		$tbody_heading_controls = $this->generate_standard_controls( 'tbodyHeading', '.woocommerce-orders-table tbody th' );
-		unset( $tbody_heading_controls['tbodyHeadingMargin'] );
-		unset( $tbody_heading_controls['tbodyHeadingBoxShadow'] );
-
-		$tbody_heading_controls = $this->controls_grouping( $tbody_heading_controls, 'table' );
-		$this->controls         = array_merge( $this->controls, $tbody_heading_controls );
 
 		// LINKS
 		$this->controls['tbodyLinksSep'] = [

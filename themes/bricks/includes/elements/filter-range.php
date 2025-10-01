@@ -55,12 +55,7 @@ class Filter_Range extends Filter_Element {
 		$this->controls['modeSep'] = [
 			'type'  => 'separator',
 			'label' => esc_html__( 'Mode', 'bricks' ),
-		];
-
-		$this->controls['disableAutoMinMax'] = [
-			'type'        => 'checkbox',
-			'label'       => esc_html__( 'Disable auto min/max value', 'bricks' ),
-			'description' => esc_html__( 'By default, the min/max values are dynamically set based on each filter query loop results. Disable this feature so the min/max values are only set initially.', 'bricks' ),
+			'desc'  => esc_html__( 'Min/max values are set automatically based on query loop results.', 'bricks' ),
 		];
 
 		$this->controls['displayMode'] = [
@@ -75,37 +70,9 @@ class Filter_Range extends Filter_Element {
 		];
 
 		$this->controls['step'] = [
-			'label'       => esc_html__( 'Step', 'bricks' ),
-			'type'        => 'number',
-			'placeholder' => '1',
-			// 'required' => [ 'displayMode', '=', 'input' ], // NOTE: Why limit step to input mode only?
-		];
-
-		$this->controls['decimalPlaces'] = [
-			'label'       => esc_html__( 'Decimal places', 'bricks' ),
-			'type'        => 'number',
-			'placeholder' => '0',
-			'inline'      => true,
-		];
-
-		// Auto-set via JS: toLocaleString()
-		$this->controls['labelThousandSeparator'] = [
-			// 'group'    => 'label',
-			'label'    => esc_html__( 'Thousand separator', 'bricks' ),
-			'type'     => 'checkbox',
-			'required' => [ 'displayMode','!=','input' ],
-		];
-
-		$this->controls['labelSeparatorText'] = [
-			// 'group'       => 'label',
-			'label'       => esc_html__( 'Separator', 'bricks' ),
-			'type'        => 'text',
-			'inline'      => true,
-			'placeholder' => ',',
-			'required'    => [
-				[ 'displayMode', '!=', 'input' ],
-				[ 'labelThousandSeparator', '=', true ],
-			],
+			'label'    => esc_html__( 'Step', 'bricks' ),
+			'type'     => 'number',
+			'required' => [ 'displayMode', '=', 'input' ], // NOTE: Why limit step to input mode only?
 		];
 
 		// LABEL
@@ -166,6 +133,26 @@ class Filter_Range extends Filter_Element {
 					'property' => 'font',
 					'selector' => '.label',
 				],
+			],
+		];
+
+		// Auto-set via JS: toLocaleString()
+		$this->controls['labelThousandSeparator'] = [
+			'group'    => 'label',
+			'label'    => esc_html__( 'Thousand separator', 'bricks' ),
+			'type'     => 'checkbox',
+			'required' => [ 'displayMode','!=','input' ],
+		];
+
+		$this->controls['labelSeparatorText'] = [
+			'group'       => 'label',
+			'label'       => esc_html__( 'Separator', 'bricks' ),
+			'type'        => 'text',
+			'inline'      => true,
+			'placeholder' => ',',
+			'required'    => [
+				[ 'displayMode', '!=', 'input' ],
+				[ 'labelThousandSeparator', '=', true ],
 			],
 		];
 
@@ -398,7 +385,6 @@ class Filter_Range extends Filter_Element {
 
 		$this->prepare_sources();
 
-		$auto_min_max         = ! empty( $settings['disableAutoMinMax'] ) ? false : true;
 		$query_id             = $settings['filterQueryId'] ?? false;
 		$active_filters       = Query_Filters::$active_filters[ $query_id ] ?? [];
 		$this_active_filter   = false;
@@ -408,96 +394,87 @@ class Filter_Range extends Filter_Element {
 		$choices_source       = $this->choices_source ?? [];
 		$count_source         = [];
 
-		// Auto min/max logic (@since 1.12)
-		if ( $auto_min_max ) {
-			// Similar logic with set_options_with_count(), additional queries generated (@since 1.12)
-			if ( ! empty( $active_filters ) ) {
-				// Get all active filters that will affect the count
-				$filters_affecting_count = array_filter(
-					$active_filters,
-					function( $filter ) {
-						return isset( $filter['query_type'] ) && $filter['query_type'] !== 'sort' && $filter['query_type'] !== 'pagination';
-					}
-				);
-
-				// Assign this_active_filter and other_active_filters from filters_affecting_count
-				foreach ( $filters_affecting_count as $filter ) {
-					if ( $filter['filter_id'] === $this->id ) {
-						$this_active_filter = $filter;
-					}
-					else {
-						$other_active_filters[] = $filter;
-					}
+		// Similar logic with set_options_with_count(), additional queries generated (@since 1.12)
+		if ( ! empty( $active_filters ) ) {
+			// Get all active filters that will affect the count
+			$filters_affecting_count = array_filter(
+				$active_filters,
+				function( $filter ) {
+					return isset( $filter['query_type'] ) && $filter['query_type'] !== 'sort' && $filter['query_type'] !== 'pagination';
 				}
+			);
 
-				// Get all the query_vars from other active filters
-				$count_query_vars = [];
-				foreach ( $other_active_filters as $filter ) {
-					$filter_query_type = $filter['query_type'] ?? 'default';
-					switch ( $filter_query_type ) {
-						case 'wp_query':
-							$count_query_vars = Query::merge_query_vars( $count_query_vars, $filter['query_vars'] );
-							break;
-
-						case 'meta_query':
-							$count_query_vars = Query::merge_query_vars(
-								$count_query_vars,
-								[
-									'meta_query' => [ $filter['query_vars'] ],
-								],
-								true
-							); // Third parameter is true to merge meta_query correctly if not AJAX call (@since 1.11.1)
-
-							break;
-
-						case 'tax_query':
-							$count_query_vars = Query::merge_query_vars(
-								$count_query_vars,
-								[
-									'tax_query' => [ $filter['query_vars'] ],
-								]
-							);
-
-							break;
-
-						case 'default':
-							// Do nothing
-							break;
-					}
+			// Assign this_active_filter and other_active_filters from filters_affecting_count
+			foreach ( $filters_affecting_count as $filter ) {
+				if ( $filter['filter_id'] === $this->id ) {
+					$this_active_filter = $filter;
 				}
-
-				$disable_query_merge = $this->query_settings['disable_query_merge'] ?? false;
-				$page_filters        = Query_filters::$page_filters ?? [];
-				// Get query_vars from page filters if disable_query_merge is false and page filters should be applied
-				if ( ! $disable_query_merge && Query_Filters::should_apply_page_filters( $count_query_vars ) ) {
-					$count_query_vars     = Query::merge_query_vars( $count_query_vars, Query_Filters::generate_query_vars_from_page_filters() );
-					$other_active_filters = array_merge( $other_active_filters, $page_filters );
-				}
-
-				// Get the count source
-				if ( count( $count_query_vars ) > 0 ) {
-					$count_source = Query_Filters::get_filtered_data_from_index( $this->id, Query_Filters::get_filter_object_ids( $query_id, 'original', $count_query_vars ) );
+				else {
+					$other_active_filters[] = $filter;
 				}
 			}
 
-			// This filter is active and there are other active filters, use filtered_source
-			if ( $this_active_filter !== false && count( $other_active_filters ) > 0 ) {
-				$source_for_min_max = 'count_source';
+			// Get all the query_vars from other active filters
+			$count_query_vars = [];
+			foreach ( $other_active_filters as $filter ) {
+				$filter_query_type = $filter['query_type'] ?? 'default';
+				switch ( $filter_query_type ) {
+					case 'wp_query':
+						$count_query_vars = Query::merge_query_vars( $count_query_vars, $filter['query_vars'] );
+						break;
+
+					case 'meta_query':
+						$count_query_vars = Query::merge_query_vars(
+							$count_query_vars,
+							[
+								'meta_query' => [ $filter['query_vars'] ],
+							],
+							true
+						); // Third parameter is true to merge meta_query correctly if not AJAX call (@since 1.11.1)
+
+						break;
+
+					case 'tax_query':
+						$count_query_vars = Query::merge_query_vars(
+							$count_query_vars,
+							[
+								'tax_query' => [ $filter['query_vars'] ],
+							]
+						);
+
+						break;
+
+					case 'default':
+						// Do nothing
+						break;
+				}
 			}
 
-			// This filter is not active and there are other active filters, use filtered source
-			elseif ( count( $other_active_filters ) > 0 ) {
-				$source_for_min_max = 'filtered_source';
+			$disable_query_merge = $this->query_settings['disable_query_merge'] ?? false;
+			$page_filters        = Query_filters::$page_filters ?? [];
+			// Get query_vars from page filters if disable_query_merge is false and page filters should be applied
+			if ( ! $disable_query_merge && Query_Filters::should_apply_page_filters( $count_query_vars ) ) {
+				$count_query_vars     = Query::merge_query_vars( $count_query_vars, Query_Filters::generate_query_vars_from_page_filters() );
+				$other_active_filters = array_merge( $other_active_filters, $page_filters );
 			}
 
-			// No other active filters
-			else {
-				$source_for_min_max = 'choices_source';
+			// Get the count source
+			if ( count( $count_query_vars ) > 0 ) {
+				$count_source = Query_Filters::get_filtered_data_from_index( $this->id, Query_Filters::get_filter_object_ids( $query_id, 'original', $count_query_vars ) );
 			}
-
 		}
 
-		// Legacy logic - before 1.12
+		// This filter is active and there are other active filters, use filtered_source
+		if ( $this_active_filter !== false && count( $other_active_filters ) > 0 ) {
+			$source_for_min_max = 'count_source';
+		}
+
+		// This filter is not active and there are other active filters, use filtered source
+		elseif ( count( $other_active_filters ) > 0 ) {
+			$source_for_min_max = 'filtered_source';
+		}
+
+		// No other active filters
 		else {
 			$source_for_min_max = 'choices_source';
 		}
@@ -520,14 +497,14 @@ class Filter_Range extends Filter_Element {
 					// If the value is 1.9, it will be converted to 1
 					$choice_value = floor( $choice_value );
 					// Convert to integer - Set min value
-					$this->min_value = (float) $choice_value;
+					$this->min_value = (int) $choice_value;
 				}
 
 				if ( $this->max_value === null || $choice_value > $this->max_value ) {
 					// If the value is 1.9, it will be converted to 2
 					$choice_value = ceil( $choice_value );
 					// Convert to integer - Set max value
-					$this->max_value = (float) $choice_value;
+					$this->max_value = (int) $choice_value;
 				}
 			}
 		}
@@ -552,14 +529,14 @@ class Filter_Range extends Filter_Element {
 					// If the value is 1.9, it will be converted to 1
 					$choice_value = floor( $choice_value );
 					// Convert to integer - Set min value
-					$ori_min_value = (float) $choice_value;
+					$ori_min_value = (int) $choice_value;
 				}
 
 				if ( $ori_max_value === null || $choice_value > $ori_max_value ) {
 					// If the value is 1.9, it will be converted to 2
 					$choice_value = ceil( $choice_value );
 					// Convert to integer - Set max value
-					$ori_max_value = (float) $choice_value;
+					$ori_max_value = (int) $choice_value;
 				}
 			}
 		}
@@ -569,10 +546,9 @@ class Filter_Range extends Filter_Element {
 		$filter_settings['filterSource'] = $settings['filterSource'];
 
 		// min, max, step values
-		$filter_settings['min']           = $ori_min_value ?? 0; // For frontend Reset logic
-		$filter_settings['max']           = $ori_max_value ?? 100; // For frontend Reset logic
-		$filter_settings['step']          = isset( $settings['step'] ) ? (float) $settings['step'] : 1;
-		$filter_settings['decimalPlaces'] = isset( $settings['decimalPlaces'] ) ? (int) $settings['decimalPlaces'] : 0;
+		$filter_settings['min']  = $ori_min_value ?? 0; // For frontend Reset logic
+		$filter_settings['max']  = $ori_max_value ?? 100; // For frontend Reset logic
+		$filter_settings['step'] = $settings['step'] ?? 1;
 
 		// thousand separator
 		$display_mode = $settings['displayMode'] ?? 'range';
@@ -660,7 +636,8 @@ class Filter_Range extends Filter_Element {
 		$display_mode = $settings['displayMode'] ?? 'range';
 		$label_min    = ! empty( $settings['labelMin'] ) ? $this->render_dynamic_data( $settings['labelMin'] ) : '';
 		$label_max    = ! empty( $settings['labelMax'] ) ? $this->render_dynamic_data( $settings['labelMax'] ) : '';
-		$step         = isset( $settings['step'] ) ? (float) $settings['step'] : 1;
+		$thousands    = ! empty( $settings['labelThousandSeparator'] ) ? $settings['labelThousandSeparator'] : '';
+		$separator    = ! empty( $settings['labelSeparatorText'] ) ? $this->render_dynamic_data( $settings['labelSeparatorText'] ) : ',';
 
 		if ( $display_mode !== 'range' ) {
 			return;
@@ -704,7 +681,6 @@ class Filter_Range extends Filter_Element {
 		$this->set_attribute( 'min-range', 'min', $this->min_value ?? 0 );
 		$this->set_attribute( 'min-range', 'max', $this->max_value ?? 100 );
 		$this->set_attribute( 'min-range', 'value', $this->current_min );
-		$this->set_attribute( 'min-range', 'step', $step );
 		$this->set_attribute( 'min-range', 'tabindex', '0' ); // Safari needs this or focusin event won't fire (@since 1.11)
 
 		if ( ! empty( $label_min ) ) {
@@ -722,7 +698,6 @@ class Filter_Range extends Filter_Element {
 		$this->set_attribute( 'max-range', 'min', $this->min_value ?? 0 );
 		$this->set_attribute( 'max-range', 'max', $this->max_value ?? 100 );
 		$this->set_attribute( 'max-range', 'value', $this->current_max );
-		$this->set_attribute( 'max-range', 'step', $step );
 		$this->set_attribute( 'max-range', 'tabindex', '0' ); // Safari needs this or focusin event won't fire (@since 1.11)
 
 		if ( ! empty( $label_max ) ) {
@@ -739,8 +714,13 @@ class Filter_Range extends Filter_Element {
 		// Hardcode HTML
 		echo '<div class="value-wrap">';
 
-		$min_value = self::get_range_formatted_value( $this->current_min, $settings );
-		$max_value = self::get_range_formatted_value( $this->current_max, $settings );
+		$min_value = $this->current_min;
+		$max_value = $this->current_max;
+
+		if ( ! empty( $thousands ) ) {
+			$min_value = number_format( $min_value, 0, '.', $separator );
+			$max_value = number_format( $max_value, 0, '.', $separator );
+		}
 
 		$value_wrapper_html  = '<span class="lower">';
 		$value_wrapper_html .= ! empty( $label_min ) ? '<span id="' . esc_attr( $min_label_id ) . '" class="label">' . $label_min . '</span>' : '';
@@ -766,7 +746,6 @@ class Filter_Range extends Filter_Element {
 		$label_max       = ! empty( $settings['labelMax'] ) ? $this->render_dynamic_data( $settings['labelMax'] ) : '';
 		$placeholder_min = ! empty( $settings['placeholderMin'] ) ? $this->render_dynamic_data( $settings['placeholderMin'] ) : esc_html__( 'Min', 'bricks' );
 		$placeholder_max = ! empty( $settings['placeholderMax'] ) ? $this->render_dynamic_data( $settings['placeholderMax'] ) : esc_html__( 'Max', 'bricks' );
-		$step            = isset( $settings['step'] ) ? (float) $settings['step'] : 1;
 
 		$this->set_attribute( 'min-max-wrap', 'class', 'min-max-wrap' );
 
@@ -793,7 +772,7 @@ class Filter_Range extends Filter_Element {
 		$this->set_attribute( 'min-input', 'id', "form-field-min-{$this->id}" ); // @since 1.12.2
 		$this->set_attribute( 'min-input', 'min', $this->min_value ?? 0 );
 		$this->set_attribute( 'min-input', 'max', $this->max_value ?? 100 );
-		$this->set_attribute( 'min-input', 'step', $step );
+		$this->set_attribute( 'min-input', 'step', $settings['step'] ?? 1 );
 		$this->set_attribute( 'min-input', 'placeholder', $placeholder_min );
 		$this->set_attribute( 'min-input', 'value', $this->current_min );
 		echo "<input {$this->render_attributes( 'min-input' )}>";
@@ -816,7 +795,7 @@ class Filter_Range extends Filter_Element {
 		$this->set_attribute( 'max-input', 'id', "form-field-max-{$this->id}" ); // @since 1.12.2
 		$this->set_attribute( 'max-input', 'min', $this->min_value ?? 0 );
 		$this->set_attribute( 'max-input', 'max', $this->max_value ?? 100 );
-		$this->set_attribute( 'max-input', 'step', $step );
+		$this->set_attribute( 'max-input', 'step', $settings['step'] ?? 1 );
 		$this->set_attribute( 'max-input', 'placeholder', $placeholder_max );
 		$this->set_attribute( 'max-input', 'value', $this->current_max );
 		echo "<input {$this->render_attributes( 'max-input' )}>";

@@ -20,10 +20,7 @@ class Settings_Template extends Settings_Base {
 		}
 
 		$this->control_groups['template-conditions'] = [
-			'title'    => esc_html__( 'Conditions', 'bricks' ),
-			'required' => [
-				[ 'popupIsInfoBox', '!=', true ],
-			],
+			'title' => esc_html__( 'Conditions', 'bricks' ),
 		];
 
 		// Add password protection group for password protected templates (@since 1.11.1)
@@ -155,101 +152,45 @@ class Settings_Template extends Settings_Base {
 				// Logo
 				[
 					'property' => 'color',
-					'selector' => '#brx-header.brx-sticky.scrolling .brxe-logo',
+					'selector' => '#brx-header.sticky.scrolling .brxe-logo',
 				],
 
 				// Nav Menu
 				[
 					'property' => 'color',
-					'selector' => '#brx-header.brx-sticky.scrolling .bricks-nav-menu > li > a',
+					'selector' => '#brx-header.sticky.scrolling .bricks-nav-menu > li > a',
 				],
 				[
 					'property' => 'color',
-					'selector' => '#brx-header.brx-sticky.scrolling .bricks-nav-menu > li > .brx-submenu-toggle > *',
+					'selector' => '#brx-header.sticky.scrolling .bricks-nav-menu > li > .brx-submenu-toggle > *',
 				],
 				[
 					'property' => 'color',
-					'selector' => '#brx-header.brx-sticky.scrolling .brxe-nav-menu .bricks-mobile-menu-toggle',
+					'selector' => '#brx-header.sticky.scrolling .brxe-nav-menu .bricks-mobile-menu-toggle',
 				],
 
 				// Nav (Nestable)
 				[
 					'property' => 'color',
-					'selector' => '#brx-header.brx-sticky.scrolling .brx-nav-nested-items > li > a',
+					'selector' => '#brx-header.sticky.scrolling .brx-nav-nested-items > li > a',
 				],
 				[
 					'property' => 'color',
-					'selector' => '#brx-header.brx-sticky.scrolling .brx-nav-nested-items > li > .brx-submenu-toggle > *',
+					'selector' => '#brx-header.sticky.scrolling .brx-nav-nested-items > li > .brx-submenu-toggle > *',
 				],
 				[
 					'property' => 'color',
-					'selector' => '#brx-header.brx-sticky.scrolling .brxe-nav-nested > .brxe-toggle .brxa-inner',
+					'selector' => '#brx-header.sticky.scrolling .brxe-nav-nested > .brxe-toggle .brxa-inner',
 				],
 
 				// Search
 				[
 					'property' => 'color',
-					'selector' => '#brx-header.brx-sticky.scrolling .brxe-search',
+					'selector' => '#brx-header.sticky.scrolling .brxe-search',
 				],
 				[
 					'property' => 'color',
-					'selector' => '#brx-header.brx-sticky.scrolling .brxe-search button',
-				],
-			],
-			'required' => [
-				[ 'headerPosition', '=', '' ],
-				[ 'headerSticky', '!=', '' ],
-			],
-		];
-
-		// Background color of the sticky header when scrolling, on hover (@since 2.0)
-		$this->controls['headerStickyScrollingColorHover'] = [
-			'group'    => 'header',
-			'label'    => esc_html__( 'Scrolling text color', 'bricks' ) . ' (' . esc_html__( 'Hover', 'bricks' ) . ')',
-			'type'     => 'color',
-			'css'      => [
-				// Logo
-				[
-					'property' => 'color',
-					'selector' => '#brx-header.brx-sticky.scrolling .brxe-logo:hover',
-				],
-
-				// Nav Menu
-				[
-					'property' => 'color',
-					'selector' => '#brx-header.brx-sticky.scrolling .bricks-nav-menu > li > a:hover',
-				],
-				[
-					'property' => 'color',
-					'selector' => '#brx-header.brx-sticky.scrolling .bricks-nav-menu > li > .brx-submenu-toggle:hover > *',
-				],
-				[
-					'property' => 'color',
-					'selector' => '#brx-header.brx-sticky.scrolling .brxe-nav-menu .bricks-mobile-menu-toggle:hover',
-				],
-
-				// Nav (Nestable)
-				[
-					'property' => 'color',
-					'selector' => '#brx-header.brx-sticky.scrolling .brx-nav-nested-items > li > a:hover',
-				],
-				[
-					'property' => 'color',
-					'selector' => '#brx-header.brx-sticky.scrolling .brx-nav-nested-items > li > .brx-submenu-toggle:hover > *',
-				],
-				[
-					'property' => 'color',
-					'selector' => '#brx-header.brx-sticky.scrolling .brxe-nav-nested > .brxe-toggle:hover .brxa-inner',
-				],
-
-				// // Search
-				// [
-				// 'property' => 'color',
-				// 'selector' => '#brx-header.brx-sticky.scrolling .brxe-search',
-				// ],
-				[
-					'property' => 'color',
-					'selector' => '#brx-header.brx-sticky.scrolling .brxe-search button:hover',
+					'selector' => '#brx-header.sticky.scrolling .brxe-search button',
 				],
 			],
 			'required' => [
@@ -266,10 +207,10 @@ class Settings_Template extends Settings_Base {
 				[
 					'property' => 'background',
 					'selector' => '
-						#brx-header.brx-sticky.scrolling > .brxe-section,
-						#brx-header.brx-sticky.scrolling > .brxe-container,
-						#brx-header.brx-sticky.scrolling > .brxe-block,
-						#brx-header.brx-sticky.scrolling > .brxe-div',
+						#brx-header.sticky.scrolling > .brxe-section,
+						#brx-header.sticky.scrolling > .brxe-container,
+						#brx-header.sticky.scrolling > .brxe-block,
+						#brx-header.sticky.scrolling > .brxe-div',
 				],
 			],
 			'required' => [
@@ -286,10 +227,10 @@ class Settings_Template extends Settings_Base {
 				[
 					'property' => 'box-shadow',
 					'selector' => '
-						#brx-header.brx-sticky.scrolling:not(.slide-up) > .brxe-section,
-						#brx-header.brx-sticky.scrolling:not(.slide-up) > .brxe-container,
-						#brx-header.brx-sticky.scrolling:not(.slide-up) > .brxe-block,
-						#brx-header.brx-sticky.scrolling:not(.slide-up) > .brxe-div',
+						#brx-header.sticky.scrolling:not(.slide-up) > .brxe-section,
+						#brx-header.sticky.scrolling:not(.slide-up) > .brxe-container,
+						#brx-header.sticky.scrolling:not(.slide-up) > .brxe-block,
+						#brx-header.sticky.scrolling:not(.slide-up) > .brxe-div',
 				],
 			],
 			'required' => [
@@ -306,63 +247,63 @@ class Settings_Template extends Settings_Base {
 			'hasDynamicData' => false,
 			'css'            => [
 				[
-					'selector' => '#brx-header.brx-sticky',
+					'selector' => '#brx-header.sticky',
 					'property' => 'transition',
 				],
 				[
 					'selector' => '
-						#brx-header.brx-sticky > .brxe-section,
-						#brx-header.brx-sticky > .brxe-container,
-						#brx-header.brx-sticky > .brxe-block,
-						#brx-header.brx-sticky > .brxe-div',
+						#brx-header.sticky > .brxe-section,
+						#brx-header.sticky > .brxe-container,
+						#brx-header.sticky > .brxe-block,
+						#brx-header.sticky > .brxe-div',
 					'property' => 'transition',
 				],
 
 				// Logo
 				[
-					'selector' => '#brx-header.brx-sticky .brxe-logo',
+					'selector' => '#brx-header.sticky .brxe-logo',
 					'property' => 'transition',
 				],
 
 				// Nav menu
 				[
-					'selector' => '#brx-header.brx-sticky .bricks-nav-menu > li > a',
+					'selector' => '#brx-header.sticky .bricks-nav-menu > li > a',
 					'property' => 'transition',
 				],
 				[
-					'selector' => '#brx-header.brx-sticky .bricks-nav-menu > li > .brx-submenu-toggle > a',
+					'selector' => '#brx-header.sticky .bricks-nav-menu > li > .brx-submenu-toggle > a',
 					'property' => 'transition',
 				],
 				[
-					'selector' => '#brx-header.brx-sticky .bricks-nav-menu > li > .brx-submenu-toggle > button > *',
+					'selector' => '#brx-header.sticky .bricks-nav-menu > li > .brx-submenu-toggle > button > *',
 					'property' => 'transition',
 				],
 
 				// Nav (Nestable)
 				[
-					'selector' => '#brx-header.brx-sticky .brx-nav-nested-items > li > a',
+					'selector' => '#brx-header.sticky .brx-nav-nested-items > li > a',
 					'property' => 'transition',
 				],
 				[
-					'selector' => '#brx-header.brx-sticky .brx-nav-nested-items > li > .brx-submenu-toggle',
+					'selector' => '#brx-header.sticky .brx-nav-nested-items > li > .brx-submenu-toggle',
 					'property' => 'transition',
 				],
 				[
-					'selector' => '#brx-header.brx-sticky .brx-nav-nested-items > li > .brx-submenu-toggle > *',
+					'selector' => '#brx-header.sticky .brx-nav-nested-items > li > .brx-submenu-toggle > *',
 					'property' => 'transition',
 				],
 				[
-					'selector' => '#brx-header.brx-sticky .brxe-nav-nested > .brxe-toggle .brxa-inner',
+					'selector' => '#brx-header.sticky .brxe-nav-nested > .brxe-toggle .brxa-inner',
 					'property' => 'transition',
 				],
 
 				// Search
 				[
-					'selector' => '#brx-header.brx-sticky .brxe-search',
+					'selector' => '#brx-header.sticky .brxe-search',
 					'property' => 'transition',
 				],
 				[
-					'selector' => '#brx-header.brx-sticky .brxe-search button',
+					'selector' => '#brx-header.sticky .brxe-search button',
 					'property' => 'transition',
 				],
 			],
@@ -396,15 +337,11 @@ class Settings_Template extends Settings_Base {
 			'label'       => esc_html__( 'Interactions', 'bricks' ),
 			'description' => esc_html__( 'Set interactions for this popup.', 'bricks' ),
 			'type'        => 'separator',
-			'required'    => [ 'popupIsInfoBox', '!=', true ],
 		];
 
 		// Control key: template_interactions
 		$this->controls['template_interactions']          = Interactions::get_controls_data();
 		$this->controls['template_interactions']['group'] = 'popup';
-
-		// Template interactions not for Info Box popup (@since 2.0)
-		$this->controls['template_interactions']['required'] = [ 'popupIsInfoBox', '!=', true ];
 
 		// Add special popup triggers
 		$this->controls['template_interactions']['fields']['trigger']['options']['popupGroupTitle'] = esc_html__( 'Popup', 'bricks' );
@@ -543,6 +480,16 @@ class Settings_Template extends Settings_Base {
 					'required' => [ 'main', '=', 'ids' ],
 				],
 
+				// @since 1.9.2 (TODO NEXT: Delete in Bricks 2.0)
+				'hookInfo'                    => [
+					'type'     => 'info',
+					'content'  => '"hook" is no longer a supported template condition as we improved the section hook feature in <a href="https://bricksbuilder.io/changelog/#v1.9.2" target="_blank">Bricks 1.9.2</a>. Please select a valid template condition from above.',
+					'bricks',
+					'required' => [
+						[ 'main', '=', 'hook' ],
+					],
+				],
+
 				// @since 1.9.1
 				'hookName'                    => [
 					'type'           => 'text',
@@ -629,27 +576,24 @@ class Settings_Template extends Settings_Base {
 		];
 
 		$this->controls['passwordProtectionExcludeHeader'] = [
-			'group'      => 'password-protected',
-			'type'       => 'checkbox',
-			'label'      => esc_html__( 'Disable header', 'bricks' ),
-			'required'   => [ 'passwordProtectionSource', '!=', 'wordpress' ],
-			'deprecated' => true, // @since 2.0
+			'group'    => 'password-protected',
+			'type'     => 'checkbox',
+			'label'    => esc_html__( 'Disable header', 'bricks' ),
+			'required' => [ 'passwordProtectionSource', '!=', 'wordpress' ],
 		];
 
 		$this->controls['passwordProtectionExcludeFooter'] = [
-			'group'      => 'password-protected',
-			'type'       => 'checkbox',
-			'label'      => esc_html__( 'Disable footer', 'bricks' ),
-			'required'   => [ 'passwordProtectionSource', '!=', 'wordpress' ],
-			'deprecated' => true, // @since 2.0
+			'group'    => 'password-protected',
+			'type'     => 'checkbox',
+			'label'    => esc_html__( 'Disable footer', 'bricks' ),
+			'required' => [ 'passwordProtectionSource', '!=', 'wordpress' ],
 		];
 
 		$this->controls['passwordProtectionExcludePopups'] = [
-			'group'      => 'password-protected',
-			'type'       => 'checkbox',
-			'label'      => esc_html__( 'Disable popups', 'bricks' ),
-			'required'   => [ 'passwordProtectionSource', '!=', 'wordpress' ],
-			'deprecated' => true, // @since 2.0
+			'group'    => 'password-protected',
+			'type'     => 'checkbox',
+			'label'    => esc_html__( 'Disable popups', 'bricks' ),
+			'required' => [ 'passwordProtectionSource', '!=', 'wordpress' ],
 		];
 
 		$this->controls['passwordProtectionBypassLoggedIn'] = [
@@ -714,7 +658,7 @@ class Settings_Template extends Settings_Base {
 			'label'       => esc_html__( 'Content type', 'bricks' ),
 			'options'     => $supported_content_types,
 			'searchable'  => true,
-			'placeholder' => esc_html__( 'Search', 'bricks' ) . ' / ' . esc_html__( 'Select content type', 'bricks' ),
+			'placeholder' => esc_html__( 'Select content type', 'bricks' ),
 		];
 
 		$this->controls['templatePreviewAuthor'] = [
@@ -725,7 +669,7 @@ class Settings_Template extends Settings_Base {
 				'action' => 'bricks_get_users',
 			],
 			'searchable'  => true,
-			'placeholder' => esc_html__( 'Search', 'bricks' ) . ' / ' . esc_html__( 'Select author', 'bricks' ),
+			'placeholder' => esc_html__( 'Select author', 'bricks' ),
 			'required'    => [ 'templatePreviewType', '=', 'archive-author' ],
 		];
 
@@ -735,7 +679,7 @@ class Settings_Template extends Settings_Base {
 			'label'       => esc_html__( 'Post type', 'bricks' ),
 			'options'     => $registered_post_types,
 			'searchable'  => true,
-			'placeholder' => esc_html__( 'Search' ) . ' / ' . esc_html__( 'Select post type', 'bricks' ),
+			'placeholder' => esc_html__( 'Select post type', 'bricks' ),
 			'required'    => [ 'templatePreviewType', '=', 'archive-cpt' ],
 		];
 
@@ -749,7 +693,7 @@ class Settings_Template extends Settings_Base {
 				'postTypes'             => [ 'any' ],
 				'addLanguageToTermName' => true,
 			], // (@since 1.12)
-			'placeholder' => esc_html__( 'Search', 'bricks' ) . ' / ' . esc_html__( 'Select term', 'bricks' ),
+			'placeholder' => esc_html__( 'Select term', 'bricks' ),
 			'required'    => [ 'templatePreviewType', '=', 'archive-term' ],
 		];
 
@@ -765,14 +709,14 @@ class Settings_Template extends Settings_Base {
 		$this->controls['templatePreviewPostId'] = [
 			'group'       => 'template-preview',
 			'type'        => 'select',
-			'label'       => esc_html__( 'Single', 'bricks' ) . ' (' . esc_html__( 'Post', 'bricks' ) . '/' . esc_html__( 'Page', 'bricks' ) . '/' . 'CPT' . ')',
+			'label'       => esc_html__( 'Single post/page', 'bricks' ),
 			'optionsAjax' => [
 				'action'                 => 'bricks_get_posts',
 				'postType'               => 'any',
 				'addLanguageToPostTitle' => true,
 			],
 			'searchable'  => true,
-			'placeholder' => esc_html__( 'Search', 'bricks' ) . ' / ' . esc_html__( 'Select', 'bricks' ),
+			'placeholder' => esc_html__( 'Select', 'bricks' ),
 			'required'    => [ 'templatePreviewType', '=', 'single' ],
 		];
 

@@ -27,7 +27,6 @@ class Element_Svg extends Element {
 				''            => esc_html__( 'File', 'bricks' ),
 				'dynamicData' => esc_html__( 'Dynamic data', 'bricks' ),
 				'code'        => esc_html__( 'Code', 'bricks' ),
-				'iconSet'     => esc_html__( 'Icon set', 'bricks' ),
 			],
 		];
 
@@ -36,19 +35,11 @@ class Element_Svg extends Element {
 			'required' => [ 'source', '=', '' ],
 		];
 
-		$this->controls['iconSet'] = [
-			'label'     => esc_html__( 'Icon set', 'bricks' ),
-			'type'      => 'icon',
-			'inline'    => true,
-			'libraries' => 'custom',
-			'required'  => [ 'source', '=', 'iconSet' ],
-		];
-
 		$this->controls['dynamicData'] = [
 			'label'    => esc_html__( 'Dynamic data', 'bricks' ),
 			'type'     => 'text',
 			'inline'   => true,
-			'desc'     => esc_html__( 'Supported field types', 'bricks' ) . ': ' . esc_html__( 'File', 'bricks' ) . ', ' . esc_html__( 'Image', 'bricks' ) . ', ' . esc_html__( 'SVG code', 'bricks' ) . ', URL', // 'URL' (@since 2.0.2)
+			'desc'     => esc_html__( 'Supported field types', 'bricks' ) . ': ' . esc_html__( 'File', 'bricks' ) . ', ' . esc_html__( 'Image', 'bricks' ),
 			'required' => [ 'source', '=', 'dynamicData' ],
 		];
 
@@ -73,11 +64,7 @@ class Element_Svg extends Element {
 		// Code execution disabled
 		else {
 			$this->controls['codeExecutionNotAllowedInfo'] = [
-				// translators: %s: 'Bricks settings path'
-				'content'  => esc_html__( 'Code execution not allowed.', 'bricks' ) . ' ' . sprintf(
-					esc_html__( 'You can manage code execution permissions under: %s', 'bricks' ),
-					'Bricks > ' . esc_html__( 'Settings', 'bricks' ) . ' > ' . esc_html__( 'Custom code', 'bricks' ) . ' > ' . esc_html__( 'Code execution', 'bricks' )
-				),
+				'content'  => esc_html__( 'Code execution not allowed.', 'bricks' ) . ' ' . esc_html__( 'You can manage code execution permissions under: Bricks > Settings > Builder Access > Code Execution', 'bricks' ),
 				'type'     => 'info',
 				'required' => [ 'source', '=', 'code' ],
 			];
@@ -160,42 +147,14 @@ class Element_Svg extends Element {
 			$svg      = $svg_path ? Helpers::file_get_contents( $svg_path ) : false;
 		}
 
-		// Get SVG from icon set
-		if ( $source === 'iconSet' && ! empty( $settings['iconSet']['svg']['id'] ) ) {
-			$svg_path = get_attached_file( $settings['iconSet']['svg']['id'] );
-			$svg      = $svg_path ? Helpers::file_get_contents( $svg_path ) : false;
-		}
-
 		// Get SVG from dynamic data
 		if ( $source === 'dynamicData' && ! empty( $settings['dynamicData'] ) ) {
 			$svg_data = $this->render_dynamic_data_tag( $settings['dynamicData'], 'image' );
+			$file_id  = ! empty( $svg_data[0] ) && is_numeric( $svg_data[0] ) ? $svg_data[0] : false;
 
-			$file = false;
-
-			// Check if $svg_data is already an SVG code (@since 2.0)
-			if ( Helpers::is_valid_svg( $svg_data ) ) {
-				$file = $svg_data;
-			}
-			else {
-				// Get dynamic tag content (@since 2.0)
-				$file = ! empty( $svg_data[0] ) ? $svg_data[0] : false;
-			}
-
-			// STEP: Check if we have a valid file ID
-			if ( $file && is_numeric( $file ) ) {
-				$svg_path = get_attached_file( $file );
+			if ( $file_id ) {
+				$svg_path = get_attached_file( $file_id );
 				$svg      = $svg_path ? Helpers::file_get_contents( $svg_path ) : false;
-			}
-
-			// STEP: If not a file ID, check if the file is SVG
-			// To support "icon" dynamic tags that returns SVG #86c1bpp6y (@since 2.0)
-			elseif ( ! $svg && Helpers::is_valid_svg( $file ) ) {
-				$svg = $file;
-			}
-
-			// STEP: Check if file is a valid SVG file path (@since 2.0.2)
-			elseif ( ! $svg && self::is_valid_svg_url( $file ) ) {
-				$svg = self::get_svg_from_url( $file ) ?? '';
 			}
 		}
 
@@ -273,9 +232,6 @@ class Element_Svg extends Element {
 		if ( $link ) {
 			$this->set_link_attributes( 'link', $link );
 
-			// Add custom class to the link wrapper so we can target it in CSS (@since 2.0)
-			$this->set_attribute( 'link', 'class', 'bricks-link-wrapper' );
-
 			// Add custom attributes to the link instead of the icon
 			$output .= "<a {$this->render_attributes( 'link', true )}>";
 		}
@@ -288,57 +244,5 @@ class Element_Svg extends Element {
 		}
 
 		echo $output;
-	}
-
-	/**
-	 * Check if URL is valid and points to an SVG file
-	 *
-	 * @param string $url The URL to validate
-	 * @return bool True if valid SVG URL, false otherwise
-	 *
-	 * @since 2.0.2
-	 */
-	private function is_valid_svg_url( $url ) {
-			// Validate URL format using WordPress function
-		if ( ! wp_http_validate_url( $url ) ) {
-				return false;
-		}
-
-		// Check and return if URL ends with .svg
-		return preg_match( '/\.svg$/i', $url );
-	}
-
-	/**
-	 * Fetch SVG content from URL
-	 *
-	 * @param string $url The SVG URL to fetch (should be a valid SVG file URL)
-	 * @param array  $args Optional arguments for the request
-	 * @return string|false SVG content on success, false on failure
-	 *
-	 * @since 2.0.2
-	 */
-	private function get_svg_from_url( $url ) {
-		// Make the request
-		$response = \Bricks\Helpers::remote_get( $url );
-
-		// Check for errors
-		if ( is_wp_error( $response ) ) {
-			return false;
-		}
-
-		// Check HTTP status code
-		$status_code = wp_remote_retrieve_response_code( $response );
-		if ( $status_code !== 200 ) {
-			return false;
-		}
-
-		$svg_content = wp_remote_retrieve_body( $response );
-
-		// Validate SVG content
-		if ( ! Helpers::is_valid_svg( $svg_content ) ) {
-			return false;
-		}
-
-		return $svg_content;
 	}
 }

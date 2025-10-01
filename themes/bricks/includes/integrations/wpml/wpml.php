@@ -86,7 +86,6 @@ class Wpml {
 		// Enable WPML hooks in Bricks frontend endpoints (@since 1.12.2)
 		add_action( 'bricks/render_query_result/start', [ $this, 'wpml_get_term_adjust_id' ] );
 		add_action( 'bricks/render_query_page/start', [ $this, 'wpml_get_term_adjust_id' ] );
-		add_action( 'bricks/render_popup_content/start', [ $this, 'wpml_get_term_adjust_id' ] );
 	}
 
 	/**
@@ -762,6 +761,8 @@ class Wpml {
 	 * @return string The modified title with the language suffix.
 	 */
 	public function add_langugage_to_post_title( $title, $page_id ) {
+		\Bricks\Ajax::verify_nonce( 'bricks-nonce-builder' );
+
 		if ( isset( $_GET['addLanguageToPostTitle'] ) ) {
 			$language_code = self::get_post_language_code( $page_id );
 			$language_code = ! empty( $language_code ) ? strtoupper( $language_code ) : '';

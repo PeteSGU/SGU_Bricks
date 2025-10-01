@@ -42,7 +42,6 @@ class Element_Slider extends Element {
 
 		$this->controls['items'] = [
 			'tab'         => 'content',
-			'label'       => esc_html__( 'Slides', 'bricks' ),
 			'placeholder' => esc_html__( 'Slide', 'bricks' ),
 			'type'        => 'repeater',
 			'checkLoop'   => true,
@@ -832,9 +831,8 @@ class Element_Slider extends Element {
 					echo "<div {$this->render_attributes( "content-{$index}" )}>" . Helpers::parse_editor_content( $content ) . '</div>';
 				}
 
-				$button_text = isset( $slide['buttonText'] ) ? $this->render_dynamic_data( $slide['buttonText'] ) : false;
-				if ( ! empty( $button_text ) ) {
-					echo "<a {$this->render_attributes( "slide-button-{$index}" )}>{$button_text}</a>";
+				if ( isset( $slide['buttonText'] ) && ! empty( $slide['buttonText'] ) ) {
+					echo "<a {$this->render_attributes( "slide-button-{$index}" )}>{$slide['buttonText']}</a>";
 				}
 				?>
 			</div>

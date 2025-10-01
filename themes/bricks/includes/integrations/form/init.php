@@ -9,8 +9,6 @@ class Init {
 	protected $uploaded_files;
 	protected $form_settings;
 	protected $form_fields;
-	protected $form_id;
-	protected $post_id;
 	protected $results;
 	protected static $submission_url_params = [];
 
@@ -42,8 +40,6 @@ class Init {
 		$loop_post_id    = isset( $submitted_data['loopId'] ) ? absint( $submitted_data['loopId'] ) : 0; // Get query loop post ID to parse dynamic data (@since 1.11.1)
 
 		$this->form_settings = \Bricks\Helpers::get_element_settings( $post_id, $form_element_id );
-		$this->form_id       = $form_element_id;
-		$this->post_id       = $post_id;
 
 		// No form settings found: Try to get from component element (@since 1.12.2)
 		if ( empty( $this->form_settings ) ) {
@@ -517,14 +513,6 @@ class Init {
 		return $this->form_fields;
 	}
 
-	public function get_id() {
-		return $this->form_id;
-	}
-
-	public function get_post_id() {
-		return $this->post_id;
-	}
-
 	public function get_uploaded_files() {
 		return $this->uploaded_files;
 	}
@@ -919,7 +907,6 @@ class Init {
 		$actions = [
 			'custom'         => esc_html__( 'Custom', 'bricks' ),
 			'email'          => esc_html__( 'Email', 'bricks' ),
-			'webhook'        => esc_html__( 'Webhook', 'bricks' ),
 			'redirect'       => esc_html__( 'Redirect', 'bricks' ),
 			'mailchimp'      => 'Mailchimp',
 			'sendgrid'       => 'SendGrid',

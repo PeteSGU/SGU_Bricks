@@ -24,41 +24,28 @@ class Element_Offcanvas extends Element {
 			'content' => Helpers::article_link( 'menu-builder/#mobile-menu-offcanvas', esc_html__( 'Add a "Toggle" element to your page that targets this Offcanvas to open it.', 'bricks' ) ),
 		];
 
-		$this->controls['direction'] = [
-			'label'       => esc_html__( 'Direction', 'bricks' ),
-			'type'        => 'select',
-			'inline'      => true,
-			'placeholder' => esc_html__( 'Left', 'bricks' ),
-			'options'     => [
-				'top'    => esc_html__( 'Top', 'bricks' ),
-				'right'  => esc_html__( 'Right', 'bricks' ),
-				'bottom' => esc_html__( 'Bottom', 'bricks' ),
-				'left'   => esc_html__( 'Left', 'bricks' ),
-			],
-			'rerender'    => true,
+		// NOTE: Undocumented: Stored in builder $_state._addedClasses only (@since 1.8)
+		$this->controls['_addedClasses'] = [
+			'label' => esc_html__( 'Keep open while styling', 'bricks' ),
+			'type'  => 'checkbox',
+			'class' => 'brx-open',
 		];
 
-		$this->controls['effect'] = [
-			'label'       => esc_html__( 'Effect', 'bricks' ),
-			'type'        => 'select',
-			'inline'      => true,
-			'placeholder' => esc_html__( 'Slide', 'bricks' ),
-			'options'     => [
-				'slide'  => esc_html__( 'Slide', 'bricks' ),
-				'offset' => esc_html__( 'Offset', 'bricks' ),
-			],
+		$this->controls['noScrollBody'] = [
+			'label' => esc_html__( 'No scroll', 'bricks' ) . ' (body)',
+			'type'  => 'checkbox',
 		];
 
-		$this->controls['closeOn'] = [
-			'label'       => esc_html__( 'Close on', 'bricks' ),
-			'type'        => 'select',
-			'inline'      => true,
-			'options'     => [
-				'backdrop' => esc_html__( 'Backdrop', 'bricks' ) . ' (' . esc_html__( 'Click', 'bricks' ) . ')',
-				'esc'      => 'ESC (' . esc_html__( 'Key', 'bricks' ) . ')',
-				'none'     => esc_html__( 'None', 'bricks' ),
-			],
-			'placeholder' => esc_html__( 'Backdrop', 'bricks' ) . ' & ESC',
+		$this->controls['noAutoFocus'] = [
+			'label'       => esc_html__( 'Disable auto focus', 'bricks' ),
+			'type'        => 'checkbox',
+			'description' => esc_html__( 'Don\'t auto focus on first focusable element when offcanvas opens.', 'bricks' ),
+		];
+
+		$this->controls['scrollToTop'] = [
+			'label'       => esc_html__( 'Scroll to top', 'bricks' ),
+			'type'        => 'checkbox',
+			'description' => esc_html__( 'Scroll to top when offcanvas opens.', 'bricks' ),
 		];
 
 		$this->controls['width'] = [
@@ -85,31 +72,28 @@ class Element_Offcanvas extends Element {
 			],
 		];
 
-		// Transition duration (@since 2.0)
-		$this->controls['transitionDuration'] = [
-			'label'       => esc_html__( 'Transition', 'bricks' ) . ': ' . esc_html__( 'Duration', 'bricks' ),
-			'type'        => 'number',
-			'units'       => true,
-			'placeholder' => '0.2s',
-			'description' => esc_html__( 'Set to "0s" to disable open/close animation.', 'bricks' ),
-			'css'         => [
-				[
-					'property' => 'transition-duration',
-					'selector' => '.brx-offcanvas-inner, .brx-offcanvas-backdrop',
-				],
+		$this->controls['direction'] = [
+			'label'       => esc_html__( 'Direction', 'bricks' ),
+			'type'        => 'select',
+			'inline'      => true,
+			'placeholder' => esc_html__( 'Left', 'bricks' ),
+			'options'     => [
+				'top'    => esc_html__( 'Top', 'bricks' ),
+				'right'  => esc_html__( 'Right', 'bricks' ),
+				'bottom' => esc_html__( 'Bottom', 'bricks' ),
+				'left'   => esc_html__( 'Left', 'bricks' ),
 			],
+			'rerender'    => true,
 		];
 
-		// Transition timing function (@since 2.0)
-		$this->controls['transitionTimingFunction'] = [
-			'label'       => esc_html__( 'Transition', 'bricks' ) . ': ' . esc_html__( 'Timing function', 'bricks' ),
-			'type'        => 'text',
-			'placeholder' => 'cubic-bezier(0.25, 0, 0.25, 1)',
-			'css'         => [
-				[
-					'property' => 'transition-timing-function',
-					'selector' => '.brx-offcanvas-inner, .brx-offcanvas-backdrop',
-				],
+		$this->controls['effect'] = [
+			'label'       => esc_html__( 'Effect', 'bricks' ),
+			'type'        => 'select',
+			'inline'      => true,
+			'placeholder' => esc_html__( 'Slide', 'bricks' ),
+			'options'     => [
+				'slide'  => esc_html__( 'Slide', 'bricks' ),
+				'offset' => esc_html__( 'Offset', 'bricks' ),
 			],
 		];
 
@@ -121,34 +105,16 @@ class Element_Offcanvas extends Element {
 			'placeholder'    => esc_html__( 'Offcanvas', 'bricks' ),
 		];
 
-		// NOTE: Undocumented: Stored in builder $_state._addedClasses only (@since 1.8)
-		$this->controls['_addedClasses'] = [
-			'label' => esc_html__( 'Keep open while styling', 'bricks' ),
-			'type'  => 'checkbox',
-			'class' => 'brx-open',
-		];
-
-		$this->controls['noScrollBody'] = [
-			'label' => esc_html__( 'No scroll', 'bricks' ) . ' (body)',
-			'type'  => 'checkbox',
-		];
-
-		$this->controls['scrollToTop'] = [
-			'label'       => esc_html__( 'Scroll to top', 'bricks' ),
-			'type'        => 'checkbox',
-			'description' => esc_html__( 'Scroll to top when offcanvas opens.', 'bricks' ),
-		];
-
-		$this->controls['noAutoFocus'] = [
-			'label'       => esc_html__( 'Disable auto focus', 'bricks' ),
-			'type'        => 'checkbox',
-			'description' => esc_html__( 'Don\'t auto focus on first focusable element when offcanvas opens.', 'bricks' ),
-		];
-
-		$this->controls['openByDefault'] = [
-			'label' => esc_html__( 'Open on page load', 'bricks' ),
-			'desc'  => esc_html__( 'Not applied in the builder.', 'bricks' ),
-			'type'  => 'checkbox',
+		$this->controls['closeOn'] = [
+			'label'       => esc_html__( 'Close on', 'bricks' ),
+			'type'        => 'select',
+			'inline'      => true,
+			'options'     => [
+				'backdrop' => esc_html__( 'Backdrop', 'bricks' ) . ' (' . esc_html__( 'Click', 'bricks' ) . ')',
+				'esc'      => 'ESC (' . esc_html__( 'Key', 'bricks' ) . ')',
+				'none'     => esc_html__( 'None', 'bricks' ),
+			],
+			'placeholder' => esc_html__( 'Backdrop', 'bricks' ) . ' & ESC',
 		];
 	}
 
@@ -203,24 +169,19 @@ class Element_Offcanvas extends Element {
 			$this->set_attribute( '_root', 'data-no-scroll', 'true' );
 		}
 
-		// No auto focus
+		// No auto focus (@since 1.10.2)
 		if ( isset( $settings['noAutoFocus'] ) ) {
 			$this->set_attribute( '_root', 'data-no-auto-focus', 'true' );
 		}
 
-		// Scroll to top
+		// Scroll to top (@since 1.10.2)
 		if ( isset( $settings['scrollToTop'] ) ) {
 			$this->set_attribute( '_root', 'data-scroll-to-top', 'true' );
 		}
 
-		// Close on (Click on backdrop, ESC)
+		// Close on (backdrop, esc)
 		if ( isset( $settings['closeOn'] ) ) {
 			$this->set_attribute( '_root', 'data-close-on', esc_attr( $settings['closeOn'] ) );
-		}
-
-		// Open by default on the frontend (@since 2.0)
-		if ( isset( $settings['openByDefault'] ) && ! bricks_is_builder() && ! bricks_is_builder_call() ) {
-			$this->set_attribute( '_root', 'class', 'brx-open' );
 		}
 
 		if ( ! empty( $settings['effect'] ) ) {

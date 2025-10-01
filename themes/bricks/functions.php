@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
  *
  * @since 1.0
  */
-define( 'BRICKS_VERSION', '2.0.2' );
+define( 'BRICKS_VERSION', '1.12.2' );
 define( 'BRICKS_NAME', 'Bricks' );
 define( 'BRICKS_TEMP_DIR', 'bricks-temp' ); // Template import/export (JSON & ZIP)
 define( 'BRICKS_TEMPLATE_SCREENSHOTS_DIR', 'bricks/template-screenshots' ); // Template screenshots (@since 1.10)
@@ -45,12 +45,6 @@ define( 'BRICKS_DB_PINNED_ELEMENTS', 'bricks_pinned_elements' );
 define( 'BRICKS_DB_SIDEBARS', 'bricks_sidebars' );
 define( 'BRICKS_DB_THEME_STYLES', 'bricks_theme_styles' );
 define( 'BRICKS_DB_ADOBE_FONTS', 'bricks_adobe_fonts' );
-define( 'BRICKS_DB_ELEMENT_MANAGER', 'bricks_element_manager' );
-define( 'BRICKS_DB_FONT_FAVORITES', 'bricks_font_favorites' ); // @since 2.0
-
-define( 'BRICKS_DB_ICON_SETS', 'bricks_icon_sets' ); // @since 2.0
-define( 'BRICKS_DB_CUSTOM_ICONS', 'bricks_custom_icons' ); // @since 2.0
-define( 'BRICKS_DB_DISABLED_ICON_SETS', 'bricks_disabled_icon_sets' ); // @since 2.0
 
 define( 'BRICKS_DB_EDITOR_MODE', '_bricks_editor_mode' );
 define( 'BRICKS_BREAKPOINTS_LAST_GENERATED', 'bricks_breakpoints_last_generated' );
@@ -62,8 +56,6 @@ define( 'BRICKS_CSS_FILES_ADMIN_NOTICE', 'bricks_css_files_admin_notice' );
 define( 'BRICKS_CODE_SIGNATURES_LAST_GENERATED', 'bricks_code_signatures_last_generated' );
 define( 'BRICKS_CODE_SIGNATURES_LAST_GENERATED_TIMESTAMP', 'bricks_code_signatures_last_generated_timestamp' );
 define( 'BRICKS_CODE_SIGNATURES_ADMIN_NOTICE', 'bricks_code_signatures_admin_notice' );
-
-define( 'BRICKS_DB_CAPABILITIES_PERMISSIONS', 'bricks_capabilities_permissions' );
 
 /**
  * Lock code signatures (default: false)
@@ -101,7 +93,7 @@ define( 'BRICKS_ADMIN_PAGE_URL_LICENSE', admin_url( 'admin.php?page=bricks-licen
 
 define( 'BRICKS_AUTH_CHECK_INTERVAL', 30 );
 
-if ( ! defined( 'BRICKS_DEBUG' ) ) {
+if ( ! defined( 'BRICKS_DEBUG ' ) ) {
 	define( 'BRICKS_DEBUG', false );
 }
 
@@ -150,26 +142,6 @@ if ( ! defined( 'BRICKS_MULTISITE_USE_MAIN_SITE_GLOBAL_ELEMENTS' ) ) {
 	define( 'BRICKS_MULTISITE_USE_MAIN_SITE_GLOBAL_ELEMENTS', false );
 }
 
-// Global data: Font favorites
-if ( ! defined( 'BRICKS_MULTISITE_USE_MAIN_SITE_FONT_FAVORITES' ) ) {
-	define( 'BRICKS_MULTISITE_USE_MAIN_SITE_FONT_FAVORITES', false );
-}
-
-// Global data: Icon sets
-if ( ! defined( 'BRICKS_MULTISITE_USE_MAIN_SITE_ICON_SETS' ) ) {
-	define( 'BRICKS_MULTISITE_USE_MAIN_SITE_ICON_SETS', false );
-}
-
-// Global data: Custom icons
-if ( ! defined( 'BRICKS_MULTISITE_USE_MAIN_SITE_CUSTOM_ICONS' ) ) {
-	define( 'BRICKS_MULTISITE_USE_MAIN_SITE_CUSTOM_ICONS', false );
-}
-
-// Global data: Disabled icon sets
-if ( ! defined( 'BRICKS_MULTISITE_USE_MAIN_SITE_DISABLED_ICON_SETS' ) ) {
-	define( 'BRICKS_MULTISITE_USE_MAIN_SITE_DISABLED_ICON_SETS', false );
-}
-
 /**
  * Use minified assets when SCRIPT_DEBUG is off
  *
@@ -194,8 +166,8 @@ if ( version_compare( PHP_VERSION, '5.4', '>=' ) ) {
 	add_action(
 		'admin_notices',
 		function() {
-			// translators: %1$s: Bricks (theme name), %2$s: PHP version
-			$message = sprintf( esc_html__( '%1$s requires PHP version %2$s+.', 'bricks' ), 'Bricks', '5.4' );
+			// translators: %s: PHP version number
+			$message = sprintf( esc_html__( 'Bricks requires PHP version %s+.', 'bricks' ), '5.4' );
 			$html    = sprintf( '<div class="error">%s</div>', wpautop( $message ) );
 			echo wp_kses_post( $html );
 		}

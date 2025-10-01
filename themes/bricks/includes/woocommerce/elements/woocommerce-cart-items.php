@@ -374,11 +374,6 @@ class Woocommerce_Cart_Items extends Element {
 
 		Woocommerce_Helpers::maybe_init_cart_context();
 
-		// Avoid Fatal error if WC()->cart is not defined (@since 2.0)
-		if ( ! function_exists( 'WC' ) || ! WC()->cart ) {
-			return;
-		}
-
 		// In the builder: add products to cart if cart is empty for a better user experience
 		Woocommerce_Helpers::maybe_populate_cart_contents();
 
@@ -400,10 +395,10 @@ class Woocommerce_Cart_Items extends Element {
 					<tr>
 						<th class="product-remove">&nbsp;</th>
 						<th class="product-thumbnail">&nbsp;</th>
-						<th scope="col" class="product-name"><?php esc_html_e( 'Product', 'woocommerce' ); ?></th>
-						<th scope="col" class="product-price"><?php esc_html_e( 'Price', 'woocommerce' ); ?></th>
-						<th scope="col" class="product-quantity"><?php esc_html_e( 'Quantity', 'woocommerce' ); ?></th>
-						<th scope="col" class="product-subtotal"><?php esc_html_e( 'Subtotal', 'woocommerce' ); ?></th>
+						<th class="product-name"><?php esc_html_e( 'Product', 'woocommerce' ); ?></th>
+						<th class="product-price"><?php esc_html_e( 'Price', 'woocommerce' ); ?></th>
+						<th class="product-quantity"><?php esc_html_e( 'Quantity', 'woocommerce' ); ?></th>
+						<th class="product-subtotal"><?php esc_html_e( 'Subtotal', 'woocommerce' ); ?></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -426,7 +421,7 @@ class Woocommerce_Cart_Items extends Element {
 											'woocommerce_cart_item_remove_link',
 											// translators: %s: Product remove URL, %s: Product remove text, %s: Product ID, %s: Product SKU
 											sprintf(
-												'<a role="button" href="%s" class="remove" aria-label="%s" data-product_id="%s" data-product_sku="%s">&times;</a>',
+												'<a href="%s" class="remove" aria-label="%s" data-product_id="%s" data-product_sku="%s">&times;</a>',
 												esc_url( wc_get_cart_remove_url( $cart_item_key ) ),
 												// translators: %s: Product name
 												esc_attr( sprintf( __( 'Remove %s from cart', 'woocommerce' ), wp_strip_all_tags( $product_name ) ) ),
@@ -450,7 +445,7 @@ class Woocommerce_Cart_Items extends Element {
 								?>
 								</td>
 
-								<th scope="row" class="product-name" data-title="<?php esc_attr_e( 'Product', 'woocommerce' ); ?>">
+								<td class="product-name" data-title="<?php esc_attr_e( 'Product', 'woocommerce' ); ?>">
 								<?php
 								if ( ! $product_permalink ) {
 									echo wp_kses_post( $product_name . '&nbsp;' );
@@ -468,7 +463,7 @@ class Woocommerce_Cart_Items extends Element {
 									echo wp_kses_post( apply_filters( 'woocommerce_cart_item_backorder_notification', '<p class="backorder_notification">' . esc_html__( 'Available on backorder', 'woocommerce' ) . '</p>', $product_id ) );
 								}
 								?>
-								</th>
+								</td>
 
 								<td class="product-price" data-title="<?php esc_attr_e( 'Price', 'woocommerce' ); ?>">
 									<?php

@@ -167,31 +167,15 @@ class Element_Post_Sharing extends Element {
 		 *
 		 * Fallback: permalink
 		 *
+		 * @since 1.9.3 - Use Request URI only if we aren't looping. Otherwise, use the permalink.
+		 *
 		 * @since 1.9.2
 		 */
 		$request_uri = ! Query::is_looping() && ! empty( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : false;
-
-		// For multisite in subfolder mode, we need to remove the site path prefix (@since 2.0)
-		if ( isset( $request_uri ) && is_multisite() && ! is_subdomain_install() ) {
-			// Get the site path (e.g., /site1/)
-			$site_path = ltrim( parse_url( get_blog_details()->path, PHP_URL_PATH ), '/' );
-
-			// Only proceed if we have a site path
-			if ( ! empty( $site_path ) ) {
-				// Add a leading slash to the site path
-				$path_prefix = '/' . $site_path;
-
-				// If request URI starts with the site path, remove it
-				if ( strpos( $request_uri, $path_prefix ) === 0 ) {
-					$request_uri = substr( $request_uri, strlen( $path_prefix ) );
-				}
-			}
-		}
-
-		$url   = $request_uri ? home_url( $request_uri ) : get_the_permalink();
-		$url   = rawurlencode( html_entity_decode( $url, ENT_COMPAT, 'UTF-8' ) );
-		$image = rawurlencode( html_entity_decode( wp_get_attachment_url( get_post_thumbnail_id() ), ENT_COMPAT, 'UTF-8' ) );
-		$title = rawurlencode( html_entity_decode( get_the_title(), ENT_COMPAT, 'UTF-8' ) );
+		$url         = $request_uri ? home_url( $request_uri ) : get_the_permalink();
+		$url         = rawurlencode( html_entity_decode( $url, ENT_COMPAT, 'UTF-8' ) );
+		$image       = rawurlencode( html_entity_decode( wp_get_attachment_url( get_post_thumbnail_id() ), ENT_COMPAT, 'UTF-8' ) );
+		$title       = rawurlencode( html_entity_decode( get_the_title(), ENT_COMPAT, 'UTF-8' ) );
 
 		// Ignore in builder MutationObserver
 		if ( isset( $settings['brandColors'] ) ) {

@@ -197,16 +197,23 @@ class Assets_Files {
 			}
 		}
 
-		// STEP: Active theme styles
-		foreach ( Theme_Styles::$settings_by_id as $style_id => $settings ) {
-			// Convert ":" to "_" (@since 2.0)
-			$style_id = str_replace( ':', '_', $style_id );
+		// STEP: Global settings "Custom CSS"
+		$global_custom_css_file_dir = Assets::$css_dir . '/global-custom-css.min.css';
+		$global_custom_css_file_url = Assets::$css_url . '/global-custom-css.min.css';
 
-			$theme_style_file_dir = Assets::$css_dir . "/theme-style-$style_id.min.css";
-			$theme_style_file_url = Assets::$css_url . "/theme-style-$style_id.min.css";
+		if ( file_exists( $global_custom_css_file_dir ) ) {
+			wp_enqueue_style( 'bricks-global-custom-css', $global_custom_css_file_url, [], filemtime( $global_custom_css_file_dir ) );
+		}
+
+		// STEP: Active theme style
+		$active_theme_style = Theme_Styles::$active_id;
+
+		if ( $active_theme_style ) {
+			$theme_style_file_dir = Assets::$css_dir . "/theme-style-$active_theme_style.min.css";
+			$theme_style_file_url = Assets::$css_url . "/theme-style-$active_theme_style.min.css";
 
 			if ( file_exists( $theme_style_file_dir ) ) {
-				wp_enqueue_style( "bricks-theme-style-$style_id", $theme_style_file_url, [], filemtime( $theme_style_file_dir ) );
+				wp_enqueue_style( "bricks-theme-style-$active_theme_style", $theme_style_file_url, [], filemtime( $theme_style_file_dir ) );
 			}
 		}
 
@@ -310,18 +317,10 @@ class Assets_Files {
 		$content_elements = get_post_meta( $content_template_id, BRICKS_DB_PAGE_CONTENT, true );
 
 		$this->load_content_extra_css_files( $content_elements ); // Recursive
-
-		// STEP: Global settings "Custom CSS"
-		$global_custom_css_file_dir = Assets::$css_dir . '/global-custom-css.min.css';
-		$global_custom_css_file_url = Assets::$css_url . '/global-custom-css.min.css';
-
-		if ( file_exists( $global_custom_css_file_dir ) ) {
-			wp_enqueue_style( 'bricks-global-custom-css', $global_custom_css_file_url, [], filemtime( $global_custom_css_file_dir ) );
-		}
 	}
 
 	/**
-	 * Recursively scan elements array for template, map-connector & shortcode elements and enqueue found template CSS files
+	 * Recursively scan elements array for template & shortcode elements and enqueue found template CSS files
 	 *
 	 * @param array $elements Array of Bricks elements to scan.
 	 *
@@ -332,17 +331,6 @@ class Assets_Files {
 			// Check template elements
 			if ( $element['name'] === 'template' && ! empty( $element['settings']['template'] ) ) {
 				$template_id  = $element['settings']['template'];
-				$css_file_dir = Assets::$css_dir . "/post-$template_id.min.css";
-				$css_file_url = Assets::$css_url . "/post-$template_id.min.css";
-
-				if ( file_exists( $css_file_dir ) ) {
-					wp_enqueue_style( "bricks-post-$template_id", $css_file_url, [], filemtime( $css_file_dir ) );
-				}
-			}
-
-			// Check Map Connector elements for Info Box template (@since 2.0)
-			if ( in_array( $element['name'], [ 'map-connector', 'map' ], true ) && ! empty( $element['settings']['infoBoxTemplateId'] ) ) {
-				$template_id  = $element['settings']['infoBoxTemplateId'];
 				$css_file_dir = Assets::$css_dir . "/post-$template_id.min.css";
 				$css_file_url = Assets::$css_url . "/post-$template_id.min.css";
 
@@ -525,8 +513,8 @@ class Assets_Files {
 				if ( file_exists( $element_css_file_path ) ) {
 					$element_css = file_get_contents( $element_css_file_path );
 
-					// STEP: Wrap CSS in @layer bricks (@since 2.0)
-					if ( ! Database::get_setting( 'disableBricksCascadeLayer' ) ) {
+					// STEP: Wrap CSS in @layer bricks (@since 1.12)
+					if ( Database::get_setting( 'bricksCascadeLayer' ) ) {
 						$element_css = "@layer bricks {\n$element_css\n}";
 					}
 
@@ -664,8 +652,8 @@ class Assets_Files {
 			);
 		}
 
-		// Reset the avoid duplicates arrays so that same styles in different CSS files can be generated again (@since 2.0.1)
-		Assets::reset_duplication_tracking();
+		// Flush unique inline CSS so same styles in different CSS files can be generated again (@since 1.9.4)
+		Assets::$unique_inline_css = [];
 
 		$file_name = '';
 

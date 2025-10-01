@@ -778,18 +778,17 @@ class Element_Slider_Nested extends Element {
 		];
 
 		$this->controls['nextArrowTop'] = [
-			'group'       => 'arrows',
-			'label'       => esc_html__( 'Top', 'bricks' ),
-			'type'        => 'number',
-			'units'       => true,
-			'css'         => [
+			'group'    => 'arrows',
+			'label'    => esc_html__( 'Top', 'bricks' ),
+			'type'     => 'number',
+			'units'    => true,
+			'css'      => [
 				[
 					'property' => 'top',
 					'selector' => '.splide__arrow--next',
 				],
 			],
-			'placeholder' => '50%',
-			'required'    => [ 'arrows', '!=', '' ],
+			'required' => [ 'arrows', '!=', '' ],
 		];
 
 		$this->controls['nextArrowRight'] = [

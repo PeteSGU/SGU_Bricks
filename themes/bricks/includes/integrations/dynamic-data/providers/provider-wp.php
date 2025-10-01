@@ -150,7 +150,7 @@ class Provider_Wp extends Base {
 			],
 
 			'author_meta'                => [
-				'label' => esc_html__( 'Author meta', 'bricks' ) . ' (' . esc_html__( 'add key after', 'bricks' ) . ' ":")',
+				'label' => esc_html__( 'Author meta - add key after :', 'bricks' ),
 				'group' => 'author',
 			],
 
@@ -181,7 +181,7 @@ class Provider_Wp extends Base {
 			],
 
 			'url_parameter'              => [
-				'label' => esc_html__( 'URL parameter', 'bricks' ) . ' (' . esc_html__( 'add key after', 'bricks' ) . ' ":")',
+				'label' => esc_html__( 'URL parameter - add key after :', 'bricks' ),
 				'group' => 'site',
 			],
 
@@ -240,7 +240,7 @@ class Provider_Wp extends Base {
 			],
 
 			'term_meta'                  => [
-				'label'  => esc_html__( 'Term meta', 'bricks' ) . ' (' . esc_html__( 'add key after', 'bricks' ) . ' ":")',
+				'label'  => esc_html__( 'Term meta - add key after :', 'bricks' ),
 				'group'  => 'terms',
 				'render' => 'terms',
 			],
@@ -262,15 +262,9 @@ class Provider_Wp extends Base {
 				'group' => 'query',
 			],
 
-			// Query Filter
 			'query_results_count_filter' => [
 				'label' => esc_html__( 'Query results count', 'bricks' ) . ' (' . esc_html__( 'Filter', 'bricks' ) . ')',
-				'group' => 'queryFilters',
-			],
-
-			'active_filters_count'       => [
-				'label' => esc_html__( 'Active filters count', 'bricks' ),
-				'group' => 'queryFilters',
+				'group' => 'query',
 			],
 
 			/**
@@ -287,7 +281,7 @@ class Provider_Wp extends Base {
 
 			'search_term_filter'         => [
 				'label' => esc_html__( 'Search term', 'bricks' ) . ' (' . esc_html__( 'Filter', 'bricks' ) . ')',
-				'group' => 'queryFilters',
+				'group' => 'misc',
 			],
 		];
 
@@ -307,7 +301,7 @@ class Provider_Wp extends Base {
 			'last_name'       => esc_html__( 'Last name', 'bricks' ),
 			'display_name'    => esc_html__( 'Display name', 'bricks' ),
 			'picture'         => esc_html__( 'Profile picture', 'bricks' ),
-			'meta'            => esc_html__( 'User meta', 'bricks' ) . ' (' . esc_html__( 'add key after', 'bricks' ) . ' ":")',
+			'meta'            => esc_html__( 'User meta - add key after :', 'bricks' ),
 		];
 
 		foreach ( $user_fields as $key => $label ) {
@@ -1001,8 +995,8 @@ class Provider_Wp extends Base {
 
 				$search_query_id = isset( $filters['meta_key'] ) ? $filters['meta_key'] : false;
 				if ( $search_query_id ) {
-					// Get the search term from query_history or init
-					$search_query = Helpers::get_query_object_from_history_or_init( $search_query_id, true );
+					// Get the search term from query_history
+					$search_query = Query::get_query_by_element_id( $search_query_id, true );
 					if ( $search_query && ! empty( $search_query->query_vars['s'] ) ) {
 						$value = sanitize_text_field( $search_query->query_vars['s'] );
 					}
@@ -1014,38 +1008,6 @@ class Provider_Wp extends Base {
 					}
 				}
 
-				break;
-
-			// Active filters count (@since 2.0)
-			case 'active_filters_count':
-				$target_query_id = isset( $filters['meta_key'] ) ? $filters['meta_key'] : false;
-
-				if ( $target_query_id && Helpers::enabled_query_filters() ) {
-					// Save the dd for AJAX update later (without curly braces) and add :value filter
-					$dynamic_tag       = "active_filters_count:{$target_query_id}:value";
-					$additional_params = [];
-
-					// Add additional params
-					if ( isset( $filters['exclude'] ) ) {
-						$exclude_filters_dd                   = (string) $filters['exclude'];
-						$dynamic_tag                         .= " @exclude:'{$exclude_filters_dd}'";
-						$exclude_filters                      = explode( ',', $exclude_filters_dd );
-						$exclude_filters                      = array_map( 'trim', $exclude_filters );
-						$additional_params['exclude_filters'] = $exclude_filters;
-					}
-
-					$count = \Bricks\Query_Filters::get_active_filters_count( $target_query_id, $additional_params );
-
-					if ( ! isset( $filters['value'] ) ) {
-						// wrap the value with a span for AJAX update when using query filter feature
-						$dynamic_tag              = esc_attr( $dynamic_tag );
-						$filters['skip_sanitize'] = true;
-						$value                    = "<span data-brx-af-count='{$target_query_id}' data-brx-af-dd='{$dynamic_tag}'>{$count}</span>";
-					} else {
-						// Return the count value only
-						$value = $count;
-					}
-				}
 				break;
 		}
 
@@ -1486,54 +1448,8 @@ class Provider_Wp extends Base {
 
 		$output = [];
 
-		// We store term field (if it's in meta_key) and seaprator here. Default separator is ', '
-		$term_field = null;
-		$separator  = ', ';
-
-		// Get term meta key (@since 2.0), could also be in separator:term_field format " > :term_id"
-		$meta_key = $filters['meta_key'] ?? null;
-
-		// List of allowed term fields that user can choose from (@since 2.0)
-		$allowed_term_fields = [ 'term_id', 'slug' ];
-
-		// Check if meta_key is exactly one of the allowed term fields (then we know we don't have separator)
-		if ( ! empty( $meta_key ) && in_array( $meta_key, $allowed_term_fields ) ) {
-			$term_field = $meta_key;
-		}
-
-		// Is separator:term_field format or only separator (@since 2.0)
-		elseif ( ! empty( $meta_key ) ) {
-			// Check if meta_key string contains one of the allowed term fields
-			foreach ( $allowed_term_fields as $allowed_term_field ) {
-				if ( strpos( $meta_key, $allowed_term_field ) !== false ) {
-					$term_field = $allowed_term_field; // We found the term field
-
-					// We found the term field, get separator by splitting on the last colon, and get everything before it
-					if ( strpos( $meta_key, ':' ) !== false ) {
-						$separator = substr( $meta_key, 0, strrpos( $meta_key, ':' ) );
-					}
-					break;
-				}
-			}
-
-			// If we don't have term key, meta_key is separator
-			if ( is_null( $term_field ) ) {
-				$separator = $meta_key;
-			}
-		}
-
 		foreach ( $terms as $term ) {
 			$item = $term->name;
-
-			// If we have term key, get term meta (@since 2.0)
-			if ( ! is_null( $term_field ) ) {
-				$item = get_term_field( $term_field, $term->term_id, $taxonomy );
-
-				// If term meta is empty or error, continue loop
-				if ( empty( $item ) || is_wp_error( $item ) || is_null( $item ) ) {
-					continue;
-				}
-			}
 
 			if ( $has_links ) {
 				$url = get_term_link( $term );
@@ -1546,21 +1462,20 @@ class Provider_Wp extends Base {
 			$output[] = $item;
 		}
 
-		// https://academy.bricksbuilder.io/article/filter-bricks-dynamic_data-post_terms_separator/
-		$separator = apply_filters( 'bricks/dynamic_data/post_terms_separator', $separator, $post, $taxonomy );
+		$sep = isset( $filters['meta_key'] ) ? $filters['meta_key'] : ', ';
 
-		return implode( $separator, $output );
+		// https://academy.bricksbuilder.io/article/filter-bricks-dynamic_data-post_terms_separator/
+		$sep = apply_filters( 'bricks/dynamic_data/post_terms_separator', $sep, $post, $taxonomy );
+
+		return implode( $sep, $output );
 	}
 
 	public function get_term_tag_value( $tag, $filters, $context, $post_id ) {
 		$looping_query_id = Query::is_any_looping();
-		$loop_object_type = '';
-		$looping_object   = null;
 		$object           = null;
 
 		if ( ! empty( $looping_query_id ) ) {
-			$object           = $looping_object = Query::get_loop_object( $looping_query_id );
-			$loop_object_type = Query::get_loop_object_type( $looping_query_id );
+			$object = Query::get_loop_object( $looping_query_id );
 		}
 
 		// Is taxonomy archive (check again is_tax() not working inside Posts element in archive template @since 1.7.2)
@@ -1570,20 +1485,11 @@ class Provider_Wp extends Base {
 
 		/**
 		 * term_xx DD unable to parse correctly based on populate content (@since 1.9.5)
-		 * History tasks: (#86bw6re4w, #86bx6wxxm)
+		 * TODO NOTE: No longer in use (@since 1.9.6). As it causes builder query issue (#86bx6wxxm)
+		 * Should be tackled together with (#86bw6re4w)
 		 */
 		if ( Helpers::is_bricks_preview() && ! Query::is_looping() ) {
 			$object = Helpers::get_queried_object( $post_id );
-
-			/**
-			 * Similar logic in render_content() in providers.php
-			 * In the builder, something is looping, but currently rendering Query parameters (#86c2wzt6n)
-			 *
-			 * @since 2.0
-			 */
-			if ( $looping_query_id && $looping_object && $loop_object_type === 'term' ) {
-				$object = $looping_object;
-			}
 		}
 
 		// Not a WP_Term, leave

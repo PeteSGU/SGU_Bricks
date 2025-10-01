@@ -137,8 +137,8 @@ class Provider_Cmb2 extends Base {
 				break;
 
 			case 'textarea_code':
-				$theme_style_setting = \Bricks\Theme_Styles::get_setting_by_key( 'code', 'prettify' );
-				$classes             = $theme_style_setting ? "prettyprint $theme_style_setting" : '';
+				$theme_styles = \Bricks\Theme_Styles::$active_settings;
+				$classes      = isset( $theme_styles['code']['prettify'] ) ? 'prettyprint ' . $theme_styles['code']['prettify'] : '';
 
 				foreach ( $value as $key => $item ) {
 					$value[ $key ] = '<pre class="' . $classes . '"><code>' . $item . '</code></pre>';

@@ -238,7 +238,7 @@ class Api {
 		}
 
 		// Return: Current user can not access builder
-		if ( ! Capabilities::current_user_can_use_builder() ) {
+		if ( Capabilities::current_user_has_no_access() ) {
 			return new \WP_Error( 'rest_current_user_can_not_use_builder', __( 'Permission error' ), [ 'status' => 403 ] );
 		}
 
@@ -269,40 +269,19 @@ class Api {
 		$global_variables = get_option( BRICKS_DB_GLOBAL_VARIABLES, [] );
 		$color_palette    = get_option( BRICKS_DB_COLOR_PALETTE, [] ); // @since 1.12
 
-		// STEP: Add all active theme styles to template data to import when inserting a template
+		// STEP: Add theme style to template data to import when inserting a template (@since 1.3.2)
 		foreach ( $templates as $index => $template ) {
-			/**
-			 * Provide only most-specific theme style for template import
-			 *
-			 * @since 2.0: Provide all active theme styles for template import (regardless if 'themeStylesLoadingMethod' Bricks setting is enabled on the site)
-			 */
-			$theme_style_ids = Theme_Styles::set_active_style( $template['id'], true );
+			$theme_style_id = Theme_Styles::set_active_style( $template['id'], true );
+			$theme_style    = $theme_styles[ $theme_style_id ] ?? false;
 
-			if ( is_array( $theme_style_ids ) && count( $theme_style_ids ) ) {
-				foreach ( $theme_style_ids as $theme_style_id ) {
-					// Get theme style by ID
-					$theme_style = $theme_styles[ $theme_style_id ] ?? false;
-
-					// Skip if theme style not found
-					if ( ! $theme_style ) {
-						continue;
-					}
-
-					// Remove theme style conditions
+			if ( $theme_style ) {
+				// Remove theme style conditions
+				if ( isset( $theme_style['settings']['conditions'] ) ) {
 					unset( $theme_style['settings']['conditions'] );
-
-					if ( ! isset( $templates[ $index ]['themeStyles'] ) ) {
-						$templates[ $index ]['themeStyles'] = [];
-					}
-
-					/**
-					 * NOTE: @pre 2.0 we passed a single 'themeStyle'
-					 *
-					 * @since 2.0 we pass an array of all active 'themeStyles'
-					 */
-					$theme_style['id']                    = $theme_style_id;
-					$templates[ $index ]['themeStyles'][] = $theme_style;
 				}
+
+				$theme_style['id']                 = $theme_style_id;
+				$templates[ $index ]['themeStyle'] = $theme_style;
 			}
 
 			/**
@@ -442,74 +421,19 @@ class Api {
 			return false;
 		}
 
-		return self::is_bricks_rest_request( $endpoint );
-	}
-
-	/**
-	 * Check if current request is a Bricks REST API request
-	 *
-	 * Works reliably during init hook before REST API is fully initialized.
-	 *
-	 * @since 2.0
-	 *
-	 * @return bool
-	 */
-	public static function is_bricks_rest_request( $endpoint = '' ) {
-		// Build the namespace pattern
-		$namespace_pattern = '/' . self::API_NAMESPACE . '/';
-		$endpoint_pattern  = $endpoint ? $namespace_pattern . $endpoint : $namespace_pattern;
-
-		// Method 1: Check if REST_REQUEST constant is defined and check for Bricks namespace
-		if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) {
-			global $wp;
-			$current_rest_route = isset( $wp->query_vars['rest_route'] ) ? $wp->query_vars['rest_route'] : '';
-
-			if ( $current_rest_route ) {
-				if ( $endpoint ) {
-					return $current_rest_route === $endpoint_pattern;
-				} else {
-					return strpos( $current_rest_route, $namespace_pattern ) === 0;
-				}
-			}
-		}
-
-		// Method 2: Check REQUEST_URI for Bricks namespace (works during init hook)
-		if ( isset( $_SERVER['REQUEST_URI'] ) ) {
-			$request_uri = $_SERVER['REQUEST_URI'];
-			$rest_prefix = rest_get_url_prefix(); // Usually 'wp-json'
-
-			// Check for pretty permalinks pattern
-			$full_pattern = '/' . $rest_prefix . $endpoint_pattern;
-			if ( strpos( $request_uri, $full_pattern ) !== false ) {
-				return true;
-			}
-
-			// Check for non-pretty permalinks pattern: ?rest_route=
-			if ( isset( $_SERVER['QUERY_STRING'] ) && $_SERVER['QUERY_STRING'] ) {
-				parse_str( $_SERVER['QUERY_STRING'], $query_params );
-				if ( isset( $query_params['rest_route'] ) ) {
-					$rest_route = $query_params['rest_route'];
-					if ( $endpoint ) {
-						return $rest_route === $endpoint_pattern;
-					} else {
-						return strpos( $rest_route, $namespace_pattern ) === 0;
-					}
-				}
-			}
-		}
-
-		// Method 3: Check global $wp for Bricks REST route (fallback)
 		global $wp;
-		if ( isset( $wp->query_vars['rest_route'] ) ) {
-			$current_rest_route = $wp->query_vars['rest_route'];
-			if ( $endpoint ) {
-				return $current_rest_route === $endpoint_pattern;
-			} else {
-				return strpos( $current_rest_route, $namespace_pattern ) === 0;
-			}
+
+		// REST route (example: /bricks/v1/load_query_page)
+		$current_rest_route = isset( $wp->query_vars['rest_route'] ) ? $wp->query_vars['rest_route'] : '';
+
+		if ( ! $current_rest_route ) {
+			return false;
 		}
 
-		return false;
+		// Example: /bricks/v1/load_query_page
+		$bricks_rest_route = '/' . self::API_NAMESPACE . '/' . $endpoint;
+
+		return $current_rest_route === $bricks_rest_route;
 	}
 
 	/**
@@ -602,23 +526,17 @@ class Api {
 		$language         = isset( $request_data['lang'] ) ? sanitize_key( $request_data['lang'] ) : false;
 		$pagination_id    = isset( $request_data['paginationId'] ) ? sanitize_key( $request_data['paginationId'] ) : false;
 		$base_url         = $request_data['baseUrl'] ?? '';
-		$main_query_id    = isset( $request_data['mainQueryId'] ) ? sanitize_text_field( $request_data['mainQueryId'] ) : false;
+
+		// Allow addtional actions for custom code. WPML (@since 1.12.2)
+		do_action( 'bricks/render_query_page/start', $request_data );
 
 		// Set current language (@since 1.9.9)
 		if ( $language ) {
 			Database::$page_data['language'] = $language;
 		}
 
-		// Set main query ID (@since 2.0)
-		if ( $main_query_id ) {
-			Database::$main_query_id = $main_query_id;
-		}
-
 		// Set post_id for use in prepare_query_vars_from_settings
 		Database::$page_data['preview_or_post_id'] = $post_id;
-
-		// Allow addtional actions for custom code. WPML (@since 1.12.2)
-		do_action( 'bricks/render_query_page/start', $request_data );
 
 		/**
 		 * Handle Query ID with dash
@@ -689,7 +607,6 @@ class Api {
 			foreach ( $component_data_elements as $key => $component_data_element ) {
 				$component_data_elements[ $key ]['parentComponent'] = $element_data['element']['cid'];
 				$component_data_elements[ $key ]['instanceId']      = $element_id;
-				$component_data_elements[ $key ]['ajaxLocalId']     = $element_id . '-' . $component_data_element['id']; // component children become local element when running generate_css_from_elements (#86c4957mc)
 			}
 
 			// Find the query element via query_instance_id from the component data
@@ -787,6 +704,9 @@ class Api {
 			unset( $query_vars['offset'] );
 		}
 
+		// Set the page number which comes from the request
+		$query_vars['paged'] = $page;
+
 		// NOTE: $ori_query_element_id could be a query element ID with dash (query inside a component instance). This type of query is supported in AJAX pagination only. Not Query filters. Must use this ID in hooks or we will get the wrong query.
 
 		/**
@@ -813,16 +733,10 @@ class Api {
 
 		add_filter(
 			"bricks/{$object_type}s/query_vars",
-			function( $vars, $settings, $element_id ) use ( $ori_query_element_id, $query_vars, $object_type, $page ) {
+			function( $vars, $settings, $element_id ) use ( $ori_query_element_id, $query_vars ) {
 				if ( $element_id !== $ori_query_element_id ) {
 					return $vars;
 				}
-
-				// STEP: Restore original query vars from frontend for dynamic parsed data (#86c4mgz6q; @since 2.0.1)
-				$vars = Query::restore_original_query_vars_from_frontend( $query_vars, $vars, $object_type );
-
-				// Set the page number which comes from the request
-				$query_vars['paged'] = $page;
 
 				// Merge the query vars
 				$merged_query_vars = Query::merge_query_vars( $vars, $query_vars );
@@ -911,8 +825,8 @@ class Api {
 			}
 		}
 
-		// STEP: Query data, use original query ID
-		$query_data = Helpers::get_query_object_from_history_or_init( $ori_query_element_id, $post_id );
+		// STEP: Query data (If any third party code disable history, wouldn't work)
+		$query_data = Query::get_query_by_element_id( $query_element_id );
 
 		// Remove unnecessary properties
 		unset( $query_data->settings );
@@ -954,22 +868,8 @@ class Api {
 		$popup_loop_id      = $request_data['popupLoopId'] ?? false;
 		$popup_context_id   = $request_data['popupContextId'] ?? false;
 		$popup_context_type = $request_data['popupContextType'] ?? false;
-		$query_element_id   = $request_data['queryElementId'] ?? false;
-		$language           = isset( $request_data['lang'] ) ? sanitize_key( $request_data['lang'] ) : false;
-		$main_query_id      = isset( $request_data['mainQueryId'] ) ? sanitize_text_field( $request_data['mainQueryId'] ) : false;
-
-		// Set current language (@since 2.0)
-		if ( $language ) {
-			Database::$page_data['language'] = $language;
-		}
-
-		// Set main query ID (@since 2.0)
-		if ( $main_query_id ) {
-			Database::$main_query_id = $main_query_id;
-		}
-
-		// Allow addtional actions for custom code (@since 2.0)
-		do_action( 'bricks/render_popup_content/start', $request_data );
+		// $poup_is_looping    = $request_data['isLooping'] ?? false; // Not in use
+		$query_element_id = $request_data['queryElementId'] ?? false;
 
 		// Get Popup template settings and add classes to the popup content (@since 1.10.2)
 		$popup_settings    = Helpers::get_template_settings( $popup_id );
@@ -1132,7 +1032,6 @@ class Api {
 				foreach ( $component_data_elements as $key => $component_data_element ) {
 					$component_data_elements[ $key ]['parentComponent'] = $element_data['element']['cid'];
 					$component_data_elements[ $key ]['instanceId']      = $element_id;
-					$component_data_elements[ $key ]['ajaxLocalId']     = $element_id . '-' . $component_data_element['id']; // component children become local element when running generate_css_from_elements (#86c4957mc)
 				}
 
 				// Find the query element via query_instance_id from the component data
@@ -1437,29 +1336,22 @@ class Api {
 		$post_id             = $request_data['postId'];
 		$filters             = $request_data['filters'] ?? [];
 		$selected_filters    = $request_data['selectedFilters'] ?? [];
-		$active_filters_tags = $request_data['afTags'] ?? [];
 		$page_filters        = $request_data['pageFilters'] ?? [];
 		$base_url            = $request_data['baseUrl'] ?? '';
 		$language            = isset( $request_data['lang'] ) ? sanitize_key( $request_data['lang'] ) : false;
 		$infinite_page       = isset( $request_data['infinitePage'] ) ? sanitize_text_field( $request_data['infinitePage'] ) : 1;
 		$original_query_vars = isset( $request_data['originalQueryVars'] ) ? json_decode( $request_data['originalQueryVars'], true ) : [];
-		$main_query_id       = isset( $request_data['mainQueryId'] ) ? sanitize_text_field( $request_data['mainQueryId'] ) : false;
+
+		// Allow addtional actions for custom code. WPML (@since 1.12.2)
+		do_action( 'bricks/render_query_result/start', $request_data );
 
 		// Set current language (@since 1.9.9)
 		if ( $language ) {
 			Database::$page_data['language'] = $language;
 		}
 
-		// Set main query ID (@since 2.0)
-		if ( $main_query_id ) {
-			Database::$main_query_id = $main_query_id;
-		}
-
 		// Set post_id for use in prepare_query_vars_from_settings
 		Database::$page_data['preview_or_post_id'] = $post_id;
-
-		// Allow addtional actions for custom code. WPML (@since 1.12.2)
-		do_action( 'bricks/render_query_result/start', $request_data );
 
 		$data = Helpers::get_element_data( $post_id, $query_element_id );
 
@@ -1674,7 +1566,7 @@ class Api {
 		$updated_filters = Query_Filters::get_updated_filters( $filters, $post_id );
 
 		// STEP: Query data
-		$query_data = Helpers::get_query_object_from_history_or_init( $query_element_id, $post_id );
+		$query_data = Query::get_query_by_element_id( $query_element_id );
 
 		// Remove unnecessary properties
 		unset( $query_data->settings );
@@ -1692,25 +1584,6 @@ class Api {
 			unset( $query_data->query_vars['signature'] );
 		}
 
-		// Get the active filters count via Dynamic Data (@since 2.0)
-		$parsed_af_tags = [];
-		if ( is_array( $active_filters_tags ) && ! empty( $active_filters_tags ) ) {
-			foreach ( $active_filters_tags as $tag ) {
-				if ( ! is_string( $tag ) ) {
-					continue;
-				}
-
-				$tag = sanitize_text_field( trim( $tag ) );
-
-				// Only parse dynamic data tags starting with 'active_filters_count'
-				if ( strpos( $tag, 'active_filters_count' ) !== 0 ) {
-					continue;
-				}
-
-				$parsed_af_tags[ $tag ] = Integrations\Dynamic_Data\Providers::render_tag( "{$tag}", $post_id );
-			}
-		}
-
 		return rest_ensure_response(
 			[
 				'html'            => $html,
@@ -1718,7 +1591,6 @@ class Api {
 				'popups'          => $popups,
 				'updated_filters' => $updated_filters,
 				'updated_query'   => $query_data,
-				'parsed_af_tags'  => $parsed_af_tags,
 				// 'page_filters'    => Query_Filters::$page_filters,
 				// 'filter_object_ids' => Query_Filters::$filter_object_ids,
 				// 'active_filters'  => Query_Filters::$active_filters,
@@ -1773,8 +1645,8 @@ class Api {
 		}
 
 		// Return: Current user does not have full access
-		if ( ! Builder_Permissions::user_has_permission( 'access_class_manager' ) ) {
-			return new \WP_Error( 'rest_current_user_does_not_have_full_access', __( 'Current user does not have access to get global classes site usage' ), [ 'status' => 403 ] );
+		if ( ! Capabilities::current_user_has_full_access() ) {
+			return new \WP_Error( 'rest_current_user_does_not_have_full_access', __( 'Current user does not have full access' ), [ 'status' => 403 ] );
 		}
 
 		return true;

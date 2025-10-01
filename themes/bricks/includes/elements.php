@@ -5,8 +5,6 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 class Elements {
 	public static $elements = [];
-	public static $manager  = []; // = Element Manager (@since 2.0)
-	public static $native   = []; // Use in Element Manager (@since 2.0)
 
 	public function __construct() {
 		// Init elements on init hook (to get custom registered taxonomies, etc.)
@@ -64,7 +62,6 @@ class Elements {
 			'tabs-nested', // @since 1.5
 			'form',
 			'map',
-			'map-connector', // @since 2.0
 			'alert',
 			'animated-typing',
 			'countdown',
@@ -132,38 +129,18 @@ class Elements {
 				'filter-search',
 				'filter-select',
 				'filter-submit',
-				'filter-active-filters',
+				'filter-active-filters', // @since 1.11
 			];
 
 			$element_names = array_merge( $element_names, $input_elements );
 		}
 
-		// Add element names to self::$native element names array (@since 2.0)
-		self::$native = array_merge( self::$native, $element_names );
-
 		$element_names = apply_filters( 'bricks/builder/elements', $element_names );
 
-		/**
-		 * Get element manager data
-		 *
-		 * Remove element if 'status' is 'disabled'
-		 *
-		 * @since 2.0
-		 */
-		self::$manager = self::manager();
-
 		foreach ( $element_names as $element_name ) {
-			// Skip if element is disabled and we aren't on the Bricks > Elements page (@since 2.0)
-			if ( isset( self::$manager[ $element_name ]['status'] ) && self::$manager[ $element_name ]['status'] === 'disabled' ) {
-				$page_name = $_GET['page'] ?? '';
-				if ( $page_name !== 'bricks-elements' ) {
-					continue;
-				}
-			}
-
 			$file = BRICKS_PATH . "includes/elements/$element_name.php";
 
-			// Construct element class name from element name to avoid having to get all declared classes
+			// Construct element class name from element name (@since 1.4 avoids having to get all delared classes)
 			$class_name = str_replace( '-', '_', $element_name );
 			$class_name = ucwords( $class_name, '_' );
 			$class_name = "Bricks\\Element_$class_name";
@@ -171,39 +148,6 @@ class Elements {
 			// Register all elements in builder & frontend
 			self::register_element( $file, $element_name, $class_name );
 		}
-	}
-
-	/**
-	 * Get mandatory elements
-	 *
-	 * @since 2.0.2
-	 */
-	public static function mandatory_elements() {
-		return [
-			'container',
-			'posts',
-			'post-comments',
-		];
-	}
-
-	/**
-	 * Get element manager data
-	 *
-	 * @since 2.0.2
-	 */
-	public static function manager() {
-		$manager = get_option( BRICKS_DB_ELEMENT_MANAGER, [] );
-
-		// Rectify element status in case user disabled it in previous version (@since 2.0.2)
-		$mandatory_elements = self::mandatory_elements();
-		foreach ( $mandatory_elements as $element_name ) {
-			if ( isset( $manager[ $element_name ]['status'] ) && $manager[ $element_name ]['status'] !== 'active' ) {
-				// Set mandatory element status to 'active'
-				$manager[ $element_name ]['status'] = 'active';
-			}
-		}
-
-		return $manager;
 	}
 
 	/**

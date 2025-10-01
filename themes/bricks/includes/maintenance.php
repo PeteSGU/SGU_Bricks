@@ -4,10 +4,9 @@ namespace Bricks;
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 class Maintenance {
-	private static $instance         = null;
-	private static $mode             = false;
-	private static $template_id      = false;
-	private static $original_post_id = null; // Store the original post ID before maintenance mode is applied (Polylang language switcher needs it)
+	private static $instance    = null;
+	private static $mode        = false;
+	private static $template_id = false;
 
 	public function __construct() {
 		self::$mode = Database::get_setting( 'maintenanceMode' );
@@ -65,37 +64,6 @@ class Maintenance {
 			return;
 		}
 
-		// Return: Current post is in the excluded posts list
-		$excluded_posts = Database::get_setting( 'maintenanceExcludedPosts', [] );
-		if ( ! empty( $excluded_posts ) && in_array( get_the_ID(), $excluded_posts ) ) {
-			return;
-		}
-
-		// STEP: At this point, all built-in checks have passed, so maintenance mode should apply
-		$apply_maintenance = true;
-
-		/**
-		 * Filter: Allows developers to override the maintenance mode decision
-		 *
-		 * This filter fires AFTER all built-in checks have determined that maintenance mode should apply.
-		 * It gives developers a final opportunity to override this decision based on their own custom logic.
-		 *
-		 * @param bool $apply_maintenance Whether to apply maintenance mode (default: true)
-		 * @param string $mode Current maintenance mode ('maintenance' or 'coming_soon')
-		 *
-		 * @since 2.0
-		 */
-		$apply_maintenance = apply_filters(
-			'bricks/maintenance/should_apply',
-			$apply_maintenance,
-			self::$mode,
-		);
-
-		// Return if filter decides not to apply maintenance mode
-		if ( ! $apply_maintenance ) {
-			return;
-		}
-
 		// STEP: Serve the maintenance page content instead of the requested page
 		if ( self::$mode === 'maintenance' ) {
 			status_header( 503 );
@@ -114,8 +82,6 @@ class Maintenance {
 		// WPML: Get the translated template ID if WPML is active (@since 1.10.2)
 		if ( \Bricks\Integrations\Wpml\Wpml::$is_active ) {
 			$maintenance_template_id = apply_filters( 'wpml_object_id', $maintenance_template_id, BRICKS_DB_TEMPLATE_SLUG, true );
-		} elseif ( \Bricks\Integrations\Polylang\Polylang::$is_active ) {
-			$maintenance_template_id = pll_get_post( $maintenance_template_id );
 		}
 
 		// Ensure the maintenance template is published and has Bricks data
@@ -177,11 +143,6 @@ class Maintenance {
 		$active_templates['content_type'] = 'content';
 		$active_templates['content']      = self::$template_id;
 
-		// Save the original post ID to restore later (@since 2.0)
-		self::$original_post_id = ( isset( $GLOBALS['post'] ) && is_object( $GLOBALS['post'] ) )
-		? $GLOBALS['post']->ID
-		: null;
-
 		// Replace the global query with the maintenance template
 		$GLOBALS['wp_query'] = new \WP_Query(
 			[
@@ -196,16 +157,6 @@ class Maintenance {
 		$GLOBALS['post'] = $GLOBALS['wp_query']->post;
 
 		return $active_templates;
-	}
-
-	/**
-	 * Get the original post ID before maintenance mode was applied
-	 *
-	 * @return int|null
-	 * @since 2.0
-	 */
-	public static function get_original_post_id() {
-		return self::$original_post_id;
 	}
 
 	/**

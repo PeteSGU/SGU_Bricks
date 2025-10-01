@@ -41,7 +41,6 @@ class Filter_Search extends Filter_Element {
 			'type'  => 'separator',
 		];
 
-		// Placeholder
 		$this->controls['placeholder'] = [
 			'label'       => esc_html__( 'Placeholder', 'bricks' ),
 			'type'        => 'text',
@@ -60,28 +59,9 @@ class Filter_Search extends Filter_Element {
 			],
 		];
 
-		// Label (@since 2.0.2)
-		$this->controls['label'] = [
-			'label'  => esc_html__( 'Label', 'bricks' ),
-			'type'   => 'text',
-			'inline' => true,
-		];
-
-		$this->controls['labelTypography'] = [
-			'label'    => esc_html__( 'Label typography', 'bricks' ),
-			'type'     => 'typography',
-			'css'      => [
-				[
-					'property' => 'font',
-					'selector' => 'label',
-				],
-			],
-			'required' => [ 'label', '!=', '' ],
-		];
-
 		// Icon (Clear)
 		$this->controls['iconSep'] = [
-			'label' => esc_html__( 'Icon', 'bricks' ) . ' (' . esc_html__( 'Clear', 'bricks' ) . ')',
+			'label' => esc_html__( 'Icon', 'bricks' ) . ' ( ' . esc_html__( 'Clear', 'bricks' ) . ')',
 			'type'  => 'separator',
 		];
 
@@ -139,7 +119,6 @@ class Filter_Search extends Filter_Element {
 		$settings         = $this->settings;
 		$placeholder      = ! empty( $settings['placeholder'] ) ? $this->render_dynamic_data( $settings['placeholder'] ) : esc_html__( 'Search', 'bricks' );
 		$icon             = $settings['icon'] ?? false;
-		$label_text       = ! empty( $settings['label'] ) ? $this->render_dynamic_data( $settings['label'] ) : false;
 		$this->input_name = $settings['name'] ?? "form-field-{$this->id}";
 
 		if ( $this->is_filter_input() ) {
@@ -148,24 +127,12 @@ class Filter_Search extends Filter_Element {
 
 		$this->set_attribute( 'input', 'name', $this->input_name );
 		$this->set_attribute( 'input', 'placeholder', $placeholder );
+		$this->set_attribute( 'input', 'aria-label', $placeholder );
 		$this->set_attribute( 'input', 'type', 'search' );
 		$this->set_attribute( 'input', 'autocomplete', 'off' );
 		$this->set_attribute( 'input', 'spellcheck', 'false' );
 
-		// Has label: Set input ID for accessibility and don't set aria-label (@since 2.0.2)
-		if ( $label_text ) {
-			$input_id = "bricks-filter-search-{$this->id}";
-			$this->set_attribute( 'input', 'id', $input_id );
-		} else {
-			$this->set_attribute( 'input', 'aria-label', $placeholder );
-		}
-
 		echo "<div {$this->render_attributes('_root')}>";
-
-		// Render label (@since 2.0.2)
-		if ( $label_text ) {
-			echo '<label for="' . esc_attr( "bricks-filter-search-{$this->id}" ) . '">' . esc_html( $label_text ) . '</label>';
-		}
 
 		echo "<input {$this->render_attributes('input')}>";
 

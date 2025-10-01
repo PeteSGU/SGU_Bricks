@@ -32,9 +32,6 @@ class Registration extends Base {
 			// Use part before @ as user_login
 			$user_login = explode( '@', $user_email )[0];
 
-			// Sanitize the username to remove invalid characters (@since 2.0)
-			$user_login = sanitize_user( $user_login, true );
-
 			// user_login taken: Append number to user_login
 			if ( username_exists( $user_login ) ) {
 				$i = 1;

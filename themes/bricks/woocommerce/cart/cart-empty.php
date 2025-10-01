@@ -88,8 +88,8 @@ if ( $template_id ) {
 		isset( $_GET['removed_item'] ) ||
 		( isset( $_SERVER['HTTP_REFERER'] ) && $_SERVER['HTTP_REFERER'] === wc_get_cart_url() )
 	) {
-		Bricks\Assets::generate_global_classes( 'global_classes_empty_cart' );
-		$inline_css  = Bricks\Assets::$inline_css['global_classes_empty_cart'] ?? '';
+		// $inline_css = Bricks\Assets::generate_inline_css();
+		$inline_css  = Bricks\Assets::$inline_css['global_classes'];
 		$inline_css .= Bricks\Assets::$inline_css[ "template_$template_id" ];
 
 		echo "<style id=\"bricks-cart-empty-inline-css\">$inline_css</style>"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped

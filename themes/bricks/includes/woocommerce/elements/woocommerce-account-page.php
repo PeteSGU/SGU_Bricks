@@ -389,12 +389,6 @@ class Woocommerce_Account_Page extends Woo_Element {
 					echo "<div {$this->render_attributes( '_root' )}>{$bricks_template}</div>";
 					return;
 				}
-
-				// Fallback: Get 'wc_account_form_lost_password_confirmation' Woo template
-				else {
-					wc_get_template( 'myaccount/lost-password-confirmation.php' );
-					return;
-				}
 			}
 
 			// Lost password form

@@ -1058,7 +1058,7 @@ class Woocommerce_Products_Filters extends Element {
 
 			$terms = get_terms( $terms_args );
 
-			if ( $terms && ! is_wp_error( $terms ) ) {
+			if ( $terms ) {
 				foreach ( $terms as $term ) {
 					$options[] = [
 						'id'   => $term->term_id,

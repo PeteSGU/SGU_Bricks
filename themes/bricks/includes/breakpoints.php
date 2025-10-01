@@ -110,7 +110,7 @@ class Breakpoints {
 		Ajax::verify_nonce( 'bricks-nonce-builder' );
 
 		// Only users with full access can update breakpoints (@since 1.5.4)
-		if ( ! Builder_Permissions::user_has_permission( 'access_breakpoints_manager' ) ) {
+		if ( ! Capabilities::current_user_has_full_access() ) {
 			wp_send_json_error( 'verify_request: Sorry, you are not allowed to perform this action.' );
 		}
 

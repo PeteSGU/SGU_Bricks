@@ -19,7 +19,7 @@ class Interactions {
 		// Add popup interactions (template settings) to popup root
 		add_filter( 'bricks/popup/attributes', [ $this, 'add_to_template_root' ], 10, 2 );
 
-		add_action( 'init', [ $this, 'set_controls' ], 10 );
+		$this->set_controls();
 
 		self::get_global_class_interactions();
 	}
@@ -59,48 +59,40 @@ class Interactions {
 			'formSubmit'        => esc_html__( 'Form', 'bricks' ) . ' ' . esc_html__( 'Submit', 'bricks' ),
 			'formSuccess'       => esc_html__( 'Form', 'bricks' ) . ' ' . esc_html__( 'Success', 'bricks' ),
 			'formError'         => esc_html__( 'Form', 'bricks' ) . ' ' . esc_html__( 'Error', 'bricks' ),
+			'browserGroupTitle' => esc_html__( 'Browser', 'bricks' ) . ' / ' . esc_html__( 'Window', 'bricks' ),
+			'scroll'            => esc_html__( 'Scroll', 'bricks' ),
+			'contentLoaded'     => esc_html__( 'Content loaded', 'bricks' ),
+			'mouseleaveWindow'  => esc_html__( 'Mouse leave window', 'bricks' ),
 		];
 
-		// Interactions for browser/window events
-		$trigger_options['browserGroupTitle'] = esc_html__( 'Browser', 'bricks' ) . ' / ' . esc_html__( 'Window', 'bricks' );
-		$trigger_options['scroll']            = esc_html__( 'Scroll', 'bricks' );
-		$trigger_options['contentLoaded']     = esc_html__( 'Content loaded', 'bricks' );
-		$trigger_options['mouseleaveWindow']  = esc_html__( 'Mouse leave window', 'bricks' );
-
-		// Interactions for Query filter (@since 1.11)
+		// Query filter interactions (@since 1.11)
 		if ( Helpers::enabled_query_filters() ) {
 			$trigger_options['filterGroupTitle']     = esc_html__( 'Query filters', 'bricks' );
 			$trigger_options['filterOptionEmpty']    = esc_html__( 'Filter', 'bricks' ) . ': ' . esc_html__( 'Empty', 'bricks' );
 			$trigger_options['filterOptionNotEmpty'] = esc_html__( 'Filter', 'bricks' ) . ': ' . esc_html__( 'Not empty', 'bricks' );
 		}
 
-		// Interactions for WooCommerce events (@since 2.0)
-		if ( Woocommerce::$is_active ) {
-			$trigger_options['wooGroupTitle']      = 'WooCommerce';
-			$trigger_options['wooAddedToCart']     = esc_html__( 'Added to cart', 'bricks' );
-			$trigger_options['wooAddingToCart']    = esc_html__( 'Adding to cart', 'bricks' );
-			$trigger_options['wooRemovedFromCart'] = esc_html__( 'Removed from cart', 'bricks' );
-			$trigger_options['wooUpdateCart']      = esc_html__( 'Cart updated', 'bricks' );
-			$trigger_options['wooCouponApplied']   = esc_html__( 'Coupon applied', 'bricks' );
-			$trigger_options['wooCouponRemoved']   = esc_html__( 'Coupon removed', 'bricks' );
-		}
-
 		// STEP: Add interaction controls (= repeater)
 		self::$control_options = [
 			'type'          => 'repeater',
 			'titleProperty' => 'trigger',
-			'titleEditable' => true,
+			'titleEditable' => true, // @since 1.6
 			'placeholder'   => esc_html__( 'Interaction', 'bricks' ),
 			'fields'        => [
-				// Show Interaction ID for copy & paste to other interactions
+				/**
+				 * Display Interaction ID to copy & paste to other interactions
+				 *
+				 * @since 1.8.4
+				 */
 				'id'                            => [
-					'label'          => esc_html__( 'ID', 'bricks' ),
+					'label'          => esc_html__( 'Interaction ID', 'bricks' ),
 					'type'           => 'text',
 					'clearable'      => false,
 					'inline'         => true,
 					'readonly'       => true,
+					'small'          => true,
 					'hasDynamicData' => false,
-					'copyable'       => true, // NOTE: Undocumented
+					'copyable'       => true, // NOTE: Undocumented (don't use with hasDynamicData (@since 1.8.4))
 				],
 
 				'trigger'                       => [
@@ -108,25 +100,6 @@ class Interactions {
 					'type'        => 'select',
 					'options'     => $trigger_options,
 					'placeholder' => esc_html__( 'Select', 'bricks' ),
-				],
-
-				// @since 2.0
-				'disablePreventDefault'         => [
-					'label'    => esc_html__( 'Disable', 'bricks' ) . ': preventDefault',
-					'type'     => 'checkbox',
-					'required' => [ 'trigger', '=', 'click' ],
-					'desc'     => esc_html__( 'Allow the element\'s normal click behavior (like following links) instead of blocking it.', 'bricks' ),
-				],
-
-				// @since 2.0
-				'rootMargin'                    => [
-					'label'       => 'rootMargin',
-					'type'        => 'text',
-					'placeholder' => '0px 0px 0px 0px',
-					'required'    => [ 'trigger', '=', 'enterView' ],
-					'desc'        =>
-					// translators: %s is the value for root margin
-					sprintf( esc_html__( 'To trigger the interaction when 50%% of the element is in the viewport, set the rootMargin to %s.', 'bricks' ), '<a href="https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/rootMargin" target="_blank"><code>0px 0px -50% 0px</code></a>' ),
 				],
 
 				'ajaxQueryId'                   => [
@@ -196,14 +169,11 @@ class Interactions {
 						'setAttribute'    => esc_html__( 'Set attribute', 'bricks' ),
 						'removeAttribute' => esc_html__( 'Remove attribute', 'bricks' ),
 						'toggleAttribute' => esc_html__( 'Toggle attribute', 'bricks' ),
-						'toggleOffCanvas' => esc_html__( 'Toggle offcanvas', 'bricks' ),
+						'toggleOffCanvas' => esc_html__( 'Toggle offcanvas', 'bricks' ), // @since 1.11
 						'loadMore'        => esc_html__( 'Load more', 'bricks' ) . ' (' . esc_html__( 'Query loop', 'bricks' ) . ')',
 						'startAnimation'  => esc_html__( 'Start animation', 'bricks' ),
 						'scrollTo'        => esc_html__( 'Scroll to', 'bricks' ),
 						'javascript'      => 'JavaScript ' . esc_html__( '(Function)', 'bricks' ),
-						'openAddress'     => esc_html__( 'Open address' ) . ' (' . esc_html__( 'Map', 'bricks' ) . ')', // (@since 2.0)
-						'closeAddress'    => esc_html__( 'Close address' ) . ' (' . esc_html__( 'Map', 'bricks' ) . ')', // (@since 2.0)
-						'clearForm'       => esc_html__( 'Clear form', 'bricks' ), // (@since 2.0)
 						'storageAdd'      => esc_html__( 'Browser storage', 'bricks' ) . ': ' . esc_html__( 'Add', 'bricks' ),
 						'storageRemove'   => esc_html__( 'Browser storage', 'bricks' ) . ': ' . esc_html__( 'Remove', 'bricks' ),
 						'storageCount'    => esc_html__( 'Browser storage', 'bricks' ) . ': ' . esc_html__( 'Count', 'bricks' ),
@@ -271,17 +241,6 @@ class Interactions {
 					'required'       => [ 'action', '=', 'startAnimation' ],
 				],
 
-				// Target Form ID (@since 2.0)
-				'targetFormSelector'            => [
-					'label'       => esc_html__( 'Target form selector', 'bricks' ) ,
-					'type'        => 'text',
-					'placeholder' => 'form', // If no selector provided, it will clear all forms
-					'required'    => [
-						[ 'action', '=', [ 'clearForm' ] ],
-						[ 'trigger', '!=', [ 'formSubmit', 'formSuccess', 'formError' ] ],
-					],
-				],
-
 				'target'                        => [
 					'label'       => esc_html__( 'Target', 'bricks' ),
 					'type'        => 'select',
@@ -291,18 +250,16 @@ class Interactions {
 						'popup'  => esc_html__( 'Popup', 'bricks' ),
 					],
 					'placeholder' => esc_html__( 'Self', 'bricks' ),
-					'required'    => [ 'action', '!=', [ 'loadMore', 'storageAdd', 'storageRemove', 'storageCount', 'toggleOffCanvas', 'openAddress', 'closeAddress', 'clearForm' ] ],
+					'required'    => [ 'action', '!=', [ 'loadMore', 'storageAdd', 'storageRemove', 'storageCount', 'toggleOffCanvas' ] ],
 				],
 
 				'targetSelector'                => [
 					'label'    => esc_html__( 'CSS selector', 'bricks' ),
 					'type'     => 'text',
-					'required' => [
-						[ 'target', '=', 'custom' ],
-						[ 'action', '!=', [ 'loadMore', 'storageAdd', 'storageRemove', 'storageCount', 'toggleOffCanvas', 'openAddress', 'closeAddress' ] ],
-					],
+					'required' => [ 'target', '=', 'custom' ],
 				],
 
+				// (@since 1.11)
 				'toggleOffCanvasInfo'           => [
 					'type'     => 'info',
 					'content'  => esc_html__( 'Do not set this interaction on a Toggle element.', 'bricks' ),
@@ -331,22 +288,10 @@ class Interactions {
 				'templateId'                    => [
 					'label'       => esc_html__( 'Popup', 'bricks' ),
 					'type'        => 'select',
-					'options'     => bricks_is_builder() ? Templates::get_templates_list( 'popup' ) : [],
+					'options'     => bricks_is_builder() ? Templates::get_templates_list( [ 'popup' ] ) : [],
 					'searchable'  => true,
 					'placeholder' => esc_html__( 'Select template', 'bricks' ),
-					'required'    => [
-						[ 'target', '=', 'popup' ],
-						[ 'action', '!=', [ 'openAddress', 'closeAddress' ] ],
-					],
-				],
-
-				'infoBoxId'                     => [
-					'label'       => esc_html__( 'Info Box', 'bricks' ),
-					'type'        => 'select',
-					'options'     => bricks_is_builder() ? Templates::get_templates_list( 'infobox' ) : [],
-					'searchable'  => true,
-					'placeholder' => esc_html__( 'Select template', 'bricks' ),
-					'required'    => [ 'action', '=', [ 'openAddress', 'closeAddress' ] ],
+					'required'    => [ 'target', '=', 'popup' ],
 				],
 
 				// @since 1.9.4

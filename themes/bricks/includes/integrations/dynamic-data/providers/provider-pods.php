@@ -95,8 +95,8 @@ class Provider_Pods extends Base {
 
 		switch ( $field['type'] ) {
 			case 'code':
-				$theme_style_setting = \Bricks\Theme_Styles::get_setting_by_key( 'code', 'prettify' );
-				$classes             = $theme_style_setting ? "prettyprint $theme_style_setting" : '';
+				$theme_styles = \Bricks\Theme_Styles::$active_settings;
+				$classes      = isset( $theme_styles['code']['prettify'] ) ? 'prettyprint ' . $theme_styles['code']['prettify'] : '';
 
 				if ( is_array( $value ) ) {
 					$value = implode( "\n", $value );

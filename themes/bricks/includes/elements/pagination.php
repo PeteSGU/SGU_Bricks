@@ -213,7 +213,6 @@ class Pagination extends Element {
 		$element_id       = $query_id;
 		$element_settings = [];
 		$query_element_id = $query_id;
-		$main_query_id    = (string) Database::$main_query_id;
 
 		// Query from a query Loop
 		if ( $query_id && $query_id !== 'main' ) {
@@ -287,18 +286,6 @@ class Pagination extends Element {
 			// Destroy query to explicitly remove it from the global store
 			$query_obj->destroy();
 			unset( $query_obj );
-		}
-
-		// Handle main query setting in Bricks API endpoints (@since 2.0)
-		elseif ( $main_query_id !== '' && $query_id === 'main' && ( Api::is_current_endpoint( 'query_result' ) || Api::is_current_endpoint( 'load_query_page' ) ) ) {
-			$total_pages  = 1;
-			$current_page = 1;
-			$query_obj    = Helpers::get_query_object_from_history_or_init( $main_query_id, $this->post_id );
-
-			if ( isset( $query_obj->query_vars ) && isset( $query_obj->query_vars['is_archive_main_query'] ) && $query_obj->query_vars['is_archive_main_query'] ) {
-				$current_page = isset( $query_obj->query_vars['paged'] ) ? max( 1, $query_obj->query_vars['paged'] ) : 1;
-				$total_pages  = isset( $query_obj->max_num_pages ) ? $query_obj->max_num_pages : 1;
-			}
 		}
 
 		// Default: Main query

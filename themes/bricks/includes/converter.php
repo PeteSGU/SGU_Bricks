@@ -2,137 +2,16 @@
 namespace Bricks;
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
+/**
+ * TODO: Can't convert globalElements into nestable elements
+ * As each global element is considered one individual array item.
+ * So nestable elements like 'slider-nested' aren't allowed be to be saved as a global element!
+ */
 class Converter {
 	public function __construct() {
 		add_action( 'wp_ajax_bricks_get_converter_items', [ $this, 'get_converter_items' ] );
 		add_action( 'wp_ajax_bricks_run_converter', [ $this, 'run_converter' ] );
-
-		add_action( 'wp_ajax_bricks_convert_global_elements', [ $this, 'convert_global_elements' ] );
-	}
-
-	/**
-	 * Convert global elements to components
-	 */
-	public function convert_global_elements() {
-		Ajax::verify_nonce( 'bricks-nonce-admin' );
-
-		$post_id          = $_POST['postId'] ?? null;
-		$unlink_nestables = $_POST['unlinkNestables'] ?? false;
-		$post_meta_key    = BRICKS_DB_PAGE_CONTENT;
-		$components       = get_option( BRICKS_DB_COMPONENTS, [] );
-
-		Elements::load_elements();
-
-		// STEP: Convert all global elements of specific post to components
-		if ( $post_id ) {
-			// Get all Bricks elements of post
-			$elements  = get_post_meta( $post_id, BRICKS_DB_PAGE_CONTENT, true );
-			$post_type = get_post_type( $post_id );
-
-			if ( ! $elements && $post_type === BRICKS_DB_TEMPLATE_SLUG ) {
-				$elements = get_post_meta( $post_id, BRICKS_DB_PAGE_HEADER, true );
-
-				if ( ! $elements ) {
-					$elements      = get_post_meta( $post_id, BRICKS_DB_PAGE_FOOTER, true );
-					$post_meta_key = BRICKS_DB_PAGE_FOOTER;
-				} else {
-					$post_meta_key = BRICKS_DB_PAGE_HEADER;
-				}
-			}
-
-			// Loop over elements & convert global elements to components
-			if ( is_array( $elements ) && count( $elements ) ) {
-				foreach ( $elements as $index => $element ) {
-					$global_element    = Helpers::get_global_element( $element );
-					$global_element_id = $global_element['global'] ?? 0;
-					$new_component_id  = Helpers::generate_random_id( false );
-
-					if ( ! $global_element_id ) {
-						continue;
-					}
-
-					$is_nestable = Elements::$elements[ $element['name'] ]['nestable'] ?? false;
-
-					// Not a nestable element: Convert global element to component
-					if ( $is_nestable != 1 ) {
-						// Remove global element identifier
-						unset( $elements[ $index ]['global'] );
-
-						// STEP: Create new component from global element and add to components array, then save to DB
-						$new_component = [
-							'id'         => $new_component_id,
-							'category'   => 'Converted Global Elements',
-							'desc'       => '',
-							'elements'   => [
-								[
-									'id'       => $new_component_id,
-									'name'     => $global_element['name'],
-									'parent'   => 0,
-									'children' => [],
-									'settings' => $global_element['settings'] ?? [],
-								],
-							],
-							'properties' => [],
-							'_created'   => time(),
-							'_user_id'   => get_current_user_id(),
-							'_version'   => BRICKS_VERSION,
-							'_converted_from_global_element_id' => $global_element_id, // NOTE: Flag to indicate that this component was converted from a global element
-						];
-
-						if ( ! empty( $global_element['label'] ) ) {
-							$new_component['elements'][0]['label'] = esc_html( $global_element['label'] );
-						}
-
-						// Add new component to components array, if no other component with same 'id' exists
-						$component_ids = array_column( $components, '_converted_from_global_element_id' );
-						if ( array_search( $global_element_id, $component_ids ) === false ) {
-							$components[] = $new_component;
-
-							// Save components in DB
-							update_option( BRICKS_DB_COMPONENTS, $components );
-
-							// Set component instance 'cid' to new component ID
-							$elements[ $index ]['cid'] = $new_component_id;
-						}
-
-						// Component with global element ID already exists
-						else {
-							// Set component instance 'cid' to existing component ID
-							foreach ( $components as $component ) {
-								$global_element_id = $component['_converted_from_global_element_id'] ?? false;
-
-								if ( $global_element_id && $global_element_id === $global_element_id ) {
-									$elements[ $index ]['cid'] = $component['id'];
-								}
-							}
-						}
-					}
-
-					// STEP: Unlink nestable elements and use global element settings
-					if ( $is_nestable == 1 && $unlink_nestables == 'true' ) {
-						// Use global element settings for individual element
-						if ( isset( $global_element['settings'] ) ) {
-							$elements[ $index ]['settings'] = $global_element['settings'];
-						}
-
-						// Remove global element identifier
-						unset( $elements[ $index ]['global'] );
-					}
-				}
-
-				// Update Bricks data post meta
-				update_post_meta( $post_id, $post_meta_key, $elements );
-			}
-		}
-
-		wp_send_json_success(
-			[
-				'post_id'          => $post_id,
-				'message'          => $post_id ? get_the_title( $post_id ) . ': ' . esc_html__( 'Global elements converted to components.', 'bricks' ) : esc_html__( 'No post ID provided.', 'bricks' ),
-				'components'       => $components,
-				'unlink_nestables' => $unlink_nestables,
-			]
-		);
 	}
 
 	/**
@@ -174,6 +53,8 @@ class Converter {
 		// Global elements (for any converter action)
 		$items_to_convert[] = 'globalElements';
 
+		// Get template & post IDs (for any converter action)
+
 		// Get IDs of all Bricks templates
 		$template_ids     = Templates::get_all_template_ids();
 		$items_to_convert = array_merge( $items_to_convert, $template_ids );
@@ -194,6 +75,7 @@ class Converter {
 	 * Run converter
 	 *
 	 * @since 1.4 Convert element IDs & class names for 1.4 ('bricks-element-' to 'brxe-')
+	 * @since 1.5 Convert elements to nestable elements
 	 */
 	public function run_converter() {
 		Ajax::verify_nonce( 'bricks-nonce-admin' );
@@ -247,79 +129,6 @@ class Converter {
 				}
 				break;
 
-			/**
-			 * Convert global elements to components
-			 *
-			 * NOTE: Global elements are deprecated since 2.0!
-			 *
-			 * @since 2.0
-			 */
-			case 'globalElementsToComponents':
-				$global_elements              = get_option( BRICKS_DB_GLOBAL_ELEMENTS, [] );
-				$components                   = get_option( BRICKS_DB_COMPONENTS, [] );
-				$components_count             = count( $components );
-				$component_ids                = array_column( $components, 'id' );
-				$new_components_created       = 0;
-				$components_already_converted = 0;
-
-				foreach ( $global_elements as $global_element ) {
-					$global_element_id = $global_element['global'] ?? $global_element['id'];
-					$component         = [
-						'id'         => $global_element_id,
-						'category'   => 'Converted Global Elements',
-						'desc'       => '',
-						'elements'   => [
-							[
-								'id'       => $global_element_id,
-								'name'     => $global_element['name'],
-								'parent'   => 0,
-								'children' => [],
-								'settings' => $global_element['settings'] ?? [],
-							],
-						],
-						'properties' => [],
-						'_created'   => time(),
-						'_user_id'   => get_current_user_id(),
-						'_version'   => BRICKS_VERSION,
-						'_converted' => 'global_element', // NOTE: Flag to indicate that this component was converted from a global element
-					];
-
-					if ( ! empty( $global_element['label'] ) ) {
-						$component['elements'][0]['label'] = esc_html( $global_element['label'] );
-					}
-
-					// Add new component to components array, if no other component with same 'id' exists
-					if ( array_search( $global_element_id, $component_ids ) === false ) {
-						$components[] = $component;
-						$new_components_created++;
-					}
-
-					// Global element already converted to component
-					else {
-						$components_already_converted++;
-					}
-				}
-
-				// Update components in DB (if any new components were created)
-				$updated[ $data ] = $components_count !== count( $components ) ? update_option( BRICKS_DB_COMPONENTS, $components ) : false; // true if successful
-
-				// New components created
-				if ( $new_components_created > 0 ) {
-					// translators: %1$s: Number of components created, %2$s: Total number of global elements
-					$label = sprintf(
-						esc_html__( '%1$s out of %2$s global elements have been converted to components.', 'bricks' ),
-						$new_components_created,
-						count( $global_elements )
-					);
-				}
-
-				// Global elements already converted to components
-				if ( $components_already_converted > 0 ) {
-					// translators: %1$s: Number of components already converted, %2$s: Total number of global elements
-					$label = sprintf( esc_html__( '%1$s out of %2$s global elements components were already converted to components.', 'bricks' ), $components_already_converted, count( $global_elements ) );
-				}
-				break;
-
 			// Individual post + any possible page settings (that has Bricks data OR is Bricks template)
 			default:
 				$post_id       = $data;
@@ -342,7 +151,7 @@ class Converter {
 					}
 				}
 
-				// No 'header' or 'footer' data: Check for 'content' post meta
+				// No 'header', nor footer' data: Check for 'content' post meta
 				if ( ! $elements ) {
 					$elements = get_post_meta( $post_id, BRICKS_DB_PAGE_CONTENT, true );
 
@@ -365,7 +174,7 @@ class Converter {
 							// Generate label to show in Bricks settings
 							$post_type_object = get_post_type_object( $post_type );
 							$post_type        = $post_type_object ? $post_type_object->labels->singular_name : $post_type;
-							$label            = "$post_type: <a href='" . Helpers::get_builder_edit_link( $post_id ) . "' target='_blank'>" . get_the_title( $post_id ) . '</a>';
+							$label            = "$post_type: " . get_the_title( $post_id );
 						}
 					}
 
@@ -401,11 +210,464 @@ class Converter {
 	}
 
 	/**
-	 * Convert: elementClasses
+	 * Convert plain element to nestable elements
+	 *
+	 * Slider > Nestable slider
+	 * Testimonial > Nestable slider
+	 * Carousel > Nestable slider
+	 *
+	 * @return array
+	 *
+	 * @since 1.5
+	 */
+	private function convert_to_nestable_elements( $elements, $count ) {
+		foreach ( $elements as $index => $element ) {
+			// 'slider', 'testimonial', 'carousel' to 'slider-nested'
+			if ( in_array( $element['name'], [ 'slider', 'testimonial', 'carousel' ] ) ) {
+				$nestable_elements  = self::convert_to_nestable_slider( $element );
+				$elements_to_remove = 1;
+				array_splice( $elements, $index, $elements_to_remove, $nestable_elements );
+				array_values( $elements );
+				$count++;
+			}
+		}
+
+		return [
+			'elements' => $elements,
+			'count'    => $count,
+		];
+	}
+
+	/**
+	 * Convert slider/testimonials element to nestable slider
+	 *
+	 * @return array $elements Elements array with new nestable slider + child elements.
+	 *
+	 * @since 1.5
+	 */
+	private function convert_to_nestable_slider( $element ) {
+		$element_name      = $element['name'];
+		$settings          = $element['settings'];
+		$nestable_elements = [];
+
+		$slider = [
+			'id'       => $element['id'],
+			'parent'   => $element['parent'],
+			'name'     => 'slider-nested',
+			'children' => [],
+			'settings' => [],
+		];
+
+		if ( ! empty( $element['global'] ) ) {
+			$slider['global'] = $element['global'];
+		}
+
+		if ( $element_name === 'slider' ) {
+			if ( ! empty( $settings['contentAlignHorizontal'] ) ) {
+				$nestable_element['settings']['slideAlignHorizontal'] = $settings['contentAlignHorizontal'];
+			}
+
+			if ( ! empty( $settings['contentAlignVertical'] ) ) {
+				$nestable_element['settings']['slideAlignVertical'] = $settings['contentAlignVertical'];
+			}
+		} elseif ( $element_name === 'testimonials' ) {
+			$slider['label'] = esc_html__( 'Testimonials', 'bricks' ) . ' (' . esc_html__( 'Nestable', 'bricks' ) . ')';
+		} elseif ( $element_name === 'carousel' ) {
+			$slider['label'] = esc_html__( 'Carousel', 'bricks' ) . ' (' . esc_html__( 'Nestable', 'bricks' ) . ')';
+		}
+
+		$slides   = ! empty( $settings['items'] ) ? $settings['items'] : [];
+		$has_loop = isset( $settings['hasLoop'] );
+
+		// Carousel: No individual slides (media: 'items' OR query: 'query')
+		if ( $element_name === 'carousel' ) {
+			$carousel_type = ! empty( $settings['type'] ) ? $settings['type'] : 'media';
+
+			if ( $carousel_type === 'media' ) {
+				$slides = ! empty( $settings['items']['images'] ) ? $settings['items']['images'] : [];
+			}
+
+			// Don't merge into new 'slider-nested', which has it's own 'type' setting
+			unset( $settings['type'] );
+
+			if ( $carousel_type === 'posts' ) {
+				$has_loop = true;
+				$slides   = ! empty( $settings['fields'] ) ? $settings['fields'] : [];
+			}
+		}
+
+		// STEP: Generate individual slides
+		foreach ( $slides as $index => $slide ) {
+			// Is query loop: Skip any slide after first one
+			if ( $has_loop && $index !== 0 ) {
+				continue;
+			}
+
+			$child_label = esc_html__( 'Slide', 'bricks' );
+
+			if ( $element_name === 'testimonials' ) {
+				$child_label = esc_html__( 'Testimonial', 'bricks' );
+			}
+
+			// Direct child element (= slide)
+			$child_element = [
+				'id'       => Helpers::generate_random_id( false ),
+				'name'     => 'block',
+				'label'    => $child_label,
+				'parent'   => $element['id'],
+				'children' => [],
+				'settings' => [],
+			];
+
+			// Populate first child div element with 'hasLoop' & 'query' settings
+			if ( $has_loop ) {
+				$child_element['settings']['hasLoop'] = true;
+
+				if ( ! empty( $settings['query'] ) ) {
+					$child_element['settings']['query'] = $settings['query'];
+				}
+			}
+
+			// Add new Div element ID to nestable 'children'
+			$slider['children'][] = $child_element['id'];
+
+			// STEP: Convert in-slide elements
+			if ( $element_name === 'slider' ) {
+				if ( ! empty( $slide['background'] ) ) {
+					$child_element['settings']['_background'] = $slide['background'];
+				}
+
+				// Heading element = 'title'
+				if ( ! empty( $slide['title'] ) ) {
+					$heading_element = [
+						'id'       => Helpers::generate_random_id( false ),
+						'name'     => 'heading',
+						'parent'   => $child_element['id'],
+						'settings' => [
+							'text' => $slide['title'],
+						],
+					];
+
+					$slide_tag = ! empty( $slide['titleTag'] ) ? Helpers::sanitize_html_tag( $slide['titleTag'], '' ) : '';
+					if ( $slide_tag ) {
+						$heading_element['settings']['tag'] = $slide_tag;
+					}
+
+					$child_element['children'][] = $heading_element['id'];
+
+					$nestable_elements[] = $heading_element;
+				}
+
+				// Text element = 'content'
+				if ( ! empty( $slide['content'] ) ) {
+					$text_element = [
+						'id'       => Helpers::generate_random_id( false ),
+						'name'     => 'text',
+						'parent'   => $child_element['id'],
+						'settings' => [
+							'text' => $slide['content'],
+						],
+					];
+
+					$child_element['children'][] = $text_element['id'];
+
+					$nestable_elements[] = $text_element;
+				}
+
+				// Button element = 'buttonText'
+				if ( ! empty( $slide['buttonText'] ) ) {
+					$button_element = [
+						'id'       => Helpers::generate_random_id( false ),
+						'name'     => 'button',
+						'parent'   => $child_element['id'],
+						'settings' => [
+							'text' => $slide['buttonText'],
+						],
+					];
+
+					if ( ! empty( $slide['buttonStyle'] ) ) {
+						$button_element['settings']['style'] = $slide['buttonStyle'];
+					}
+
+					if ( ! empty( $slide['buttonSize'] ) ) {
+						$button_element['settings']['size'] = $slide['buttonSize'];
+					}
+
+					if ( ! empty( $slide['buttonWidth'] ) ) {
+						$button_element['settings']['_widthMin'] = $slide['buttonWidth'];
+					}
+
+					if ( ! empty( $slide['buttonLink'] ) ) {
+						$button_element['settings']['link'] = $slide['buttonLink'];
+					}
+
+					if ( ! empty( $slide['buttonBackground'] ) ) {
+						$button_element['settings']['_background'] = [
+							'color' => $slide['buttonBackground'],
+						];
+					}
+
+					if ( ! empty( $slide['buttonBorder'] ) ) {
+						$button_element['settings']['_border'] = $slide['buttonBorder'];
+					}
+
+					if ( ! empty( $slide['buttonBoxShadow'] ) ) {
+						$button_element['settings']['_boxShadow'] = $slide['buttonBoxShadow'];
+					}
+
+					if ( ! empty( $slide['buttonTypography'] ) ) {
+						$button_element['settings']['_typography'] = $slide['buttonTypography'];
+					}
+
+					$child_element['children'][] = $button_element['id'];
+
+					$nestable_elements[] = $button_element;
+				}
+			} elseif ( $element_name === 'testimonials' ) {
+				// Text element = 'content'
+				if ( ! empty( $slide['content'] ) ) {
+					$text_element = [
+						'id'       => Helpers::generate_random_id( false ),
+						'name'     => 'text',
+						'label'    => esc_html__( 'Content', 'bricks' ),
+						'parent'   => $child_element['id'],
+						'settings' => [
+							'text' => $slide['content'],
+						],
+					];
+
+					$child_element['children'][] = $text_element['id'];
+
+					$nestable_elements[] = $text_element;
+				}
+
+				// Heading element = 'name'
+				if ( ! empty( $slide['name'] ) ) {
+					$heading_element = [
+						'id'       => Helpers::generate_random_id( false ),
+						'name'     => 'heading',
+						'label'    => esc_html__( 'Name', 'bricks' ),
+						'parent'   => $child_element['id'],
+						'settings' => [
+							'text' => $slide['name'],
+							'tag'  => 'h5',
+						],
+					];
+
+					$child_element['children'][] = $heading_element['id'];
+
+					$nestable_elements[] = $heading_element;
+				}
+
+				// Text basic element = 'title'
+				if ( ! empty( $slide['title'] ) ) {
+					$text_element = [
+						'id'       => Helpers::generate_random_id( false ),
+						'name'     => 'text-basic',
+						'label'    => esc_html__( 'Title', 'bricks' ),
+						'parent'   => $child_element['id'],
+						'settings' => [
+							'text' => $slide['title'],
+						],
+					];
+
+					$child_element['children'][] = $text_element['id'];
+
+					$nestable_elements[] = $text_element;
+				}
+
+				// Image element = 'image'
+				if ( ! empty( $slide['image'] ) ) {
+					$image_element = [
+						'id'       => Helpers::generate_random_id( false ),
+						'name'     => 'image',
+						'parent'   => $child_element['id'],
+						'settings' => [
+							'image'   => $slide['image'],
+							'_width'  => ! empty( $settings['imageSize'] ) ? $settings['imageSize'] : '60px',
+							'_height' => ! empty( $settings['imageSize'] ) ? $settings['imageSize'] : '60px',
+						],
+					];
+
+					if ( ! empty( $settings['imageBorder'] ) ) {
+						$image_element['settings']['_border'] = $settings['imageBorder'];
+					}
+
+					if ( ! empty( $settings['imageBoxShadow'] ) ) {
+						$image_element['settings']['_boxShadow'] = $settings['imageBoxShadow'];
+					}
+
+					$child_element['children'][] = $image_element['id'];
+
+					$nestable_elements[] = $image_element;
+				}
+			}
+
+			// Carousel type 'media' (= image gallery)
+			elseif ( $element_name === 'carousel' && $carousel_type === 'media' ) {
+				$image_element = [
+					'id'       => Helpers::generate_random_id( false ),
+					'name'     => 'image',
+					'parent'   => $child_element['id'],
+					'settings' => [
+						'image' => $slide,
+					],
+				];
+
+				$child_element['children'][] = $image_element['id'];
+
+				$nestable_elements[] = $image_element;
+			}
+
+			// Carousel type 'posts' (= query)
+			elseif ( $element_name === 'carousel' && $carousel_type === 'posts' && ! empty( $settings['fields'] ) ) {
+				// Loop over fields to create per-slide  elements
+				foreach ( $settings['fields'] as $field ) {
+					$html_tag   = ! empty( $field['tag'] ) ? $field['tag'] : 'div';
+					$text       = ! empty( $field['dynamicData'] ) ? $field['dynamicData'] : false;
+					$is_heading = is_numeric( $html_tag );
+
+					if ( ! $text ) {
+						continue;
+					}
+
+					$field_element = [
+						'id'       => Helpers::generate_random_id( false ),
+						'name'     => $is_heading ? 'heading' : 'text-basic',
+						'parent'   => $child_element['id'],
+						'settings' => [
+							'text' => $text,
+						],
+					];
+
+					if ( $html_tag ) {
+						$field_element['settings']['tag'] = $html_tag;
+					}
+
+					if ( ! empty( $field['dynamicMargin'] ) ) {
+						$field_element['settings']['_margin'] = $field['dynamicMargin'];
+					}
+
+					if ( ! empty( $field['dynamicPadding'] ) ) {
+						$field_element['settings']['_padding'] = $field['dynamicPadding'];
+					}
+
+					if ( ! empty( $field['dynamicBackground'] ) ) {
+						$field_element['settings']['_background'] = [
+							'color' => $field['dynamicBackground'],
+						];
+					}
+
+					if ( ! empty( $field['dynamicBorder'] ) ) {
+						$field_element['settings']['_border'] = $field['dynamicBorder'];
+					}
+
+					if ( ! empty( $field['dynamicTypography'] ) ) {
+						$field_element['settings']['_typography'] = $field['dynamicTypography'];
+					}
+
+					$child_element['children'][] = $field_element['id'];
+
+					$nestable_elements[] = $field_element;
+				}
+			}
+
+			$nestable_elements[] = $child_element;
+		}
+
+		// STEP: Get slider settings by checking against nestable slider controls for all breakpoints (swiperJS to splideJS)
+		$element_controls = Elements::get_element( [ 'name' => 'slider-nested' ], 'controls' );
+
+		foreach ( array_keys( $element_controls ) as $control_key ) {
+			if ( ! empty( $settings[ $control_key ] ) ) {
+				$slider['settings'][ $control_key ] = $settings[ $control_key ];
+			}
+
+			foreach ( Breakpoints::$breakpoints as $breakpoint ) {
+				$control_key = "{$control_key}:{$breakpoint['key']}";
+
+				if ( ! empty( $settings[ $control_key ] ) ) {
+					$slider['settings'][ $control_key ] = $settings[ $control_key ];
+				}
+			}
+		}
+
+		// STEP: Map old slider swiperJS keys to new slider-nested splideJS keys
+		$swiper_to_splide = [
+			'height'          => 'height',
+			'gutter'          => 'gap',
+			'initialSlide'    => 'start',
+			'slidesToShow'    => 'perPage',
+			'slidesToScroll'  => 'perMove',
+			'adaptiveHeight'  => 'autoHeight',
+			'autoplay'        => 'autoplay',
+			'pauseOnHover'    => 'pauseOnHover',
+			'autoplaySpeed'   => 'interval',
+			'speed'           => 'speed',
+
+			'arrows'          => 'arrows',
+			'arrowHeight'     => 'arrowHeight',
+			'arrowWidth'      => 'arrowWidth',
+			'arrowBackground' => 'arrowBackground',
+			'arrowBorder'     => 'arrowBorder',
+			'arrowTypography' => 'arrowTypography',
+
+			'prevArrow'       => 'prevArrow',
+			'prevArrowTop'    => 'prevArrowTop',
+			'prevArrowRight'  => 'prevArrowRight',
+			'prevArrowBottom' => 'prevArrowBottom',
+			'prevArrowLeft'   => 'prevArrowLeft',
+
+			'nextArrow'       => 'nextArrow',
+			'nextArrowTop'    => 'nextArrowTop',
+			'nextArrowRight'  => 'nextArrowRight',
+			'nextArrowBottom' => 'nextArrowBottom',
+			'nextArrowLeft'   => 'nextArrowLeft',
+
+			'dots'            => 'pagination',
+			'dotsSpacing'     => 'paginationSpacing',
+			'dotsHeight'      => 'paginationHeight',
+			'dotsWidth'       => 'paginationWidth',
+			'dotsColor'       => 'paginationColor',
+			'dotsBorder'      => 'paginationBorder',
+			'dotsActiveColor' => 'paginationColorActive',
+			'dotsTop'         => 'paginationTop',
+			'dotsRight'       => 'paginationRight',
+			'dotsBottom'      => 'paginationBottom',
+			'dotsLeft'        => 'paginationLeft',
+		];
+
+		foreach ( $swiper_to_splide as $swiper_key => $splide_key ) {
+			if ( ! empty( $settings[ $swiper_key ] ) ) {
+				$slider['settings'][ $splide_key ] = $settings[ $swiper_key ];
+			}
+
+			foreach ( Breakpoints::$breakpoints as $breakpoint ) {
+				$control_key = "{$swiper_key}:{$breakpoint['key']}";
+
+				if ( ! empty( $settings[ $control_key ] ) ) {
+					$slider['settings'][ "{$splide_key}:{$breakpoint['key']}" ] = $settings[ $control_key ];
+				}
+			}
+		}
+
+		if ( isset( $settings['infinite'] ) ) {
+			$slider['settings']['type']    = 'loop';
+			$slider['settings']['perPage'] = 1;
+			$slider['settings']['perMove'] = 1;
+		}
+
+		array_unshift( $nestable_elements, $slider );
+
+		return $nestable_elements;
+	}
+
+	/**
+	 * Convert: elementClasses, nestableElements
 	 *
 	 * @param string $data Source string to apply search & replace for.
 	 * @param string $source themeStyles, globalSettings, globalClasses, globalElements, pageSettings, $post_id.
-	 * @param array  $convert elementClasses, container.
+	 * @param array  $convert elementClasses, nestableElements, contaner.
 	 *
 	 * @return string
 	 *
@@ -417,45 +679,6 @@ class Converter {
 		}
 
 		$count = 0;
-
-		/**
-		 * STEP: Convert global elements to components
-		 *
-		 * @since 2.0
-		 */
-		if ( in_array( 'globalElementsToComponents', $convert ) ) {
-			$elements = $data;
-			Elements::load_elements();
-
-			if ( is_array( $elements ) && count( $elements ) ) {
-				foreach ( $elements as $index => $element ) {
-					$global_element_id = Helpers::get_global_element( $element, 'global' );
-
-					// Is global element
-					if ( $global_element_id ) {
-						$global_element_settings = Helpers::get_global_element( $element, 'settings' );
-
-						// Is nestable element: Convert to individual element instead of component by using global element settings
-						$is_nestable = Elements::$elements[ $element['name'] ]['nestable'] ?? false;
-						if ( $is_nestable ) {
-							$elements[ $index ]['settings'] = $global_element_settings;
-						}
-
-						// Set component instance 'cid' to global element ID
-						else {
-							$elements[ $index ]['cid'] = $global_element_id;
-						}
-
-						// Remove global element identifier
-						unset( $elements[ $index ]['global'] );
-
-						$count++;
-					}
-				}
-			}
-
-			$data = $elements;
-		}
 
 		/**
 		 * STEP: Convert entry animation ('_animation') to interaction
@@ -632,6 +855,19 @@ class Converter {
 				$data = json_decode( $data, true );
 			}
 		}
+
+		/**
+		 * STEP: Convert elements to nestable elements
+		 *
+		 * - Plain 'slider', 'testimonials', 'carousel' element to 'slider-nested' element
+		 *
+		 * @since 1.?
+		 */
+		// if ( in_array( 'nestableElements', $convert ) && is_array( $data ) && is_numeric( $source ) ) {
+		// $converter_response = self::convert_to_nestable_elements( $data, $count );
+		// $data               = $converter_response['elements'];
+		// $count              = $converter_response['count'];
+		// }
 
 		/**
 		 * STEP: Convert 'container' to 'section' & 'block' element & theme styles

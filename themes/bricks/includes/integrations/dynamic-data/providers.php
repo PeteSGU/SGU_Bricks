@@ -25,9 +25,6 @@ class Providers {
 	 */
 	private $tags = [];
 
-	// Holds the functions that were already run when registering providers and tags (@since 2.0)
-	private static $registered_flags = [];
-
 	public function __construct( $providers ) {
 		$this->providers_keys = $providers;
 
@@ -38,43 +35,17 @@ class Providers {
 	public static function register( $providers = [] ) {
 		$instance = new self( $providers );
 
-		// For Polylang without interfere other plugins. (#86c3htjt0)
-		$register_hook = apply_filters( 'bricks/dynamic_data/register_hook', 'init' );
-
 		// Register providers (priority 10000 due to CMB2 priority)
-		add_action( $register_hook, [ $instance, 'register_providers' ], 10000 );
+		add_action( 'init', [ $instance, 'register_providers' ], 10000 );
 
 		// Register tags on init after register_providers (@since 1.9.8)
-		add_action( $register_hook, [ $instance, 'register_tags' ], 10001 );
+		add_action( 'init', [ $instance, 'register_tags' ], 10001 );
 
-		// Trigger an action when all dynamic data tags are registered (@since 2.0)
-		add_action( $register_hook, [ $instance, 'tag_registered' ], 10002 );
-		// Keep 1 version for reference
-		// Register providers and tags for normal requests or Bricks REST API requests (@since 2.0) (#86c3htjt0)
-		// if ( \Bricks\Api::is_bricks_rest_request() ) {
-		// Register providers during WP REST API call
-		// rest_api_init is too early and causing Poylang no language set, use rest_pre_dispatch which will run after rest_api_init and before callback. (@since 2.0)
-		// Note: rest_pre_dispatch will be running multiple times based on the number of registered REST API routes, so we need to check if the providers already registered (@since 2.0)
-		// $register_hook = apply_filters( 'bricks/dynamic_data/register_hook', 'rest_pre_dispatch' );
+		// Register providers during WP REST API call (priority 7 to run before register_tags() on WP REST API)
+		add_action( 'rest_api_init', [ $instance, 'register_providers' ], 7 );
 
-		// add_action( $register_hook, [ $instance, 'register_providers' ], 10 );
-
-		// Register tags after register_providers and Polylang set language (priority 10) (@since 2.0)
-		// add_action( $register_hook, [ $instance, 'register_tags' ], 11 );
-
-		// Trigger an action when all dynamic data tags are registered (@since 2.0)
-		// add_action( $register_hook, [ $instance, 'tag_registered' ], 12 );
-
-		// } else {
-		// Register providers (priority 10000 due to CMB2 priority)
-		// add_action( 'init', [ $instance, 'register_providers' ], 10000 );
-
-		// Register tags on init after register_providers (@since 1.9.8)
-		// add_action( 'init', [ $instance, 'register_tags' ], 10001 );
-
-		// Trigger an action when all dynamic data tags are registered (@since 2.0)
-		// add_action( 'init', [ $instance, 'tag_registered' ], 10002 );
-		// }
+		// Hook 'init' doesn't run on REST API calls so we need this to register the tags when rendering elements (needed for Posts element) or fetching dynamic data content
+		add_action( 'rest_api_init', [ $instance, 'register_tags' ], 8 );
 
 		// Register tags before wp_enqueue_scripts (but not before wp to get the post custom fields)
 		// Priority = 8 to run before Setup::init_control_options
@@ -96,22 +67,6 @@ class Providers {
 	}
 
 	/**
-	 * Trigger an action when all dynamic data tags are registered
-	 *
-	 * @since 2.0
-	 */
-	public function tag_registered() {
-		// Check if this function already called
-		if ( ! in_array( 'tags_registered', self::$registered_flags ) ) {
-			self::$registered_flags[] = 'tags_registered';
-		} else {
-			return; // Already registered
-		}
-
-		do_action( 'bricks/dynamic_data/tags_registered' );
-	}
-
-	/**
 	 * Get a registered provider
 	 *
 	 * @since 1.9.9
@@ -121,13 +76,6 @@ class Providers {
 	}
 
 	public function register_providers() {
-		// Check if this function already called
-		if ( ! in_array( 'register_providers', self::$registered_flags ) ) {
-			self::$registered_flags[] = 'register_providers';
-		} else {
-			return; // Already registered
-		}
-
 		foreach ( $this->providers_keys as $provider ) {
 			$classname = 'Bricks\Integrations\Dynamic_Data\Providers\Provider_' . str_replace( ' ', '_', ucwords( str_replace( '-', ' ', $provider ) ) );
 
@@ -156,13 +104,6 @@ class Providers {
 	}
 
 	public function register_tags() {
-		// Check if this function already called
-		if ( ! in_array( 'register_tags', self::$registered_flags ) ) {
-			self::$registered_flags[] = 'register_tags';
-		} else {
-			return; // Already registered
-		}
-
 		foreach ( self::$providers as $key => $provider ) {
 			$this->tags = array_merge( $this->tags, $provider->get_tags() );
 		}
@@ -186,37 +127,11 @@ class Providers {
 				continue;
 			}
 
-			// Get the field config, if any (@since 2.0)
-			$field = isset( $tag['field'] ) ? $tag['field'] : false;
-
-			$tag_data = [
-				'name'                   => $tag['name'],
-				'label'                  => $tag['label'],
-				'group'                  => $tag['group'],
-				'provider'               => $tag['provider'] ?? '', // @since 2.0,
-				'queryFiltersExcludeTag' => $tag['queryFiltersExcludeTag'] ?? false, // @since 2.0.2
+			$tags[] = [
+				'name'  => $tag['name'],
+				'label' => $tag['label'],
+				'group' => $tag['group']
 			];
-
-			// Add field type to the tag if available (@since 2.0)
-			if ( isset( $field['type'] ) ) {
-				$tag_data['fieldType'] = $field['type'];
-			}
-
-			// Add CSS file that needs to be loaded for icon to work (@since 2.0)
-			if (
-				$tag_data['provider'] === 'metabox' &&
-				! empty( $field['icon_css'] ) &&
-				! is_object( $field['icon_css'] ) &&
-				is_string( $field['icon_css'] )
-				) {
-				$tag_data['fieldIconCss'] = [
-					'css'    => $field['icon_css'],
-					'handle' => 'bricks-icon-' . md5( $field['icon_css'] ) . '-css', // Must match with handle in provider-metabox.php
-				];
-			}
-
-			$tags[] = $tag_data;
-
 		}
 
 		return $tags;
@@ -550,16 +465,14 @@ class Providers {
 				$post = get_post( \Bricks\Database::$page_data['preview_or_post_id'] );
 			}
 
-		}
+			// Rendering dynamic data in a nested query in the builder (Before Query run) (@since 1.12.2)
+			if ( ! \Bricks\Query::is_looping() && \Bricks\Query::is_any_looping() ) {
+				$loop_object_type = \Bricks\Query::get_loop_object_type( \Bricks\Query::is_any_looping() );
+				$loop_object      = \Bricks\Query::get_loop_object( \Bricks\Query::is_any_looping() );
 
-		// Rendering dynamic data in nested query (Before Query run)
-		// Previously applied in is_bricks_preview only, but it should apply to the frontend as well (#86c3ynnup; @since 2.0)
-		if ( ! \Bricks\Query::is_looping() && \Bricks\Query::is_any_looping() ) {
-			$loop_object_type = \Bricks\Query::get_loop_object_type( \Bricks\Query::is_any_looping() );
-			$loop_object      = \Bricks\Query::get_loop_object( \Bricks\Query::is_any_looping() );
-
-			if ( $loop_object_type === 'post' ) {
-				$post = $loop_object;
+				if ( $loop_object_type === 'post' ) {
+					$post = $loop_object;
+				}
 			}
 		}
 

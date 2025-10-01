@@ -11,7 +11,7 @@ $controls['_display'] = [
 	'css'         => [
 		[
 			'property' => 'display',
-			'selector' => '.brxe-block:not(.accordion-content-wrapper)',
+			'selector' => '.brxe-block',
 		],
 	],
 	'inline'      => true,

@@ -5,14 +5,12 @@
  * @author  WebDevStudios <contact@webdevstudios.com>
  * @since   1.0.0
  *
- * @version 2.7.1
+ * @version 2.10.2
  * @package WebDevStudios\WPSWA
  */
 
 get_header();
-
 ?>
-
 	<div id="ais-wrapper">
 		<main id="ais-main">
 			<div class="algolia-search-box-wrapper">
@@ -78,7 +76,7 @@ get_header();
 				if ( algolia.indices.searchable_posts === undefined && document.getElementsByClassName("admin-bar").length > 0) {
 					alert('It looks like you haven\'t indexed the searchable posts index. Please head to the Indexing page of the Algolia Search plugin and index it.');
 				}
-
+	
 				/* Instantiate instantsearch.js */
 				var search = instantsearch({
 					indexName: algolia.indices.searchable_posts.name,
@@ -101,11 +99,13 @@ get_header();
 								return indexUiState;
 							}
 						}
-					}
+					},
+					// https://www.algolia.com/doc/guides/building-search-ui/events/js/
+					insights: algolia.insights_enabled,
 				});
-
+	
 				search.addWidgets([
-
+	
 					/* Search box widget */
 					instantsearch.widgets.searchBox({
 						container: '#algolia-search-box',
@@ -114,16 +114,16 @@ get_header();
 						showSubmit: false,
 						showLoadingIndicator: false,
 					}),
-
+	
 					/* Stats widget */
 					instantsearch.widgets.stats({
 						container: '#algolia-stats'
 					}),
-
+	
 					instantsearch.widgets.configure({
-						hitsPerPage: 10,
+						hitsPerPage: algolia.search_hits_per_page,
 					}),
-
+	
 					/* Hits widget */
 					instantsearch.widgets.hits({
 						container: '#algolia-hits',
@@ -133,7 +133,7 @@ get_header();
 						},
 						transformData: {
 							item: function (hit) {
-
+	
 								function replace_highlights_recursive (item) {
 									if (item instanceof Object && item.hasOwnProperty('value')) {
 										item.value = _.escape(item.value);
@@ -145,20 +145,20 @@ get_header();
 									}
 									return item;
 								}
-
+	
 								hit._highlightResult = replace_highlights_recursive(hit._highlightResult);
 								hit._snippetResult = replace_highlights_recursive(hit._snippetResult);
-
+	
 								return hit;
 							}
 						}
 					}),
-
+	
 					/* Pagination widget */
 					instantsearch.widgets.pagination({
 						container: '#algolia-pagination'
 					}),
-
+	
 					/* Post types refinement widget */
 					instantsearch.widgets.menu({
 						container: '#facet-post-types',
@@ -166,7 +166,7 @@ get_header();
 						sortBy: ['isRefined:desc', 'count:desc', 'name:asc'],
 						limit: 10,
 					}),
-
+	
 					/* Categories refinement widget */
 					instantsearch.widgets.hierarchicalMenu({
 						container: '#facet-categories',
@@ -174,7 +174,7 @@ get_header();
 						sortBy: ['count'],
 						attributes: ['taxonomies_hierarchical.category.lvl0', 'taxonomies_hierarchical.category.lvl1', 'taxonomies_hierarchical.category.lvl2'],
 					}),
-
+	
 					/* Tags refinement widget */
 					instantsearch.widgets.refinementList({
 						container: '#facet-tags',
@@ -183,7 +183,7 @@ get_header();
 						limit: 15,
 						sortBy: ['isRefined:desc', 'count:desc', 'name:asc'],
 					}),
-
+	
 					/* Users refinement widget */
 					instantsearch.widgets.menu({
 						container: '#facet-users',
@@ -192,25 +192,24 @@ get_header();
 						limit: 10,
 					}),
 				]);
-
+	
 				if ( algolia.powered_by_enabled ) {
-					search.addWidget(
+					search.addWidgets([
 						/* Search powered-by widget */
 						instantsearch.widgets.poweredBy({
 							container: '#algolia-powered-by'
 						}),
-					)
+					]);
 				}
-
+	
 				/* Start */
 				search.start();
-
+	
 				// This needs work
 				document.querySelector("#algolia-search-box input[type='search']").select()
 			}
 		});
 	</script>
-
 <?php
 
 get_footer();

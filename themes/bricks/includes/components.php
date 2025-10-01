@@ -53,18 +53,11 @@ class Components {
 				unset( $components[ $index ]['settings'] );
 				unset( $components[ $index ]['children'] );
 			}
-
-			// Remove backslashes from component settings (i.e. Code element; @since 2.0)
-			$components[ $index ] = stripslashes_deep( $components[ $index ] );
 		}
 
 		// Return: Components in-builder import (PanelElements.vue)
 		if ( bricks_is_ajax_call() ) {
-			wp_send_json_success(
-				[
-					'newComponents' => $components,
-				]
-			);
+			wp_send_json_success( [ 'newComponents' => $components ] );
 		}
 
 		// Return upgraded components
@@ -80,11 +73,7 @@ class Components {
 
 		// Loop over all Bricks-enabled post types to get elements with 'cid' key
 		$instances = [];
-
-		// Get IDs of all Bricks posts & templates
-		$bricks_post_ids = Helpers::get_all_bricks_post_ids();
-		$template_ids    = Templates::get_all_template_ids();
-		$post_ids        = array_merge( $bricks_post_ids, $template_ids );
+		$post_ids  = Helpers::get_all_bricks_post_ids();
 
 		foreach ( $post_ids as $post_id ) {
 			// Skip the current post (get instances in builder from dynamicElements
@@ -92,14 +81,7 @@ class Components {
 				continue;
 			}
 
-			$type = 'content';
-
-			// Get template type (header, footer, etc.) for templates
-			if ( get_post_type( $post_id ) === BRICKS_DB_TEMPLATE_SLUG ) {
-				$type = Templates::get_template_type( $post_id );
-			}
-
-			$bricks_data = Database::get_data( $post_id, $type );
+			$bricks_data = Database::get_data( $post_id );
 
 			// Stringify the data to search for all 'cid' appearances
 			$bricks_data_json = json_encode( $bricks_data );

@@ -155,8 +155,8 @@ class Submission_Table extends \WP_List_Table {
 		$output = '<span>' . $item['id'] . '</span>';
 
 		// NOTE: Prepared, but not in use
-		// $output .= isset( $item['favorite'] ) ? '<span data-balloon="' . esc_html__( 'Favorite', 'bricks' ) . '"><i class="dashicons dashicons-star-filled"></i></span>' : '<span data-balloon="' . esc_html__( 'Favorite', 'bricks' ) . '"><i class="dashicons dashicons-star-empty"></i></span>';
-		// $output .= isset( $item['status'] ) ? '<span data-balloon="' . esc_html__( 'Read', 'bricks' ) . '"><i class="dashicons dashicons-visibility"></i></span>' : '<span data-balloon="' . esc_html__( 'Unread', 'bricks' ) . '"><i class="dashicons dashicons-hidden"></i></span>';
+		// $output .= isset( $item['favorite'] ) ? '<span data-balloon="' . esc_html__( 'Favorite', 'bricks' ) . '" data-balloon-pos="top"><i class="dashicons dashicons-star-filled"></i></span>' : '<span data-balloon="' . esc_html__( 'Favorite', 'bricks' ) . '" data-balloon-pos="top"><i class="dashicons dashicons-star-empty"></i></span>';
+		// $output .= isset( $item['status'] ) ? '<span data-balloon="' . esc_html__( 'Read', 'bricks' ) . '" data-balloon-pos="top"><i class="dashicons dashicons-visibility"></i></span>' : '<span data-balloon="' . esc_html__( 'Unread', 'bricks' ) . '" data-balloon-pos="top"><i class="dashicons dashicons-hidden"></i></span>';
 
 		return $output;
 	}

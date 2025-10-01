@@ -4,7 +4,8 @@ namespace Bricks;
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 $license_key    = License::$license_key;
-$license_status = License::get_license_status() ?? 'no_license';
+$license_status = License::get_license_status();
+$license_status = $license_status ? $license_status : 'no_license';
 ?>
 
 <div class="wrap bricks-admin-wrapper license">

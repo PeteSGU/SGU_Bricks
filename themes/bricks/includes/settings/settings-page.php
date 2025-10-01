@@ -76,12 +76,6 @@ class Settings_Page extends Settings_Base {
 			];
 		}
 
-		$this->controls['popupDisabled'] = [
-			'group' => 'general',
-			'type'  => 'checkbox',
-			'label' => esc_html__( 'Disable popups', 'bricks' ),
-		];
-
 		// Add Theme Styles "General" controls to page settings
 		$style_controls = Theme_Styles::$controls;
 
@@ -326,7 +320,7 @@ class Settings_Page extends Settings_Base {
 			'group'       => 'social-media',
 			'label'       => esc_html__( 'Description', 'bricks' ),
 			'type'        => 'text',
-			'placeholder' => bricks_is_builder() ? get_the_excerpt() : '', // Avoid memory exhausted on plugin's hook (#86c48hete; @since 2.0.2)
+			'placeholder' => get_the_excerpt(),
 			'description' => esc_html__( 'Recommended length: 55 characters. Default: Post/page excerpt.', 'bricks' ),
 		];
 

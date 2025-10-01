@@ -22,8 +22,14 @@ class Filter_DatePicker extends Filter_Element {
 		// Load datepicker localisation
 		$l10n = $this->settings['l10n'] ?? '';
 		if ( $l10n ) {
-			// Hosted locally (@since 2.0)
-			wp_enqueue_script( 'bricks-flatpickr-l10n', BRICKS_URL_ASSETS . "js/libs/flatpickr-l10n/$l10n.min.js", [ 'bricks-flatpickr' ], null );
+			/**
+			 * Set "version" (4.6.13) to null
+			 *
+			 * If version is present, we get a 302 redirect
+			 *
+			 * @since 1.12
+			 */
+			wp_enqueue_script( 'bricks-flatpickr-l10n', "https://npmcdn.com/flatpickr@4.6.13/dist/l10n/$l10n.js", [ 'bricks-flatpickr' ], null );
 		}
 	}
 
