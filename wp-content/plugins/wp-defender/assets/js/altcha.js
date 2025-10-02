@@ -1,1 +1,0 @@
-import{solveChallenge}from"altcha-lib";jQuery(function(a){var l=a("#wd_agf_unlock_me"),e=a("#wd_agf_unlock_me_error");solveChallenge(altcha.challenge,altcha.salt).promise.then(function(a){l.data("solution",a.number),l.attr("disabled",!1)}).catch(function(a){e.show()})});
