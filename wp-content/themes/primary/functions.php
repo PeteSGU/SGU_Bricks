@@ -64,14 +64,7 @@ new FrameworkSite();
 add_filter('body_class', function ($classes) {
 	array_push($classes, 'preload', 'fs-grid');
 
-/*	if (is_singular(['news'])) {
-		$classes[] = 'theme-turquoise';
-	}
-
-	if (is_singular(['tribe_events'])) {
-		$classes[] = 'theme-light-gray';
-	}
-*/
+ 
 	return $classes;
 });
 
