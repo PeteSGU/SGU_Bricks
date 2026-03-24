@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026 Residency Placements - SGU</title>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.js"></script>
+    <script
+        src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js'></script>
+    <link rel='stylesheet'
+        href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.css'
+        type='text/css' />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        referrerpolicy="no-referrer" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- Filter Panel (Top of page; flows before header) -->
+    <div class="filter-panel">
+        <div class="filter-pannel-header">
+            <h3>Search SGU Residencies</h3>
+            <div class="filter-group">
+                <div class="filter-input-icon filter-autocomplete">
+                    <input type="text" class="filter-input location" id="stateFilter" placeholder="State or Province" autocomplete="off">
+                    <i class="fa-solid fa-location-arrow" aria-hidden="true"></i>
+                    <div class="autocomplete-dropdown" id="stateDropdown" role="listbox" aria-label="States"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="filter-pannel-inner">
+            <div class="filter-group">
+                <div class="filter-autocomplete">
+                    <input type="text" class="filter-input" id="specialtyFilter" placeholder="Select Specialty" autocomplete="off">
+                    <div class="autocomplete-dropdown" id="specialtyDropdown" role="listbox" aria-label="Specialties"></div>
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <div class="filter-autocomplete">
+                    <input type="text" class="filter-input" id="programFilter" placeholder="Select Program Name" autocomplete="off">
+                    <div class="autocomplete-dropdown" id="programDropdown" role="listbox" aria-label="Programs"></div>
+                </div>
+            </div>
+
+            <button class="btn-explore" id="exploreBtn">EXPLORE</button>
+            <button class="btn-clear" id="clearBtn">Clear All Filters</button>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+        <div class="header-title">2026 Residency Placements</div>
+        <div class="header-right">
+            <!-- Mobile-only counter (shown via CSS on small screens) -->
+            <div class="header-counter" id="headerCounter">
+                <span id="headerCount">0</span> <span>Residencies</span>
+            </div>
+
+            <div class="view-toggle">
+                <button class="view-toggle-btn active" data-view="map" data-mobile-label="Map">
+                    <i class="fa-solid fa-map" aria-hidden="true"></i>
+                    <span>Map View</span>
+                </button>
+                <button class="view-toggle-btn" data-view="list" data-mobile-label="List">
+                    <i class="fa-solid fa-list" aria-hidden="true"></i>
+                    <span>List View</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- List View -->
+    <div id="listView">
+        <div class="list-topbar">
+            <!-- List View Counter -->
+            <div class="list-counter" id="listCounter" style="display: none;">
+                Showing <span id="listCount">0</span> Residency Programs
+            </div>
+        </div>
+        <div class="list-content" id="listContent">
+            <!-- Program cards will be inserted here dynamically -->
+        </div>
+        <div class="pagination-container" id="paginationContainer">
+            <div class="pagination-info" id="paginationInfo">Showing 0-0 of 0 results</div>
+            <div class="pagination-controls">
+                <button class="pagination-btn" id="prevPageBtn" disabled>‹</button>
+                <div id="pageNumbers"></div>
+                <button class="pagination-btn" id="nextPageBtn" disabled>›</button>
+                <select class="pagination-select" id="itemsPerPageSelect">
+                    <option value="4">4 per page</option>
+                    <option value="10">10 per page</option>
+                    <option value="20">20 per page</option>
+                    <option value="50">50 per page</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Map View Container (Map + overlays) -->
+    <div id="mapViewContainer">
+        <!-- Search This Area Button (temporarily disabled)
+        <button class="search-area-btn" id="searchAreaBtn">Search This Area</button>
+        -->
+
+        <!-- Top Right HUD: Counter + Controls -->
+        <div class="map-topbar">
+            <!-- Program Counter (Map View) -->
+            <div class="program-counter" id="programCounter">
+                Showing <span id="programCount">0</span> Residency Programs
+            </div>
+
+            <!-- Custom Map Controls -->
+            <div class="map-controls">
+                <button class="control-btn" id="zoomInBtn" title="Zoom In">+</button>
+                <button class="control-btn" id="zoomOutBtn" title="Zoom Out">−</button>
+                <button class="control-btn" id="fitScreenBtn" title="Full Screen">⛶</button>
+            </div>
+        </div>
+
+        <!-- Map -->
+        <div id="map"></div>
+        <div id="loading" class="loading">Loading map...</div>
+    </div>
+
+    <!-- Component Scripts (Load in dependency order) -->
+    <script src="components/StateUtils.js"></script>
+    <script src="components/UIManager.js"></script>
+    <script src="components/DataManager.js"></script>
+    <script src="components/FilterManager.js"></script>
+    <script src="components/PaginationManager.js"></script>
+    <script src="components/ListViewRenderer.js"></script>
+    <script src="components/MapManager.js"></script>
+    <script src="components/ResidencyMapComponent.js"></script>
+
+    <!-- Initialize Application -->
+    <script>
+        // Initialize the map component
+        const mapComponent = new ResidencyMapComponent({
+            accessToken: '{{Replace with Secrey}}',
+            dataUrl: 'input/input.json'
+        });
+
+        mapComponent.init();
+
+        // Expose to window for debugging/WordPress integration
+        window.mapComponent = mapComponent;
+    </script>
+</body>
+
+</html>

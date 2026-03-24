@@ -1,0 +1,13 @@
+{
+  "name": "residency-programs-map",
+  "version": "1.0.0",
+  "description": "Mapbox component for displaying medical residency programs",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["mapbox", "residency", "medical", "map", "wordpress"],
+  "author": "",
+  "license": "MIT"
+}
